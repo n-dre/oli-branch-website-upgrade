@@ -1,0 +1,401 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - Oli-Branch Financial Platform</title>
+    <meta name="description" content="Login to access your personalized financial dashboard and tools.">
+    
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Tiempos+Headline:wght@700&display=swap" rel="stylesheet">
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'primary-blue': '#2563EB',
+                        'primary-blue-dark': '#1D4ED8',
+                        'charcoal': '#2D3748'
+                    },
+                    fontFamily: {
+                        'display': ['Tiempos Headline', 'serif'],
+                        'body': ['Inter', 'sans-serif']
+                    }
+                }
+            }
+        }
+    </script>
+    
+    <style>
+        .hero-gradient {
+            background: linear-gradient(135deg, #2563EB 0%, #1D4ED8 100%);
+        }
+        
+        .glass-effect {
+            backdrop-filter: blur(10px);
+            background: rgba(255, 255, 255, 0.95);
+        }
+        
+        .login-card {
+            background: white;
+        }
+        
+        .btn-primary {
+            background: #2563EB;
+            color: white;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-primary:hover {
+            background: #1D4ED8;
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(37, 99, 235, 0.3);
+        }
+        
+        .form-input {
+            width: 100%;
+            padding: 16px 20px;
+            border: 2px solid #e2e8f0;
+            border-radius: 12px;
+            font-size: 16px;
+            transition: all 0.3s ease;
+            background: white;
+        }
+        
+        .form-input:focus {
+            outline: none;
+            border-color: #2563EB;
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+        }
+        
+        .error-message {
+            color: #EF4444;
+            font-size: 14px;
+            margin-top: 8px;
+            display: none;
+        }
+        
+        .success-message {
+            color: #10B981;
+            font-size: 14px;
+            margin-top: 8px;
+            display: none;
+        }
+        
+        .password-toggle {
+            position: absolute;
+            right: 16px;
+            top: 50%;
+            transform: translateY(-50%);
+            cursor: pointer;
+            color: #6B7280;
+            transition: color 0.3s ease;
+        }
+        
+        .password-toggle:hover {
+            color: #2563EB;
+        }
+    </style>
+</head>
+<body class="font-body bg-white text-charcoal">
+    <div class="min-h-screen flex">
+        <!-- Left Side - Blue Hero -->
+        <div class="hidden lg:flex lg:w-2/5 hero-gradient flex-col justify-between p-12 text-white relative">
+            <!-- Logo -->
+            <div class="flex items-center">
+                <img 
+                    src="https://customer-assets.emergentagent.com/job_4974f259-d95a-48a3-8a10-bb260f1e01fa/artifacts/tbn7tc1v_My%20project-1%20%281%29.png" 
+                    alt="Oli-Branch" 
+                    class="h-10 brightness-0 invert"
+                />
+            </div>
+            
+            <!-- Hero Text -->
+            <div class="space-y-6">
+                <h1 class="font-display text-5xl font-bold tracking-tight leading-tight uppercase">
+                    YOUR FINANCIAL<br/>FUTURE STARTS<br/>HERE
+                </h1>
+                <p class="text-blue-100 text-lg max-w-md leading-relaxed">
+                    Access personalized insights, track your portfolio, and make smarter financial decisions with Oli-Branch.
+                </p>
+            </div>
+            
+            <!-- Footer -->
+            <div class="text-blue-200 text-sm">
+                © 2024 Oli-Branch Financial Platform
+            </div>
+        </div>
+
+        <!-- Right Side - Login Form -->
+        <div class="flex-1 flex items-center justify-center p-8 bg-white">
+            <div class="w-full max-w-md space-y-8">
+                <!-- Mobile Logo -->
+                <div class="lg:hidden flex items-center justify-center mb-8">
+                    <img 
+                        src="resources/oli-branch-1 (7).png" 
+                        alt="Oli-Branch" 
+                        class="h-10"
+                    />
+                </div>
+
+                <!-- Title -->
+                <div>
+                    <h2 class="font-display text-3xl font-bold text-charcoal">Welcome Back</h2>
+                    <p class="mt-2 text-gray-500">Sign in to access your dashboard</p>
+                </div>
+
+                <!-- Login Form -->
+                <form id="loginForm" class="space-y-6">
+                    <!-- Email -->
+                    <div>
+                        <label for="email" class="block text-sm font-medium text-charcoal mb-2">
+                            Email Address
+                        </label>
+                        <input 
+                            type="email" 
+                            id="email" 
+                            name="email" 
+                            required 
+                            class="form-input"
+                            placeholder="Enter your email"
+                        >
+                        <div class="error-message" id="emailError"></div>
+                    </div>
+
+                    <!-- Password -->
+                    <div>
+                        <label for="password" class="block text-sm font-medium text-charcoal mb-2">
+                            Password
+                        </label>
+                        <div class="relative">
+                            <input 
+                                type="password" 
+                                id="password" 
+                                name="password" 
+                                required 
+                                class="form-input pr-12"
+                                placeholder="Enter your password"
+                            >
+                            <div class="password-toggle" id="passwordToggle">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
+                                </svg>
+                            </div>
+                        </div>
+                        <div class="error-message" id="passwordError"></div>
+                    </div>
+
+                    <!-- Remember Me & Forgot Password -->
+                    <div class="flex items-center justify-between">
+                        <label class="flex items-center">
+                            <input type="checkbox" id="rememberMe" class="mr-2 rounded border-gray-300">
+                            <span class="text-sm text-gray-500">Remember me</span>
+                        </label>
+                        <a href="forgot-password.html" class="text-sm text-primary-blue hover:text-primary-blue-dark transition-colors font-medium">
+                            Forgot password?
+                        </a>
+                    </div>
+
+                    <!-- Submit Button -->
+                    <button type="submit" class="w-full btn-primary py-4 px-6 rounded-lg font-semibold text-lg flex items-center justify-center gap-2">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path>
+                        </svg>
+                        Sign In
+                    </button>
+
+                    <!-- Error/Success Messages -->
+                    <div class="error-message text-center" id="loginError"></div>
+                    <div class="success-message text-center" id="loginSuccess"></div>
+                </form>
+
+                <!-- Divider -->
+                <div class="border-t border-gray-200 pt-6">
+                    <p class="text-center text-gray-500">
+                        Don't have an account? 
+                        <a href="signup.html" class="text-primary-blue hover:text-primary-blue-dark font-semibold">
+                            Create Account →
+                        </a>
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ============================================================
+        // LOCAL CONFIG (works on localhost)
+        // ============================================================
+        const API_BASE_URL = `${window.location.origin}/api`;  // ex: http://localhost:3000/api
+        const DASHBOARD_URL = 'user-dashboard.html';           // or whatever page you want after signup
+        // ============================================================
+
+        class LoginManager {
+            constructor() {
+                this.init();
+            }
+
+            init() {
+                this.setupEventListeners();
+                this.checkExistingLogin();
+            }
+
+            setupEventListeners() {
+                document.getElementById('loginForm').addEventListener('submit', (e) => {
+                    e.preventDefault();
+                    this.handleLogin();
+                });
+
+                document.getElementById('passwordToggle').addEventListener('click', () => {
+                    this.togglePasswordVisibility();
+                });
+
+                document.getElementById('email').addEventListener('input', () => this.clearErrors());
+                document.getElementById('password').addEventListener('input', () => this.clearErrors());
+            }
+
+            checkExistingLogin() {
+                const token = localStorage.getItem('oliBranchToken');
+                if (token) {
+                    window.location.href = DASHBOARD_URL;
+                }
+            }
+
+            async handleLogin() {
+                const email = document.getElementById('email').value.trim();
+                const password = document.getElementById('password').value;
+                const rememberMe = document.getElementById('rememberMe').checked;
+
+                this.clearErrors();
+
+                if (!this.validateInputs(email, password)) {
+                    return;
+                }
+
+                // Show loading state
+                const submitBtn = document.querySelector('button[type="submit"]');
+                const originalText = submitBtn.innerHTML;
+                submitBtn.innerHTML = 'Signing in...';
+                submitBtn.disabled = true;
+
+                try {
+                    const response = await fetch(`${API_BASE_URL}/auth/login`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({ email, password })
+                    });
+
+                    const data = await response.json();
+
+                    if (response.ok) {
+                        // Store token and user data
+                        localStorage.setItem('oliBranchToken', data.token);
+                        localStorage.setItem('oliBranchUser', JSON.stringify({
+                            id: data.id,
+                            name: data.name,
+                            email: data.email
+                        }));
+
+                        this.showSuccess(`Welcome back, ${data.name}! Redirecting...`);
+                        
+                        setTimeout(() => {
+                            window.location.href = DASHBOARD_URL;
+                        }, 1500);
+                    } else {
+                        this.showError(data.detail || 'Invalid email or password');
+                        submitBtn.innerHTML = originalText;
+                        submitBtn.disabled = false;
+                    }
+                } catch (error) {
+                    console.error('Login error:', error);
+                    this.showError('Connection error. Please try again.');
+                    submitBtn.innerHTML = originalText;
+                    submitBtn.disabled = false;
+                }
+            }
+
+            validateInputs(email, password) {
+                let isValid = true;
+                const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+                if (!email) {
+                    this.showFieldError('emailError', 'Email is required');
+                    isValid = false;
+                } else if (!emailRegex.test(email)) {
+                    this.showFieldError('emailError', 'Please enter a valid email address');
+                    isValid = false;
+                }
+
+                if (!password) {
+                    this.showFieldError('passwordError', 'Password is required');
+                    isValid = false;
+                } else if (password.length < 6) {
+                    this.showFieldError('passwordError', 'Password must be at least 6 characters');
+                    isValid = false;
+                }
+
+                return isValid;
+            }
+
+            togglePasswordVisibility() {
+                const passwordInput = document.getElementById('password');
+                const passwordToggle = document.getElementById('passwordToggle');
+                
+                if (passwordInput.type === 'password') {
+                    passwordInput.type = 'text';
+                    passwordToggle.innerHTML = `
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.878 9.878L6.05 6.05m3.828 3.828L12 12"></path>
+                        </svg>
+                    `;
+                } else {
+                    passwordInput.type = 'password';
+                    passwordToggle.innerHTML = `
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
+                        </svg>
+                    `;
+                }
+            }
+
+            showError(message) {
+                const errorElement = document.getElementById('loginError');
+                errorElement.textContent = message;
+                errorElement.style.display = 'block';
+            }
+
+            showSuccess(message) {
+                const successElement = document.getElementById('loginSuccess');
+                successElement.textContent = message;
+                successElement.style.display = 'block';
+            }
+
+            showFieldError(fieldId, message) {
+                const fieldElement = document.getElementById(fieldId);
+                fieldElement.textContent = message;
+                fieldElement.style.display = 'block';
+            }
+
+            clearErrors() {
+                document.getElementById('loginError').style.display = 'none';
+                document.getElementById('loginSuccess').style.display = 'none';
+                document.getElementById('emailError').style.display = 'none';
+                document.getElementById('passwordError').style.display = 'none';
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            new LoginManager();
+        });
+    </script>
+</body>
+</html>
