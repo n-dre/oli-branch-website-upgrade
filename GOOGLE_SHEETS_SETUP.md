@@ -19,7 +19,7 @@ This guide will help you set up Google Sheets integration for user registration.
 ## Step 2: Get Sheet ID
 
 1. Open your Google Sheet
-2. Look at the URL: `https://docs.google.com/spreadsheets/d/1O-HygRiu50iHATb0h6pj_IEulairqWrAS5Jz0yVyf9k/edit?gid=1237725089#gid=1237725089`
+2. Look at the URL: `https://docs.google.com/spreadsheets/d/1O-HygRiu50iHATb0h6pj_IEulairqWrAS5Jz0yVyf9k/edit?gid=0#gid=0`
 3. Copy the 1O-HygRiu50iHATb0h6pj_IEulairqWrAS5Jz0yVyf9k/edit?gid=1237725089#gid=1237725089 part - this is your Sheet ID
 
 ## Step 3: Enable Google Sheets API
@@ -75,7 +75,7 @@ If registration doesn't work:
 
 - `signup.html` - Registration form
 - `login.html` - Login form (updated with sign-up link)
-- `user-dashboard.html` - User dashboard
+- `User-dashboard.jsx` - User dashboard
 - `admin-dashboard.html` - Admin dashboard
 
 All files are now in `/mnt/okcomputer/output/` and ready to use!
