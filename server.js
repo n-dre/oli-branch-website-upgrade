@@ -1,7 +1,12 @@
 // server.js
-const path = require("path");
-const express = require("express");
-const cors = require("cors");
+import path from "path";
+import express from "express";
+import cors from "cors";
+import { fileURLToPath } from "url";
+
+// For ES modules, we need to get __dirname
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -11,8 +16,7 @@ const users = new Map(); // key=email -> user object
 
 app.use(cors());
 app.use(express.json());
-app.use(express.static(path.join(__dirname, "public"))); 
-// If your html files are NOT in /public, move them there OR change this line.
+app.use(express.static(path.join(__dirname, "dist"))); // Changed to "dist" for Vite build
 
 app.post("/api/auth/signup", (req, res) => {
   const { email, password, name, business_name, business_type } = req.body || {};
@@ -58,5 +62,5 @@ function cryptoRandomId() {
 }
 
 app.listen(PORT, () => {
-  console.log(`Local server running: http://localhost:${PORT}`);
+  console.log(`Server running: http://localhost:${PORT}`);
 });
