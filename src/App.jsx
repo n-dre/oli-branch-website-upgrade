@@ -1,3 +1,4 @@
+// src/App.jsx
 import React, { Suspense, lazy } from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { Toaster } from 'sonner';
@@ -108,10 +109,14 @@ const safeLazy = (importFn, pageName) => {
 // --- Lazy Load Pages ---
 const LandingPage = safeLazy(() => import('./pages/LandingPage'), 'LandingPage');
 const LoginPage = safeLazy(() => import('./pages/LoginPage'), 'LoginPage');
-const Dashboard = safeLazy(() => import('./pages/Dashboard'), 'Dashboard');
+const SignupPage = safeLazy(() => import('./pages/SignupPage'), 'SignupPage');
+const Services = safeLazy(() => import('./pages/Services'), 'Services');
+const Resources = safeLazy(() => import('./pages/Resources'), 'Resources');
+const About = safeLazy(() => import('./pages/About'), 'About');
+const UserDashboard = safeLazy(() => import('./pages/UserDashboard'), 'UserDashboard');
 const BankLinking = safeLazy(() => import('./pages/BankLinking'), 'BankLinking');
 const Budget = safeLazy(() => import('./pages/Budget'), 'Budget');
-const FeeAnalysis = safeLazy(() => import('./pages/FeeAnalysis'), 'FeeAnalysis');
+const FeeAnalysis = safeLazy(() => import('./pages/FeeAmalysis'), 'FeeAnalysis');
 const FinancialHealth = safeLazy(() => import('./pages/FinancialHealth'), 'FinancialHealth');
 const IntakeForm = safeLazy(() => import('./pages/IntakeForm'), 'IntakeForm');
 const Learning = safeLazy(() => import('./pages/Learning'), 'Learning');
@@ -122,7 +127,8 @@ const Report = safeLazy(() => import('./pages/Report'), 'Report');
 const Settings = safeLazy(() => import('./pages/Settings'), 'Settings');
 const Tools = safeLazy(() => import('./pages/Tools'), 'Tools');
 
-export default function App() {
+// --- Main App Component ---
+function App() {
   return (
     <ThemeProvider>
       <DataProvider>
@@ -133,10 +139,14 @@ export default function App() {
                 {/* Public routes */}
                 <Route path="/" element={<LandingPage />} />
                 <Route path="/login" element={<LoginPage />} />
+                <Route path="/signup" element={<SignupPage />} />
+                <Route path="/services" element={<Services />} />
+                <Route path="/resources" element={<Resources />} />
+                <Route path="/about" element={<About />} />
                 <Route path="/pricing" element={<Pricing />} />
 
                 {/* Dashboard routes */}
-                <Route path="/dashboard" element={<Dashboard />} />
+                <Route path="/dashboard" element={<UserDashboard />} />
                 <Route path="/bank-linking" element={<BankLinking />} />
                 <Route path="/budget" element={<Budget />} />
                 <Route path="/fee-analysis" element={<FeeAnalysis />} />
@@ -178,3 +188,5 @@ export default function App() {
     </ThemeProvider>
   );
 }
+
+export default App;

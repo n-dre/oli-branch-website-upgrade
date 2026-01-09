@@ -1,6 +1,11 @@
 import React, { useState } from 'react';
+import { useNavigate, Link } from 'react-router-dom';
+import { useAuth } from '../context/AuthContext';
 
 const SignupPage = () => {
+  const { register } = useAuth();
+  const navigate = useNavigate();
+  
   // --- State Management for Form Data ---
   const [formData, setFormData] = useState({
     fullName: '',
@@ -29,7 +34,7 @@ const SignupPage = () => {
 
   // Constants preserved from original code
   const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwVja7KcSxwDAAuHnUmdBnPsdPDQe6cYAtxs10g8A7J5BbR0d0sze9h2AkH7QKLCoIG9g/exec";
-  const LOGIN_URL = "/login"; // Adjust based on your React Router paths
+  const LOGIN_URL = "/login";
 
   // --- Handlers ---
   const handleInputChange = (e) => {
@@ -38,14 +43,13 @@ const SignupPage = () => {
       ...prev,
       [name]: type === 'checkbox' ? checked : value
     }));
-    // Clear error when user types
     if (errors[name]) {
       setErrors(prev => ({ ...prev, [name]: '' }));
     }
   };
 
   const validate = () => {
-    let newErrors = {};
+    const newErrors = {};
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     const passRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9!@#$%^&*])(?=.{8,12}$).*/;
 
@@ -80,7 +84,16 @@ const SignupPage = () => {
     };
 
     try {
-      // mode: 'no-cors' preserved for Google Apps Script integration
+      // Use AuthContext register function
+      const result = register(payload);
+      
+      if (result && !result.success) {
+        setErrors({ form: result.message || "Registration failed" });
+        setLoading(false);
+        return;
+      }
+
+      // Google Apps Script integration (no-cors mode)
       await fetch(GOOGLE_SCRIPT_URL, {
         method: "POST",
         mode: "no-cors",
@@ -88,18 +101,20 @@ const SignupPage = () => {
         body: JSON.stringify(payload)
       });
 
-      // LocalStorage backup logic preserved
+      // LocalStorage backup logic
       const users = JSON.parse(localStorage.getItem('registeredUsers') || '[]');
       users.push(payload);
       localStorage.setItem('registeredUsers', JSON.stringify(users));
       localStorage.setItem('userEmail', formData.email);
 
       setSuccessMsg("Account created! Redirecting to login...");
-      setTimeout(() => { window.location.href = LOGIN_URL; }, 1500);
+      setTimeout(() => navigate(LOGIN_URL), 1500);
     } catch (err) {
       console.error('Signup error:', err);
       setSuccessMsg("Account created! Redirecting to login...");
-      setTimeout(() => { window.location.href = LOGIN_URL; }, 1500);
+      setTimeout(() => navigate(LOGIN_URL), 1500);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -143,10 +158,10 @@ const SignupPage = () => {
             <img src="/resources/OliGreen.jpeg" alt="Oli-Branch" className="h-10 rounded-full" />
           </div>
 
-          <a href="/login" className="inline-flex items-center gap-2 text-gray-500 hover:text-[#1B4332] transition-colors text-sm">
+          <Link to="/login" className="inline-flex items-center gap-2 text-gray-500 hover:text-[#1B4332] transition-colors text-sm">
             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
             Back to Login
-          </a>
+          </Link>
 
           <div>
             <h2 className="font-display text-2xl sm:text-3xl font-bold text-charcoal">Create Account</h2>
@@ -241,10 +256,11 @@ const SignupPage = () => {
             <div className="flex items-start pt-2">
               <input type="checkbox" name="agreeTerms" id="agreeTerms" checked={formData.agreeTerms} onChange={handleInputChange} className="mt-1 h-4 w-4 rounded border-gray-300" />
               <label htmlFor="agreeTerms" className="ml-2.5 text-sm text-gray-500">
-                I agree to the <a href="/terms" className="text-[#1B4332] hover:underline">Terms</a> and <a href="/privacy" className="text-[#1B4332] hover:underline">Privacy</a>
+                I agree to the <Link to="/terms" className="text-[#1B4332] hover:underline">Terms</Link> and <Link to="/privacy" className="text-[#1B4332] hover:underline">Privacy</Link>
               </label>
             </div>
             {errors.agreeTerms && <div className="text-red-500 text-xs">{errors.agreeTerms}</div>}
+            {errors.form && <div className="text-red-500 text-sm text-center">{errors.form}</div>}
 
             {/* Submit Button */}
             <button type="submit" disabled={loading} className="w-full btn-primary py-3 sm:py-4 px-6 rounded-lg font-semibold text-lg flex items-center justify-center gap-2">

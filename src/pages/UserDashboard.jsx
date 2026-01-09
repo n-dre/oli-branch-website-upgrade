@@ -8,7 +8,7 @@ import {
   Shield
 } from 'lucide-react';
 import { Link } from 'react-router-dom';
-import DashboardLayout from '../components/layout/DashboardLayout';
+import UserDashboard from '../components/layout/DashboardLayout';
 import { Card, CardContent, CardHeader, CardTitle } from '../components/ui/card';
 import { Button } from '../components/ui/button';
 import { useData } from '../context/DataContext';
@@ -44,7 +44,7 @@ export default function Dashboard() {
   }));
 
   return (
-    <DashboardLayout title="Welcome Back!" subtitle="Here's your financial overview for today">
+    <UserDashboard title="Welcome Back!" subtitle="Here's your financial overview for today">
       <div className="space-y-4 sm:space-y-6 px-4 sm:px-0">
         {/* Top Section - Health Score & Quick Actions */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
@@ -181,6 +181,6 @@ export default function Dashboard() {
           </div>
         </div>
       </div>
-    </DashboardLayout>
+    </UserDashboard>
   );
 }
