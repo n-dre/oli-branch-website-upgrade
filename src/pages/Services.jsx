@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import anime from 'animejs/lib/anime.es.js';
+import anime from 'animejs';
 
 const ServicesPage = () => {
     const [activeTab, setActiveTab] = useState('banking');
