@@ -121,8 +121,13 @@ export default function Profile() {
             <div className="space-y-2">
               <Label>Email</Label>
               <div className="relative">
-                <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                <Input type="email" value={profile.email} className="pl-10" disabled />
+                <Building2 className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                <Input
+                  placeholder="e.g., oli-branch.com"
+                  value={profile.email}
+                  onChange={(e) => setProfile((p) => ({ ...p, email: e.target.value }))}
+                  className="pl-10"
+                />
               </div>
             </div>
 
