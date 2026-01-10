@@ -1,4 +1,5 @@
 import React, { useState, useRef } from "react";
+import { motion } from "framer-motion";
 import { toast } from "sonner";
 import { User, Mail, Building2, Upload, Lock } from "lucide-react";
 
@@ -16,7 +17,7 @@ export default function Profile() {
 
   const [profile, setProfile] = useState({
     fullName: "",
-    email: settings.profile?.email || "demo@olibranch.com",
+    email: settings.profile?.email || "",
     companyName: settings.profile?.companyName || "",
   });
 

@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { motion } from "framer-motion";
 import {
   MapPin,
   Navigation,
@@ -161,16 +162,16 @@ export default function NearbyBanks() {
         let message = 'Unable to get location';
         switch (error.code) {
           case error.PERMISSION_DENIED:
-            message = 'Location access denied. Showing demo banks.';
+            message = 'Location access denied. Showing banks.';
             break;
           case error.POSITION_UNAVAILABLE:
-            message = 'Location unavailable. Showing demo banks.';
+            message = 'Location unavailable. Showing banks.';
             break;
           case error.TIMEOUT:
-            message = 'Location request timed out. Showing demo banks.';
+            message = 'Location request timed out. Showing banks.';
             break;
           default:
-            message = 'Unknown error. Showing demo banks.';
+            message = 'Unknown error. Showing banks.';
         }
         setLocationError(message);
         loadMockBanks();
@@ -220,7 +221,7 @@ export default function NearbyBanks() {
                 <div>
                   <h3 className="font-semibold text-foreground">
                     {loading ? 'Getting location...' : 
-                     location ? 'Location found' : 'Demo mode'}
+                     location ? 'Location found' : 'mode'}
                   </h3>
                   <p className="text-sm text-muted-foreground">
                     {locationError || (
@@ -249,11 +250,11 @@ export default function NearbyBanks() {
           </CardContent>
         </Card>
 
-        {/* Note about demo */}
+        {/* Note about */}
         <div className="p-4 rounded-lg bg-accent/10 border border-accent/20">
           <p className="text-sm text-accent-foreground flex items-center gap-2">
             <AlertCircle className="h-4 w-4" />
-            <strong>Demo Mode:</strong> Displaying sample bank data. In production, this would use Google Maps API with your actual location.
+            <strong> Mode:</strong> Displaying sample bank data. In production, this would use Google Maps API with your actual location.
           </p>
         </div>
 
