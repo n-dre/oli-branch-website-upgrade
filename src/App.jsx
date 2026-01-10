@@ -1,6 +1,6 @@
 // src/App.jsx
 import React, { Suspense, lazy } from 'react';
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { Routes, Route } from "react-router-dom";
 import { Toaster } from 'sonner';
 
 // Context Providers
@@ -133,7 +133,6 @@ function App() {
     <ThemeProvider>
       <DataProvider>
         <StripeProvider>
-          <Router>
             <div className="min-h-screen bg-background transition-colors duration-300">
               <Routes>
                 {/* Public routes */}
@@ -182,7 +181,6 @@ function App() {
               </Routes>
               <Toaster position="top-right" richColors closeButton />
             </div>
-          </Router>
         </StripeProvider>
       </DataProvider>
     </ThemeProvider>

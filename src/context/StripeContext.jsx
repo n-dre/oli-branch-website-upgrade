@@ -3,7 +3,8 @@ import { loadStripe } from '@stripe/stripe-js';
 
 // Initialize Stripe with your publishable key
 // In production, use your real Stripe publishable key
-const STRIPE_PUBLISHABLE_KEY = process.env.REACT_APP_STRIPE_PUBLISHABLE_KEY || 'pk_test_demo_key';
+const STRIPE_PUBLISHABLE_KEY =
+    import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY ?? "pk_test_demo_key";
 
 const stripePromise = loadStripe(STRIPE_PUBLISHABLE_KEY);
 
