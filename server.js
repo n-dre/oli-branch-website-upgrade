@@ -4,7 +4,6 @@ import express from "express";
 import cors from "cors";
 import { fileURLToPath } from "url";
 
-// For ES modules, we need to get __dirname
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
@@ -12,11 +11,11 @@ const app = express();
 const PORT = process.env.PORT || 3000;
 
 // In-memory users (demo). Replace with Google Sheets later.
-const users = new Map(); // key=email -> user object
+const users = new Map();
 
 app.use(cors());
 app.use(express.json());
-app.use(express.static(path.join(__dirname, "dist"))); // Changed to "dist" for Vite build
+app.use(express.static(path.join(__dirname, "dist")));
 
 app.post("/api/auth/signup", (req, res) => {
   const { email, password, name, business_name, business_type } = req.body || {};
@@ -30,7 +29,6 @@ app.post("/api/auth/signup", (req, res) => {
     return res.status(409).json({ detail: "Email already registered." });
   }
 
-  // Basic validation
   if (String(password).length < 6) {
     return res.status(400).json({ detail: "Password must be at least 6 characters." });
   }
@@ -47,7 +45,7 @@ app.post("/api/auth/signup", (req, res) => {
     created_at: new Date().toISOString(),
   };
 
-  users.set(normalizedEmail, { ...user, password }); // For real use, hash passwords.
+  users.set(normalizedEmail, { ...user, password });
 
   return res.status(201).json({
     id: user.id,

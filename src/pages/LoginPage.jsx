@@ -1,11 +1,19 @@
-import React, { useState } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
-import { useAuth } from "../context/AuthContext";
+// src/pages/LoginPage.jsx
+import React, { useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
 
 const LoginPage = () => {
   const navigate = useNavigate();
-  const { login } = useAuth();
   const DASHBOARD_URL = "/dashboard";
+
+  // Color definitions
+  const colors = {
+    gold: '#D4AF37',
+    forest: '#1B4332',
+    sage: '#52796F',
+    cream: '#F8F5F0',
+    charcoal: '#2D3748'
+  };
 
   // --- UI State ---
   const [formData, setFormData] = useState({ email: '', password: '', rememberMe: false });
@@ -60,24 +68,22 @@ const LoginPage = () => {
     setIsLoading(true);
 
     try {
-      // Try using the AuthContext login first
-      const result = login(formData.email, formData.password, formData.rememberMe);
-      
-      if (result && result.success) {
-        setSuccessMsg("Welcome back! Redirecting...");
-        setTimeout(() => navigate(DASHBOARD_URL), 800);
-        return;
-      }
-
-      // Fallback to localStorage check
+      // Check localStorage for registered users
       const registeredUsers = JSON.parse(localStorage.getItem('registeredUsers') || '[]');
       const user = registeredUsers.find(u => u.email === formData.email && u.password === formData.password);
 
       if (user) {
+        // Store login state
+        const storage = formData.rememberMe ? localStorage : sessionStorage;
+        storage.setItem('isLoggedIn', 'true');
+        storage.setItem('userEmail', formData.email);
+        storage.setItem('userName', user.name || '');
+        storage.setItem('userCompany', user.business_name || '');
+
+        // Also set in localStorage for cross-tab sync
         localStorage.setItem('isLoggedIn', 'true');
         localStorage.setItem('userEmail', formData.email);
         localStorage.setItem('userName', user.name || '');
-        localStorage.setItem('userCompany', user.business_name || '');
 
         setSuccessMsg("Welcome back! Redirecting...");
         setTimeout(() => navigate(DASHBOARD_URL), 800);
@@ -85,19 +91,20 @@ const LoginPage = () => {
         setErrors(prev => ({ ...prev, login: "Invalid email or password. Please sign up if you don't have an account." }));
         setIsLoading(false);
       }
-    } catch {
+    } catch (error) {
+      console.error('Login error:', error);
       setErrors(prev => ({ ...prev, login: "An error occurred. Please try again." }));
       setIsLoading(false);
     }
   };
 
   return (
-    <div className="font-body bg-white text-charcoal">
-      {/* PRESERVED CSS - EXACTLY AS PROVIDED */}
+    <div className="font-body bg-white" style={{ color: colors.charcoal }}>
+      {/* CSS Styles */}
       <style>{`
         .hero-gradient { background: linear-gradient(135deg, #1B4332 0%, #1B4332 100%); }
         .btn-primary { background: #1B4332; color: #fff; transition: all 0.3s ease; }
-        .btn-primary:hover { background: #52796F; transform: translateY(-2px); box-shadow: 0 10px 20px rgba(37, 99, 235, 0.3); }
+        .btn-primary:hover { background: #52796F; transform: translateY(-2px); box-shadow: 0 10px 20px rgba(27, 67, 50, 0.3); }
         .btn-primary:disabled { opacity: 0.7; cursor: not-allowed; transform: none; }
         .form-input { width: 100%; padding: 14px 18px; border: 2px solid #e2e8f0; border-radius: 12px; font-size: 16px; transition: all 0.25s ease; background: #fff; }
         .form-input:focus { outline: none; border-color: #1B4332; box-shadow: 0 0 0 3px rgba(27, 67, 50, 0.1); }
@@ -107,15 +114,17 @@ const LoginPage = () => {
       `}</style>
 
       <div className="min-h-screen flex flex-col lg:flex-row">
-        {/* Left Side - Hero (Preserved Layout) */}
+        {/* Left Side - Hero */}
         <div className="hidden lg:flex lg:w-2/5 hero-gradient flex-col justify-between p-8 xl:p-12 text-white relative">
           <div className="flex items-center">
-            <img src="/resources/OliGreen.jpeg" alt="Oli-Branch Logo" className="h-10 w-auto" />
+            <Link to="/">
+              <img src="/resources/oli-branch00.png" alt="Oli-Branch Logo" className="h-12 w-auto rounded-lg" />
+            </Link>
           </div>
 
           <div className="space-y-6 mb-20">
             <h1 className="font-display text-4xl xl:text-5xl font-bold tracking-tight leading-tight uppercase">
-              FIX YOUR<br />BANKING<br />MISMATCH
+              FIX YOUR<br />BANKING<br /><span style={{ color: colors.gold }}>MISMATCH</span>
             </h1>
             <p className="text-blue-100 text-base xl:text-lg max-w-md leading-relaxed">
               Identify hidden fees, account limits, and banking setups that don't match how your business actually operates—and get clear next steps.
@@ -123,28 +132,29 @@ const LoginPage = () => {
           </div>
 
           <div className="text-blue-200 text-xs xl:text-sm">
-            © 2023–2026 Oli-Branch LLC. All Rights Reserved.
+            <p>Copyright &copy; 2023-2026 Oli-Branch LLC. All Rights Reserved.</p>
           </div>
         </div>
 
-        {/* Right Side - Form (Preserved Layout) */}
+        {/* Right Side - Form */}
         <div className="flex-1 flex items-center justify-center p-4 sm:p-6 lg:p-8 bg-white">
           <div className="w-full max-w-md space-y-6 sm:space-y-8">
+            {/* Mobile Logo */}
             <div className="lg:hidden flex items-center justify-center mb-6">
               <Link to="/" className="inline-block">
-                <img src="/resources/OliGreen.jpeg" alt="Oli-Branch" className="h-10 rounded-full" />
+                <img src="/resources/oli-branch00.png" alt="Oli-Branch" className="h-12 rounded-lg" />
               </Link>
             </div>
 
             <div>
-              <h2 className="font-display text-2xl sm:text-3xl font-bold text-charcoal">Welcome Back</h2>
+              <h2 className="font-display text-2xl sm:text-3xl font-bold" style={{ color: colors.charcoal }}>Welcome Back</h2>
               <p className="mt-2 text-sm sm:text-base text-gray-500">Sign in to access your dashboard</p>
             </div>
 
             <form onSubmit={handleLogin} className="space-y-5 sm:space-y-6" noValidate>
               {/* Email */}
               <div>
-                <label htmlFor="email" className="block text-sm font-medium text-charcoal mb-2">Email Address</label>
+                <label htmlFor="email" className="block text-sm font-medium mb-2" style={{ color: colors.charcoal }}>Email Address</label>
                 <input
                   type="email"
                   id="email"
@@ -155,12 +165,12 @@ const LoginPage = () => {
                   value={formData.email}
                   onChange={handleInputChange}
                 />
-                {errors.email && <div className="text-[#EF4444] text-sm mt-2">{errors.email}</div>}
+                {errors.email && <div className="text-red-500 text-sm mt-2">{errors.email}</div>}
               </div>
 
               {/* Password */}
               <div>
-                <label htmlFor="password" className="block text-sm font-medium text-charcoal mb-2">Password</label>
+                <label htmlFor="password" className="block text-sm font-medium mb-2" style={{ color: colors.charcoal }}>Password</label>
                 <div className="relative">
                   <input
                     type={showPassword ? "text" : "password"}
@@ -190,11 +200,12 @@ const LoginPage = () => {
                     </svg>
                   </button>
                 </div>
-                {errors.password && <div className="text-[#EF4444] text-sm mt-2">{errors.password}</div>}
+                {errors.password && <div className="text-red-500 text-sm mt-2">{errors.password}</div>}
               </div>
 
+              {/* Remember Me & Forgot Password */}
               <div className="flex items-center justify-between text-sm">
-                <label className="flex items-center">
+                <label className="flex items-center cursor-pointer">
                   <input 
                     type="checkbox" 
                     name="rememberMe" 
@@ -204,11 +215,12 @@ const LoginPage = () => {
                   />
                   <span className="text-gray-500">Remember me</span>
                 </label>
-                <Link to="/forgot-password" className="text-[#1B4332] hover:text-[#52796F] transition-colors font-medium">
+                <Link to="/forgot-password" className="font-medium transition-colors" style={{ color: colors.forest }}>
                   Forgot password?
                 </Link>
               </div>
 
+              {/* Submit Button */}
               <button
                 type="submit"
                 disabled={isLoading}
@@ -226,14 +238,16 @@ const LoginPage = () => {
                 )}
               </button>
 
-              {errors.login && <div className="text-[#EF4444] text-center text-sm mt-4">{errors.login}</div>}
-              {successMsg && <div className="text-[#10B981] text-center text-sm mt-4">{successMsg}</div>}
+              {/* Error/Success Messages */}
+              {errors.login && <div className="text-red-500 text-center text-sm mt-4">{errors.login}</div>}
+              {successMsg && <div className="text-green-500 text-center text-sm mt-4">{successMsg}</div>}
             </form>
 
+            {/* Sign Up Link */}
             <div className="border-t border-gray-200 pt-4 sm:pt-6">
               <p className="text-center text-sm sm:text-base text-gray-500">
                 Don't have an account?{' '}
-                <Link to="/signup" className="text-[#1B4332] hover:text-[#52796F] font-semibold">
+                <Link to="/signup" className="font-semibold" style={{ color: colors.forest }}>
                   Create Account →
                 </Link>
               </p>

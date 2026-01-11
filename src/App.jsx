@@ -1,12 +1,12 @@
 // src/App.jsx
-import React, { Suspense, lazy } from 'react';
+import React, { Suspense, lazy } from "react";
 import { Routes, Route } from "react-router-dom";
-import { Toaster } from 'sonner';
+import { Toaster } from "sonner";
 
 // Context Providers
-import { ThemeProvider } from './context/ThemeContext';
-import { DataProvider } from './context/DataContext';
-import { StripeProvider } from './context/StripeContext';
+import { ThemeProvider } from "./context/ThemeContext";
+import { DataProvider } from "./context/DataContext";
+import { StripeProvider } from "./context/StripeContext";
 
 // --- Error Boundary Component ---
 class ErrorBoundary extends React.Component {
@@ -22,22 +22,44 @@ class ErrorBoundary extends React.Component {
   render() {
     if (this.state.hasError) {
       return (
-        <div style={{ padding: '50px', textAlign: 'center', fontFamily: 'Inter, sans-serif', color: '#333' }}>
-          <h1 style={{ color: '#dc2626' }}>Error Loading Page</h1>
-          <p style={{ color: '#666', marginBottom: '20px' }}>
-            {this.props.pageName || 'This page'} failed to load.
+        <div
+          style={{
+            padding: "50px",
+            textAlign: "center",
+            fontFamily: "Inter, sans-serif",
+            color: "#333",
+          }}
+        >
+          <h1 style={{ color: "#dc2626" }}>Error Loading Page</h1>
+          <p style={{ color: "#666", marginBottom: "20px" }}>
+            {this.props.pageName || "This page"} failed to load.
           </p>
-          <pre style={{
-            background: '#f5f5f5', padding: '16px', borderRadius: '8px',
-            textAlign: 'left', overflow: 'auto', maxWidth: '600px',
-            margin: '0 auto 20px', fontSize: '12px', color: '#dc2626'
-          }}>
+          <pre
+            style={{
+              background: "#f5f5f5",
+              padding: "16px",
+              borderRadius: "8px",
+              textAlign: "left",
+              overflow: "auto",
+              maxWidth: "600px",
+              margin: "0 auto 20px",
+              fontSize: "12px",
+              color: "#dc2626",
+            }}
+          >
             {this.state.error?.toString()}
           </pre>
-          <a href="/" style={{
-            display: 'inline-block', padding: '12px 24px', backgroundColor: '#1B4332',
-            color: '#fff', borderRadius: '8px', textDecoration: 'none'
-          }}>
+          <a
+            href="/"
+            style={{
+              display: "inline-block",
+              padding: "12px 24px",
+              backgroundColor: "#1B4332",
+              color: "#fff",
+              borderRadius: "8px",
+              textDecoration: "none",
+            }}
+          >
             Go Home
           </a>
         </div>
@@ -47,18 +69,31 @@ class ErrorBoundary extends React.Component {
   }
 }
 
-// --- Loading Spinner Component ---
-const Loading = () => (
-  <div style={{
-    display: 'flex', alignItems: 'center', justifyContent: 'center',
-    minHeight: '100vh', fontFamily: 'Inter, sans-serif', color: '#1B4332', backgroundColor: '#F8F5F0'
-  }}>
-    <div style={{ textAlign: 'center' }}>
-      <div style={{
-        width: '40px', height: '40px', border: '4px solid #e0e0e0',
-        borderTopColor: '#1B4332', borderRadius: '50%',
-        animation: 'spin 1s linear infinite', margin: '0 auto 16px'
-      }} />
+    // --- Loading Spinner Component ---
+    const Loading = () => (
+      <div
+        style={{
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          minHeight: "100vh",
+          fontFamily: "Inter, sans-serif",
+          color: "#1B4332",
+          backgroundColor: "#F8F5F0",
+        }}
+      >
+    <div style={{ textAlign: "center" }}>
+      <div
+        style={{
+          width: "40px",
+          height: "40px",
+          border: "4px solid #e0e0e0",
+          borderTopColor: "#1B4332",
+          borderRadius: "50%",
+          animation: "spin 1s linear infinite",
+          margin: "0 auto 16px",
+        }}
+      />
       <p>Loading...</p>
       <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
     </div>
@@ -72,23 +107,47 @@ const safeLazy = (importFn, pageName) => {
       console.error(`Failed to load ${pageName}:`, error);
       return {
         default: () => (
-          <div style={{
-            padding: '50px', textAlign: 'center', fontFamily: 'Inter, sans-serif',
-            color: '#333', backgroundColor: '#F8F5F0', minHeight: '100vh'
-          }}>
-            <h1 style={{ color: '#dc2626' }}>Failed to Load: {pageName}</h1>
-            <p style={{ color: '#666', marginBottom: '20px' }}>There was an error importing this page.</p>
-            <pre style={{
-              background: '#fff', padding: '16px', borderRadius: '8px',
-              textAlign: 'left', overflow: 'auto', maxWidth: '600px',
-              margin: '0 auto 20px', fontSize: '12px', color: '#dc2626', border: '1px solid #e0e0e0'
-            }}>
+          <div
+            style={{
+              padding: "50px",
+              textAlign: "center",
+              fontFamily: "Inter, sans-serif",
+              color: "#333",
+              backgroundColor: "#F8F5F0",
+              minHeight: "100vh",
+            }}
+          >
+            <h1 style={{ color: "#dc2626" }}>Failed to Load: {pageName}</h1>
+            <p style={{ color: "#666", marginBottom: "20px" }}>
+              There was an error importing this page.
+            </p>
+            <pre
+              style={{
+                background: "#fff",
+                padding: "16px",
+                borderRadius: "8px",
+                textAlign: "left",
+                overflow: "auto",
+                maxWidth: "600px",
+                margin: "0 auto 20px",
+                fontSize: "12px",
+                color: "#dc2626",
+                border: "1px solid #e0e0e0",
+              }}
+            >
               {error?.toString()}
             </pre>
-            <a href="/" style={{
-              display: 'inline-block', padding: '12px 24px', backgroundColor: '#1B4332',
-              color: '#fff', borderRadius: '8px', textDecoration: 'none'
-            }}>
+            <a
+              href="/"
+              style={{
+                display: "inline-block",
+                padding: "12px 24px",
+                backgroundColor: "#1B4332",
+                color: "#fff",
+                borderRadius: "8px",
+                textDecoration: "none",
+              }}
+            >
               Go Home
             </a>
           </div>
@@ -107,25 +166,28 @@ const safeLazy = (importFn, pageName) => {
 };
 
 // --- Lazy Load Pages ---
-const LandingPage = safeLazy(() => import('./pages/LandingPage'), 'LandingPage');
-const LoginPage = safeLazy(() => import('./pages/LoginPage'), 'LoginPage');
-const SignupPage = safeLazy(() => import('./pages/SignupPage'), 'SignupPage');
-const Services = safeLazy(() => import('./pages/Services'), 'Services');
-const Resources = safeLazy(() => import('./pages/Resources'), 'Resources');
-const About = safeLazy(() => import('./pages/About'), 'About');
-const UserDashboard = safeLazy(() => import('./pages/UserDashboard'), 'UserDashboard');
-const BankLinking = safeLazy(() => import('./pages/BankLinking'), 'BankLinking');
-const Budget = safeLazy(() => import('./pages/Budget'), 'Budget');
-const FeeAnalysis = safeLazy(() => import('./pages/FeeAmalysis'), 'FeeAnalysis');
-const FinancialHealth = safeLazy(() => import('./pages/FinancialHealth'), 'FinancialHealth');
-const IntakeForm = safeLazy(() => import('./pages/IntakeForm'), 'IntakeForm');
-const Learning = safeLazy(() => import('./pages/Learning'), 'Learning');
-const NearbyBanks = safeLazy(() => import('./pages/NearbyBanks'), 'NearbyBanks');
-const Pricing = safeLazy(() => import('./pages/Pricing'), 'Pricing');
-const Profile = safeLazy(() => import('./pages/Profile'), 'Profile');
-const Report = safeLazy(() => import('./pages/Report'), 'Report');
-const Settings = safeLazy(() => import('./pages/Settings'), 'Settings');
-const Tools = safeLazy(() => import('./pages/Tools'), 'Tools');
+const LandingPage = safeLazy(() => import("./pages/LandingPage"), "LandingPage");
+const LoginPage = safeLazy(() => import("./pages/LoginPage"), "LoginPage");
+const SignupPage = safeLazy(() => import("./pages/SignupPage"), "SignupPage");
+const Services = safeLazy(() => import("./pages/Services"), "Services");
+const Resources = safeLazy(() => import("./pages/Resources"), "Resources");
+const About = safeLazy(() => import("./pages/About"), "About");
+const Pricing = safeLazy(() => import("./pages/Pricing"), "Pricing");
+const Terms = safeLazy(() => import("./pages/Terms"), "Terms");        // Note: singular "Term"
+const Privacy = safeLazy(() => import("./pages/Privacy"), "Privacy");
+
+const UserDashboard = safeLazy(() => import("./pages/UserDashboard"), "UserDashboard");
+const BankLinking = safeLazy(() => import("./pages/BankLinking"), "BankLinking");
+const Budget = safeLazy(() => import("./pages/Budget"), "Budget");
+const FinancialLeaks = safeLazy(() => import("./pages/FinancialLeaks"), "FinancialLeaks");
+const FinancialHealth = safeLazy(() => import("./pages/FinancialHealth"), "FinancialHealth");
+const IntakeForm = safeLazy(() => import("./pages/IntakeForm"), "IntakeForm");
+const Learning = safeLazy(() => import("./pages/Learning"), "Learning");
+const NearbyBanks = safeLazy(() => import("./pages/NearbyBanks"), "NearbyBanks");
+const Profile = safeLazy(() => import("./pages/Profile"), "Profile");
+const Report = safeLazy(() => import("./pages/Report"), "Report");
+const Settings = safeLazy(() => import("./pages/Settings"), "Settings");
+const Tools = safeLazy(() => import("./pages/Tools"), "Tools");
 
 // --- Main App Component ---
 function App() {
@@ -133,54 +195,73 @@ function App() {
     <ThemeProvider>
       <DataProvider>
         <StripeProvider>
-            <div className="min-h-screen bg-background transition-colors duration-300">
-              <Routes>
-                {/* Public routes */}
-                <Route path="/" element={<LandingPage />} />
-                <Route path="/login" element={<LoginPage />} />
-                <Route path="/signup" element={<SignupPage />} />
-                <Route path="/services" element={<Services />} />
-                <Route path="/resources" element={<Resources />} />
-                <Route path="/about" element={<About />} />
-                <Route path="/pricing" element={<Pricing />} />
+          <div className="min-h-screen bg-background transition-colors duration-300">
+            <Routes>
+              {/* Public routes */}
+              <Route path="/" element={<LandingPage />} />
+              <Route path="/login" element={<LoginPage />} />
+              <Route path="/signup" element={<SignupPage />} />
+              <Route path="/services" element={<Services />} />
+              <Route path="/resources" element={<Resources />} />
+              <Route path="/about" element={<About />} />
+              <Route path="/pricing" element={<Pricing />} />
+              <Route path="/terms" element={<Terms />} />        
+              <Route path="/privacy" element={<Privacy />} />
 
-                {/* Dashboard routes */}
-                <Route path="/dashboard" element={<UserDashboard />} />
-                <Route path="/bank-linking" element={<BankLinking />} />
-                <Route path="/budget" element={<Budget />} />
-                <Route path="/fee-analysis" element={<FeeAnalysis />} />
-                <Route path="/financial-health" element={<FinancialHealth />} />
-                <Route path="/intake-form" element={<IntakeForm />} />
-                <Route path="/learning" element={<Learning />} />
-                <Route path="/nearby-banks" element={<NearbyBanks />} />
-                <Route path="/profile" element={<Profile />} />
-                <Route path="/report" element={<Report />} />
-                <Route path="/report/:email" element={<Report />} />
-                <Route path="/settings" element={<Settings />} />
-                <Route path="/tools" element={<Tools />} />
+              {/* Dashboard routes */}
+              <Route path="/dashboard" element={<UserDashboard />} />
+              <Route path="/bank-linking" element={<BankLinking />} />
+              <Route path="/budget" element={<Budget />} />
+              <Route path="/financial-leaks" element={<FinancialLeaks />} />
+              <Route path="/financial-health" element={<FinancialHealth />} />
+              <Route path="/intake-form" element={<IntakeForm />} />
+              <Route path="/learning" element={<Learning />} />
+              <Route path="/nearby-banks" element={<NearbyBanks />} />
+              <Route path="/profile" element={<Profile />} />
+              <Route path="/report" element={<Report />} />
+              <Route path="/report/:email" element={<Report />} />
+              <Route path="/settings" element={<Settings />} />
+              <Route path="/tools" element={<Tools />} />
 
-                {/* 404 fallback */}
-                <Route
-                  path="*"
-                  element={
-                    <div style={{
-                      padding: '50px', textAlign: 'center', color: '#333',
-                      fontFamily: 'Inter, sans-serif', backgroundColor: '#F8F5F0', minHeight: '100vh'
-                    }}>
-                      <h1 style={{ fontSize: '72px', margin: '0 0 16px', color: '#1B4332' }}>404</h1>
-                      <p style={{ fontSize: '18px', color: '#666', marginBottom: '24px' }}>Page Not Found</p>
-                      <a href="/" style={{
-                        display: 'inline-block', padding: '12px 24px', backgroundColor: '#1B4332',
-                        color: '#fff', borderRadius: '8px', textDecoration: 'none', fontWeight: '600'
-                      }}>
-                        Go Home
-                      </a>
-                    </div>
-                  }
-                />
-              </Routes>
-              <Toaster position="top-right" richColors closeButton />
-            </div>
+              {/* 404 fallback */}
+              <Route
+                path="*"
+                element={
+                  <div
+                    style={{
+                      padding: "50px",
+                      textAlign: "center",
+                      color: "#333",
+                      fontFamily: "Inter, sans-serif",
+                      backgroundColor: "#F8F5F0",
+                      minHeight: "100vh",
+                    }}
+                  >
+                    <h1 style={{ fontSize: "72px", margin: "0 0 16px", color: "#1B4332" }}>404</h1>
+                    <p style={{ fontSize: "18px", color: "#666", marginBottom: "24px" }}>
+                      Page Not Found
+                    </p>
+                    <a
+                      href="/"
+                      style={{
+                        display: "inline-block",
+                        padding: "12px 24px",
+                        backgroundColor: "#1B4332",
+                        color: "#fff",
+                        borderRadius: "8px",
+                        textDecoration: "none",
+                        fontWeight: "600",
+                      }}
+                    >
+                      Go Home
+                    </a>
+                  </div>
+                }
+              />
+            </Routes>
+
+            <Toaster position="top-right" richColors closeButton />
+          </div>
         </StripeProvider>
       </DataProvider>
     </ThemeProvider>

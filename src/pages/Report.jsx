@@ -1,4 +1,5 @@
 import React, { useState, useMemo } from 'react';
+import { motion } from "framer-motion";
 import { useParams, Link } from 'react-router-dom';
 import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip } from 'recharts';
 import {

@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useRef } from 'react';
 import * as echarts from 'echarts';
-import anime from 'animejs';
+import anime from "animejs";
 
 const AdminDashboard = () => {
   const [activeSection, setActiveSection] = useState('overview');

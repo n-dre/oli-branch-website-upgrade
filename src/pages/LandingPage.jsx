@@ -1,564 +1,356 @@
 import React, { useState } from 'react';
-import { motion } from "framer-motion";
-import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip, LineChart, Line, XAxis, YAxis, CartesianGrid, BarChart, Bar } from 'recharts';
-import { toast } from 'sonner';
-import {
-  Heart,
-  DollarSign,
-  TrendingUp,
-  AlertTriangle,
-  CheckCircle,
-  Target,
-  PieChart as PieChartIcon,
-  BarChart3,
-  Lightbulb
-} from 'lucide-react';
-import DashboardLayout from '../components/layout/DashboardLayout';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '../components/ui/card';
-import { Button } from '../components/ui/button';
-import { Input } from '../components/ui/input';
-import { Label } from '../components/ui/label';
-import { Badge } from '../components/ui/badge';
-import { useData } from '../context/DataContext';
+import { Link } from 'react-router-dom';
 
-const DONUT_COLORS = ['hsl(150, 40%, 35%)', 'hsl(42, 70%, 52%)', 'hsl(200, 70%, 50%)'];
+const LandingPage = () => {
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [auditProgress, setAuditProgress] = useState('0%');
+  const [auditStep, setAuditStep] = useState(1);
+  const [feeInput, setFeeInput] = useState('');
+  const [resultText, setResultText] = useState('');
 
-export default function FinancialHealth() {
-  const { 
-    healthInputs, 
-    updateHealthInputs, 
-    healthHistory, 
-    addHealthHistory, 
-    clearHealthData,
-    computeHealthScore,
-    healthLabel 
-  } = useData();
-
-  const [formData, setFormData] = useState({
-    revenue: healthInputs?.revenue || '',
-    expenses: healthInputs?.expenses || '',
-    debt: healthInputs?.debt || '',
-    cash: healthInputs?.cash || ''
-  });
-
-  const updateField = (field, value) => {
-    setFormData(prev => ({ ...prev, [field]: value }));
+  // Color definitions
+  const colors = {
+    gold: '#D4AF37',
+    forest: '#1B4332',
+    sage: '#52796F',
+    cream: '#F8F5F0',
+    charcoal: '#2D3748'
   };
 
-  const handleCalculate = () => {
-    const inputs = {
-      revenue: Number(formData.revenue || 0),
-      expenses: Number(formData.expenses || 0),
-      debt: Number(formData.debt || 0),
-      cash: Number(formData.cash || 0)
-    };
-
-    const hasAny = Object.values(inputs).some(v => v > 0);
-    if (!hasAny) {
-      toast.error('Please enter at least one value');
-      return;
-    }
-
-    updateHealthInputs(inputs);
-    const result = computeHealthScore(inputs);
-    addHealthHistory(result.score);
-    toast.success(`Score calculated: ${result.score} (${healthLabel(result.score)})`);
+  const openAudit = () => {
+    setIsModalOpen(true);
+    setAuditProgress('30%');
   };
 
-  const handleClear = () => {
-    setFormData({ revenue: '', expenses: '', debt: '', cash: '' });
-    clearHealthData();
-    toast.info('Health data cleared');
+  const closeAudit = () => {
+    setIsModalOpen(false);
+    setAuditStep(1);
+    setAuditProgress('0%');
+    setFeeInput('');
+    setResultText('');
   };
 
-  // Get current score and metrics
-  const currentResult = healthInputs ? computeHealthScore(healthInputs) : null;
-  const metrics = currentResult?.metrics || { margin: 0, runway: 0, debtLoad: 0 };
+  const processAudit = () => {
+    setAuditProgress('100%');
+    setTimeout(() => {
+      setAuditStep(2);
+      const fee = parseFloat(feeInput);
+      if (isNaN(fee) || fee <= 0) {
+        setResultText("Please enter a valid fee amount.");
+      } else {
+        setResultText(fee > 40 ? 
+          `Oli identified a leak of $${(fee * 12 * 0.4).toFixed(0)} per year.` : 
+          "Your fees look healthy.");
+      }
+    }, 800);
+  };
 
-  // Donut chart data for breakdown
-  const breakdownData = currentResult ? [
-    { name: 'Cash Flow', value: Math.round(Math.max(0, Math.min(100, (metrics.margin + 0.25) / 0.75 * 100)) * 0.45), color: DONUT_COLORS[0] },
-    { name: 'Runway', value: Math.round(Math.max(0, Math.min(100, (metrics.runway / 6) * 100)) * 0.30), color: DONUT_COLORS[1] },
-    { name: 'Debt Health', value: Math.round(Math.max(0, Math.min(100, (1 - metrics.debtLoad) * 100)) * 0.25), color: DONUT_COLORS[2] }
-  ] : [];
-
-  // Fee Impact Analysis data
-  const revenue = Number(healthInputs?.revenue || 0);
-  const expenses = Number(healthInputs?.expenses || 0);
-  const feeImpactData = currentResult ? [
-    { name: 'Revenue', value: revenue, fill: 'hsl(145, 60%, 40%)' },
-    { name: 'Expenses', value: expenses, fill: 'hsl(0, 72%, 58%)' },
-    { name: 'Net', value: Math.max(0, revenue - expenses), fill: 'hsl(200, 70%, 50%)' }
-  ] : [];
-
-  // Key Mismatch Areas
-  const mismatchAreas = [];
-  if (currentResult) {
-    if (metrics.margin < 0.1) {
-      mismatchAreas.push({
-        area: 'Low Profit Margin',
-        severity: metrics.margin < 0 ? 'critical' : 'warning',
-        description: `Your margin is ${(metrics.margin * 100).toFixed(1)}%. Aim for at least 10-15%.`,
-        action: 'Increase prices or reduce variable costs'
-      });
-    }
-    if (metrics.runway < 3) {
-      mismatchAreas.push({
-        area: 'Short Runway',
-        severity: metrics.runway < 1 ? 'critical' : 'warning',
-        description: `Only ${metrics.runway.toFixed(1)} months of runway. Need 3-6 months minimum.`,
-        action: 'Build cash reserves or reduce burn rate'
-      });
-    }
-    if (metrics.debtLoad > 0.5) {
-      mismatchAreas.push({
-        area: 'High Debt Load',
-        severity: metrics.debtLoad > 0.8 ? 'critical' : 'warning',
-        description: `Debt is ${(metrics.debtLoad * 100).toFixed(0)}% of 6-month revenue.`,
-        action: 'Prioritize debt repayment or refinance'
-      });
-    }
-    if (expenses > revenue * 0.9) {
-      mismatchAreas.push({
-        area: 'Expense Ratio',
-        severity: expenses > revenue ? 'critical' : 'warning',
-        description: `Expenses are ${((expenses / revenue) * 100).toFixed(0)}% of revenue.`,
-        action: 'Review and cut non-essential expenses'
-      });
-    }
-  }
-
-  // Chart data from history
-  const chartData = healthHistory.map(h => {
-    const d = new Date(h.t);
-    return {
-      date: `${d.getMonth() + 1}/${d.getDate()}`,
-      score: h.score
-    };
-  });
-
-  // Recommendations
-  const recommendations = [];
-  if (currentResult) {
-    if (metrics.margin < 0.05) recommendations.push('Improve margin: reduce variable costs or adjust pricing.');
-    if (metrics.runway < 3) recommendations.push('Increase runway: reduce burn or build reserves.');
-    if (metrics.debtLoad > 0.65) recommendations.push('Reduce debt load: refinance or prioritize high APR balances.');
-    if (recommendations.length === 0) recommendations.push('Maintain discipline: track margin, runway, and debt monthly.');
-  } else {
-    recommendations.push('Add inputs to generate recommendations.');
-  }
+  const talkToOli = () => alert("Hi! I'm Oli. How can I help you today?");
 
   return (
-    <DashboardLayout title="Financial Health" subtitle="Assess your business financial health">
-      <div className="space-y-6">
-        {/* Top Row - Inputs and Donut Chart */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          {/* Inputs Card */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-          >
-            <Card className="h-full">
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <Heart className="h-5 w-5 text-primary" />
-                  Health Check Inputs
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <div className="space-y-2">
-                  <Label>Monthly Revenue ($)</Label>
-                  <div className="relative">
-                    <DollarSign className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                    <Input
-                      type="number"
-                      min="0"
-                      placeholder="e.g., 25000"
-                      value={formData.revenue}
-                      onChange={(e) => updateField('revenue', e.target.value)}
-                      className="pl-10"
-                    />
-                  </div>
-                </div>
+    <div className="font-body min-h-screen" style={{ backgroundColor: colors.cream, color: colors.charcoal }}>
+      <style>{`
+        .hero-gradient { background: linear-gradient(135deg, #1B4332 0%, #52796F 100%); }
+        .glass-effect { backdrop-filter: blur(10px); background: rgba(248, 245, 240, 0.9); }
+        .btn-primary { 
+          background-color: #1B4332; 
+          color: #F8F5F0; 
+          transition: all 0.3s ease; 
+        }
+        .btn-primary:hover { 
+          background-color: #52796F; 
+          transform: translateY(-2px); 
+        }
+        .btn-secondary {
+          border: 2px solid #1B4332;
+          color: #1B4332;
+          background: transparent;
+          transition: all 0.3s ease;
+        }
+        .btn-secondary:hover {
+          background-color: #1B4332;
+          color: #F8F5F0;
+        }
+        @keyframes vibrate-glow {
+          0% { transform: scale(1); box-shadow: 0 0 10px rgba(212, 175, 55, 0.6); }
+          50% { transform: scale(1.05); box-shadow: 0 0 25px rgba(212, 175, 55, 0.9); }
+          100% { transform: scale(1); box-shadow: 0 0 10px rgba(212, 175, 55, 0.6); }
+        }
+      `}</style>
 
-                <div className="space-y-2">
-                  <Label>Monthly Expenses ($)</Label>
-                  <div className="relative">
-                    <DollarSign className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                    <Input
-                      type="number"
-                      min="0"
-                      placeholder="e.g., 18000"
-                      value={formData.expenses}
-                      onChange={(e) => updateField('expenses', e.target.value)}
-                      className="pl-10"
-                    />
-                  </div>
-                </div>
-
-                <div className="grid grid-cols-2 gap-4">
-                  <div className="space-y-2">
-                    <Label>Total Debt ($)</Label>
-                    <Input
-                      type="number"
-                      min="0"
-                      placeholder="e.g., 40000"
-                      value={formData.debt}
-                      onChange={(e) => updateField('debt', e.target.value)}
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <Label>Cash on Hand ($)</Label>
-                    <Input
-                      type="number"
-                      min="0"
-                      placeholder="e.g., 12000"
-                      value={formData.cash}
-                      onChange={(e) => updateField('cash', e.target.value)}
-                    />
-                  </div>
-                </div>
-
-                <div className="flex gap-3 pt-2">
-                  <Button onClick={handleCalculate}>
-                    Calculate Score
-                  </Button>
-                  <Button variant="outline" onClick={handleClear}>
-                    Clear
-                  </Button>
-                </div>
-
-                <p className="text-xs text-muted-foreground">
-                  Your score is computed locally in your browser and stored in localStorage.
-                </p>
-              </CardContent>
-            </Card>
-          </motion.div>
-
-          {/* Donut Chart Breakdown Card */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.1 }}
-          >
-            <Card className="h-full">
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <PieChartIcon className="h-5 w-5 text-primary" />
-                  Financial Health Breakdown
-                </CardTitle>
-                <CardDescription>Score composition by category</CardDescription>
-              </CardHeader>
-              <CardContent>
-                {currentResult ? (
-                  <div className="flex flex-col items-center">
-                    <div className="relative h-[200px] w-full">
-                      <ResponsiveContainer width="100%" height="100%">
-                        <PieChart>
-                          <Pie
-                            data={breakdownData}
-                            cx="50%"
-                            cy="50%"
-                            innerRadius={55}
-                            outerRadius={85}
-                            paddingAngle={4}
-                            dataKey="value"
-                            strokeWidth={0}
-                          >
-                            {breakdownData.map((entry, idx) => (
-                              <Cell key={`cell-${idx}`} fill={entry.color} />
-                            ))}
-                          </Pie>
-                          <Tooltip 
-                            formatter={(value, name) => [`${value} pts`, name]}
-                            contentStyle={{
-                              backgroundColor: 'hsl(var(--card))',
-                              border: '1px solid hsl(var(--border))',
-                              borderRadius: '8px'
-                            }}
-                          />
-                        </PieChart>
-                      </ResponsiveContainer>
-                      {/* Center Score */}
-                      <div className="absolute inset-0 flex flex-col items-center justify-center">
-                        <span className="text-3xl font-bold text-foreground">{currentResult.score}</span>
-                        <span className="text-xs text-muted-foreground">{healthLabel(currentResult.score)}</span>
-                      </div>
-                    </div>
-                    
-                    {/* Legend */}
-                    <div className="flex flex-wrap justify-center gap-4 mt-4">
-                      {breakdownData.map((entry) => (
-                        <div key={entry.name} className="flex items-center gap-2">
-                          <div 
-                            className="w-3 h-3 rounded-full" 
-                            style={{ backgroundColor: entry.color }}
-                          />
-                          <span className="text-sm text-muted-foreground">
-                            {entry.name}: {entry.value}
-                          </span>
-                        </div>
-                      ))}
-                    </div>
-
-                    {/* Metric Details */}
-                    <div className="w-full mt-6 space-y-2 p-4 rounded-lg bg-muted/50">
-                      <div className="flex justify-between text-sm">
-                        <span className="text-muted-foreground">Cash Flow Margin</span>
-                        <span className="font-semibold">{(metrics.margin * 100).toFixed(1)}%</span>
-                      </div>
-                      <div className="flex justify-between text-sm">
-                        <span className="text-muted-foreground">Runway</span>
-                        <span className="font-semibold">{Number.isFinite(metrics.runway) ? metrics.runway.toFixed(1) : '12.0'} months</span>
-                      </div>
-                      <div className="flex justify-between text-sm">
-                        <span className="text-muted-foreground">Debt Load</span>
-                        <span className="font-semibold">{(metrics.debtLoad * 100).toFixed(0)}%</span>
-                      </div>
-                    </div>
-                  </div>
-                ) : (
-                  <div className="h-[280px] flex items-center justify-center">
-                    <div className="text-center">
-                      <PieChartIcon className="h-16 w-16 mx-auto mb-4 text-muted-foreground/30" />
-                      <p className="font-semibold">No data yet</p>
-                      <p className="text-sm text-muted-foreground">Enter your numbers and click &quot;Calculate Score&quot;</p>
-                    </div>
-                  </div>
-                )}
-              </CardContent>
-            </Card>
-          </motion.div>
+      {/* Navigation */}
+      <nav className="fixed top-0 w-full z-50 glass-effect border-b border-opacity-20 py-4" style={{ borderColor: colors.sage }}>
+        <div className="max-w-6xl mx-auto px-6 flex justify-between items-center">
+          <div className="flex items-center space-x-2">
+            <img src="/resources/oli-branch00.png" alt="Oli Logo" className="w-12 h-12 rounded-lg" />
+            <div className="flex flex-col">
+              <span className="font-bold text-xl" style={{ color: colors.forest }}>Oli-Branch</span>
+              <span className="text-[10px] uppercase tracking-widest italic">
+                Powered by AI
+              </span>
+            </div>
+          </div>
+          <div className="hidden md:flex items-center space-x-8">
+            <Link to="/services" className="hover:opacity-70 transition-colors" style={{ color: colors.charcoal }}>Services</Link>
+            <Link to="/resources" className="hover:opacity-70 transition-colors" style={{ color: colors.charcoal }}>Resources</Link>
+            <Link to="/about" className="hover:opacity-70 transition-colors" style={{ color: colors.charcoal }}>About</Link>
+            <Link to="/login" className="hover:opacity-70 transition-colors" style={{ color: colors.charcoal }}>Login</Link>
+            <button onClick={openAudit} className="btn-primary px-6 py-2 rounded-lg font-medium">Free Audit</button>
+          </div>
         </div>
+      </nav>
 
-        {/* Fee Impact Analysis */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.2 }}
-        >
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <BarChart3 className="h-5 w-5 text-accent" />
-                Fee Impact Analysis
-              </CardTitle>
-              <CardDescription>How your expenses impact your bottom line</CardDescription>
-            </CardHeader>
-            <CardContent>
-              {currentResult ? (
-                <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                  {/* Bar Chart */}
-                  <div className="h-[250px]">
-                    <ResponsiveContainer width="100%" height="100%">
-                      <BarChart data={feeImpactData} margin={{ top: 20, right: 30, left: 20, bottom: 5 }}>
-                        <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
-                        <XAxis dataKey="name" stroke="hsl(var(--muted-foreground))" />
-                        <YAxis stroke="hsl(var(--muted-foreground))" />
-                        <Tooltip 
-                          formatter={(value) => [`$${value.toLocaleString()}`, '']}
-                          contentStyle={{
-                            backgroundColor: 'hsl(var(--card))',
-                            border: '1px solid hsl(var(--border))',
-                            borderRadius: '8px'
-                          }}
-                        />
-                        <Bar dataKey="value" radius={[8, 8, 0, 0]}>
-                          {feeImpactData.map((entry, idx) => (
-                            <Cell key={`cell-${idx}`} fill={entry.fill} />
-                          ))}
-                        </Bar>
-                      </BarChart>
-                    </ResponsiveContainer>
-                  </div>
+      {/* Hero Section */}
+      <section className="relative min-h-screen flex items-center justify-center pt-24 overflow-hidden">
+        <div className="absolute inset-0 hero-gradient opacity-95"></div>
+        <div className="relative z-10 text-center text-white px-6 max-w-4xl mx-auto">
+          <h1 className="font-display text-5xl md:text-7xl font-bold mb-6">
+            Stop the <span style={{ color: colors.gold }}>Silent Leak</span> in Your Business Banking.
+          </h1>
+          <p className="text-xl md:text-2xl mb-8 opacity-90">
+            Oli is the AI auditor that finds the hidden fees and mismatched services draining your profit.
+          </p>
+          <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
+            <button 
+              onClick={openAudit} 
+              className="btn-primary px-9 py-5 rounded-lg text-lg font-medium"
+            >
+              Start My Free Audit
+            </button>
+            <button 
+              onClick={talkToOli}
+              className="border-2 border-white text-white bg-transparent hover:bg-white hover:text-green-900 px-8 py-4 rounded-lg text-lg font-semibold transition-all"
+            >
+              Ask Oli a Question
+            </button>
+          </div>
+        </div>
+      </section>
 
-                  {/* Impact Stats */}
-                  <div className="space-y-4">
-                    <div className="p-4 rounded-lg bg-success/10 border border-success/20">
-                      <div className="flex items-center gap-2 mb-2">
-                        <TrendingUp className="h-5 w-5 text-success" />
-                        <span className="font-semibold text-success">Monthly Revenue</span>
-                      </div>
-                      <p className="text-2xl font-bold">${revenue.toLocaleString()}</p>
-                    </div>
-
-                    <div className="p-4 rounded-lg bg-destructive/10 border border-destructive/20">
-                      <div className="flex items-center gap-2 mb-2">
-                        <DollarSign className="h-5 w-5 text-destructive" />
-                        <span className="font-semibold text-destructive">Monthly Expenses</span>
-                      </div>
-                      <p className="text-2xl font-bold">${expenses.toLocaleString()}</p>
-                      <p className="text-sm text-muted-foreground mt-1">
-                        {revenue > 0 ? `${((expenses / revenue) * 100).toFixed(1)}% of revenue` : '0% of revenue'}
-                      </p>
-                    </div>
-
-                    <div className="p-4 rounded-lg bg-primary/10 border border-primary/20">
-                      <div className="flex items-center gap-2 mb-2">
-                        <Target className="h-5 w-5 text-primary" />
-                        <span className="font-semibold text-primary">Net Profit</span>
-                      </div>
-                      <p className="text-2xl font-bold">${Math.max(0, revenue - expenses).toLocaleString()}</p>
-                      <p className="text-sm text-muted-foreground mt-1">
-                        {(metrics.margin * 100).toFixed(1)}% profit margin
-                      </p>
-                    </div>
-                  </div>
-                </div>
-              ) : (
-                <div className="h-[200px] flex items-center justify-center">
-                  <div className="text-center">
-                    <BarChart3 className="h-12 w-12 mx-auto mb-3 text-muted-foreground/30" />
-                    <p className="text-muted-foreground">Calculate your score to see fee impact analysis</p>
-                  </div>
-                </div>
-              )}
-            </CardContent>
-          </Card>
-        </motion.div>
-
-        {/* Key Mismatch Areas */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.3 }}
-        >
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <AlertTriangle className="h-5 w-5 text-warning" />
-                Key Mismatch Areas
-              </CardTitle>
-              <CardDescription>Areas requiring attention based on your financial data</CardDescription>
-            </CardHeader>
-            <CardContent>
-              {currentResult ? (
-                mismatchAreas.length > 0 ? (
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    {mismatchAreas.map((item, idx) => (
-                      <div 
-                        key={idx}
-                        className={`p-4 rounded-lg border ${
-                          item.severity === 'critical' 
-                            ? 'bg-destructive/10 border-destructive/30' 
-                            : 'bg-warning/10 border-warning/30'
-                        }`}
-                      >
-                        <div className="flex items-center gap-2 mb-2">
-                          <AlertTriangle className={`h-5 w-5 ${
-                            item.severity === 'critical' ? 'text-destructive' : 'text-warning'
-                          }`} />
-                          <span className="font-semibold">{item.area}</span>
-                          <Badge variant={item.severity === 'critical' ? 'destructive' : 'warning'} className="ml-auto">
-                            {item.severity}
-                          </Badge>
-                        </div>
-                        <p className="text-sm text-muted-foreground mb-2">{item.description}</p>
-                        <div className="flex items-center gap-2 text-sm">
-                          <Lightbulb className="h-4 w-4 text-accent" />
-                          <span className="text-foreground font-medium">{item.action}</span>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                ) : (
-                  <div className="p-6 rounded-lg bg-success/10 border border-success/20 text-center">
-                    <CheckCircle className="h-12 w-12 mx-auto mb-3 text-success" />
-                    <p className="font-semibold text-success text-lg">No Major Mismatches Detected!</p>
-                    <p className="text-sm text-muted-foreground mt-2">
-                      Your financial health looks good. Keep monitoring regularly.
-                    </p>
-                  </div>
-                )
-              ) : (
-                <div className="h-[150px] flex items-center justify-center">
-                  <div className="text-center">
-                    <AlertTriangle className="h-12 w-12 mx-auto mb-3 text-muted-foreground/30" />
-                    <p className="text-muted-foreground">Calculate your score to identify mismatch areas</p>
-                  </div>
-                </div>
-              )}
-            </CardContent>
-          </Card>
-        </motion.div>
-
-        {/* Recommendations */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.4 }}
-        >
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Lightbulb className="h-5 w-5 text-accent" />
-                Recommendations
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <ul className="space-y-2">
-                {recommendations.map((rec, i) => (
-                  <li key={i} className="flex items-start gap-3 p-3 rounded-lg bg-muted/50">
-                    <CheckCircle className="h-5 w-5 text-primary shrink-0 mt-0.5" />
-                    <span className="text-sm">{rec}</span>
-                  </li>
-                ))}
-              </ul>
-            </CardContent>
-          </Card>
-        </motion.div>
-
-        {/* History Chart */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.5 }}
-        >
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <TrendingUp className="h-5 w-5 text-primary" />
-                Health Score History
-              </CardTitle>
-              <CardDescription>Track your score over time</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="h-[280px]">
-                {chartData.length > 0 ? (
-                  <ResponsiveContainer width="100%" height="100%">
-                    <LineChart data={chartData} margin={{ top: 10, right: 30, left: 0, bottom: 0 }}>
-                      <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
-                      <XAxis dataKey="date" stroke="hsl(var(--muted-foreground))" />
-                      <YAxis domain={[0, 100]} stroke="hsl(var(--muted-foreground))" />
-                      <Tooltip 
-                        contentStyle={{ 
-                          backgroundColor: 'hsl(var(--card))', 
-                          border: '1px solid hsl(var(--border))',
-                          borderRadius: '8px'
-                        }} 
-                      />
-                      <Line 
-                        type="monotone" 
-                        dataKey="score" 
-                        stroke="hsl(var(--primary))" 
-                        strokeWidth={3}
-                        dot={{ fill: 'hsl(var(--primary))', strokeWidth: 2 }}
-                      />
-                    </LineChart>
-                  </ResponsiveContainer>
-                ) : (
-                  <div className="h-full flex items-center justify-center text-muted-foreground">
-                    <div className="text-center">
-                      <TrendingUp className="h-12 w-12 mx-auto mb-3 opacity-30" />
-                      <p>No history yet. Calculate your first score!</p>
-                    </div>
-                  </div>
-                )}
-              </div>
-            </CardContent>
-          </Card>
-        </motion.div>
+      {/* Oli Chat Avatar */}
+      <div 
+        onClick={talkToOli} 
+        className="fixed bottom-5 right-5 w-[60px] h-[60px] cursor-pointer z-[1000] rounded-full overflow-hidden"
+        style={{ 
+          animation: 'vibrate-glow 2s infinite ease-in-out',
+          borderWidth: '2px',
+          borderStyle: 'solid',
+          borderColor: colors.gold
+        }}
+      >
+        <img src="/resources/Gemini_Generated_Image_qt3fakqt3fakqt3f.png" alt="Oli Avatar" className="w-full h-full object-cover" />
       </div>
-    </DashboardLayout>                 
+
+      {/* Audit Modal */}
+      {isModalOpen && (
+        <div className="fixed inset-0 bg-black/60 z-[2000] flex items-center justify-center p-4">
+          <div className="bg-white rounded-2xl p-10 max-w-[600px] w-full relative shadow-2xl">
+            <button 
+              onClick={closeAudit} 
+              className="absolute top-4 right-4 text-2xl text-gray-400 hover:text-gray-700 transition-colors"
+            >
+              &times;
+            </button>
+            
+            {/* Modal Header */}
+            <div className="flex items-center space-x-3 mb-4">
+              <img 
+                src="/resources/oli-branch-1 (9).png" 
+                alt="Oli" 
+                className="w-12 h-12 rounded-full"
+                style={{ borderWidth: '2px', borderStyle: 'solid', borderColor: colors.gold }}
+              />
+              <h3 className="font-display text-2xl font-bold" style={{ color: colors.forest }}>
+                Oli Financial Audit
+              </h3>
+            </div>
+            
+            {/* Progress Bar */}
+            <div className="w-full h-2 bg-gray-200 rounded-full mb-8">
+              <div 
+                className="h-full rounded-full transition-all duration-500" 
+                style={{ width: auditProgress, backgroundColor: colors.gold }}
+              ></div>
+            </div>
+            
+            {/* Step Content */}
+            {auditStep === 1 ? (
+              <div className="space-y-6">
+                <div>
+                  <label className="block text-sm font-semibold mb-2" style={{ color: colors.charcoal }}>
+                    What are your average monthly banking fees?
+                  </label>
+                  <input 
+                    type="number" 
+                    value={feeInput} 
+                    onChange={(e) => setFeeInput(e.target.value)} 
+                    placeholder="$0.00" 
+                    className="w-full p-4 border-2 rounded-lg focus:outline-none focus:ring-2 transition-all"
+                    style={{ borderColor: colors.sage, focusRingColor: colors.gold }}
+                  />
+                </div>
+                <button 
+                  onClick={processAudit} 
+                  className="btn-primary w-full py-4 rounded-lg font-bold"
+                >
+                  Analyze My Fees
+                </button>
+              </div>
+            ) : (
+              <div className="text-center">
+                <div className="mb-4">
+                  <svg className="w-16 h-16 mx-auto" fill="none" viewBox="0 0 24 24" stroke={colors.gold}>
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  </svg>
+                </div>
+                <h4 className="text-xl font-bold mb-2" style={{ color: colors.forest }}>Audit Complete</h4>
+                <p className="text-gray-700 mb-6">{resultText}</p>
+                <button 
+                  onClick={closeAudit} 
+                  className="btn-secondary w-full py-3 rounded-lg font-semibold"
+                >
+                  Get Full Report
+                </button>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
+
+      {/* Footer */}
+      <footer style={{ backgroundColor: colors.charcoal, color: colors.cream }} className="py-12">
+        <div className="max-w-6xl mx-auto px-6">
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
+            {/* Logo & Description */}
+            <div className="md:col-span-2">
+              <div className="flex items-center space-x-2 mb-4">
+                <div className="w-10 h-10 rounded-lg flex items-center justify-center overflow-hidden">
+                  <img src="/resources/oli-branch00.png" alt="Oli Logo" className="w-full h-full object-cover" />
+                </div>
+                <span className="font-display font-bold text-xl">Oli-Branch</span>
+              </div>
+              <p className="text-gray-300 mb-4 max-w-md">
+                Oli is the AI auditor that finds hidden fees and mismatched services draining your profit. Start your free audit 
+                to secure your financial future, registration is required to view your custom report.
+              </p>
+              <div className="flex space-x-4">
+                <a href="mailto:contact@oli-branch.com" className="transition-colors" style={{ color: colors.sage }}>
+                  contact@oli-branch.com
+                </a>
+              </div>
+            </div>
+            
+            {/* Company Links */}
+            <div>
+              <h4 className="font-semibold mb-4">Company</h4>
+              <ul className="space-y-2 text-gray-300">
+                <li>
+                  <Link to="/about#story" className="hover:text-white transition-colors">Our Story</Link>
+                </li>
+                <li>
+                  <Link to="/about#team" className="hover:text-white transition-colors">Team</Link>
+                </li>
+                <li>
+                  <Link to="/about#values" className="hover:text-white transition-colors">Values</Link>
+                </li>
+              </ul>
+            </div>
+  
+            {/* Connect Links */}
+            <div>
+              <h4 className="font-semibold mb-4 text-white">Connect</h4>
+              <ul className="space-y-2 text-gray-300">
+                <li>
+                  <Link to="/resources" className="hover:text-white transition-colors">Resources</Link>
+                </li>
+                <li>
+                  <Link to="/services" className="hover:text-white transition-colors">Services</Link>
+                </li>
+              </ul>
+            </div>
+          </div>
+  
+          {/* Social Media Icons */}
+          <div className="flex items-center gap-4 mt-8" aria-label="Follow Oli-Branch on social media">
+            {/* Instagram */}
+            <a 
+              href="https://www.instagram.com/oli.branch/"
+              target="_blank" 
+              rel="noopener noreferrer"
+              className="hover:text-white transition-colors"
+              style={{ color: colors.sage }}
+              aria-label="Follow Oli-Branch on Instagram"
+            >
+              <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+                <path d="M7 2C4.243 2 2 4.243 2 7v10c0 2.757 2.243 5 5 5h10c2.757 0 5-2.243 5-5V7c0-2.757-2.243-5-5-5H7zm10 2a3 3 0 013 3v10a3 3 0 01-3 3H7a3 3 0 01-3-3V7a3 3 0 013-3h10zm-5 3a5 5 0 100 10 5 5 0 000-10zm0 2a3 3 0 110 6 3 3 0 010-6zm5.5-.9a1.1 1.1 0 11-2.2 0 1.1 1.1 0 012.2 0z"/>
+              </svg>
+            </a>
+  
+            {/* LinkedIn */}
+            <a 
+              href="https://www.linkedin.com/company/oli-branch-llc/?viewAsMember=true"
+              target="_blank" 
+              rel="noopener noreferrer"
+              className="hover:text-white transition-colors"
+              style={{ color: colors.sage }}
+              aria-label="Follow Oli-Branch on LinkedIn"
+            >
+              <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+                <path d="M4.98 3.5C3.34 3.5 2 4.84 2 6.48s1.34 2.98 2.98 2.98 2.98-1.34 2.98-2.98S6.62 3.5 4.98 3.5zM3 9h4v12H3V9zm7 0h3.8v1.6h.05c.53-1 1.83-2.05 3.77-2.05 4.03 0 4.78 2.65 4.78 6.1V21h-4v-5.6c0-1.34-.02-3.07-1.87-3.07-1.87 0-2.16 1.46-2.16 2.97V21h-4V9z"/>
+              </svg>
+            </a>
+  
+            {/* YouTube */}
+            <a 
+              href="https://www.youtube.com/@AdminContact-xd1xk"
+              target="_blank" 
+              rel="noopener noreferrer"
+              className="hover:text-white transition-colors"
+              style={{ color: colors.sage }}
+              aria-label="Subscribe to Oli-Branch on YouTube"
+            >
+              <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+                <path d="M23.5 6.2s-.2-1.6-.8-2.3c-.8-.9-1.7-.9-2.1-1C17.5 2.5 12 2.5 12 2.5h0s-5.5 0-8.6.4c-.4.1-1.3.1-2.1 1-.6.7-.8 2.3-.8 2.3S0 8.1 0 10v1.9c0 1.9.5 3.8.5 3.8s.2 1.6.8 2.3c.8.9 1.9.9 2.4 1 1.7.2 7.3.4 7.3.4s5.5 0 8.6-.4c.4-.1 1.3-.1 2.1-1 .6-.7.8-2.3.8-2.3s.5-1.9.5-3.8V10c0-1.9-.5-3.8-.5-3.8zM9.6 14.7V7.8l6.3 3.5-6.3 3.4z"/>
+              </svg>
+            </a>
+  
+            {/* Facebook */}
+            <a 
+              href="https://www.facebook.com/groups/755013229548095/"
+              target="_blank" 
+              rel="noopener noreferrer"
+              className="hover:text-white transition-colors"
+              style={{ color: colors.sage }}
+              aria-label="Follow Oli-Branch on Facebook"
+            >
+              <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+                <path d="M22 12a10 10 0 10-11.5 9.9v-7H8v-3h2.5V9.5c0-2.5 1.5-3.9 3.8-3.9 1.1 0 2.2.2 2.2.2v2.4H15.3c-1.3 0-1.7.8-1.7 1.6V12h3l-.5 3h-2.5v7A10 10 0 0022 12z"/>
+              </svg>
+            </a>
+  
+            {/* TikTok */}
+            <a 
+              href="https://www.tiktok.com/@olbrnch"
+              target="_blank" 
+              rel="noopener noreferrer"
+              className="hover:text-white transition-colors"
+              style={{ color: colors.sage }}
+              aria-label="Follow Oli-Branch on TikTok"
+            >
+              <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+                <path d="M21 8.5c-1.9 0-3.7-.6-5.1-1.7v7.4a6.5 6.5 0 11-5.7-6.4v3.5a3 3 0 102.7 3V2h3.1c.4 3 2.7 5.4 5.7 5.7v.8z"/>
+              </svg>
+            </a>
+          </div>
+  
+          {/* Copyright */}
+          <div className="border-t border-gray-700 mt-8 pt-8 text-center text-gray-300">
+            <p>Copyright &copy; 2023-2026 Oli-Branch LLC. All Rights Reserved.</p>
+          </div>
+        </div>
+      </footer>
+    </div>
   );
-}
+};
+
+export default LandingPage;
