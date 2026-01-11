@@ -12,9 +12,12 @@ export function DropdownMenu({ className = "", children, ...props }) {
 
 export function DropdownMenuTrigger({ className = "", children, ...props }) {
   return (
-    <button className={cn("outline-none", className)} {...props}>
-      {children}
-    </button>
+      <div
+          className={cn("outline-none inline-flex", className)}
+          {...props}
+      >
+        {children}
+      </div>
   );
 }
 

@@ -101,7 +101,7 @@ export default function Header({ title, subtitle }) {
             />
             
             <DropdownMenu>
-              <DropdownMenuTrigger asChild>
+              <DropdownMenuTrigger>
                 <button className="relative group">
                   <Avatar className="h-10 w-10 cursor-pointer ring-2 ring-transparent hover:ring-primary transition-all">
                     {profileImage ? (
