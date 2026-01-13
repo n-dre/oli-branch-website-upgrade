@@ -158,22 +158,31 @@ const ServicesPage = () => {
           100% { transform: scale(1); box-shadow: 0 0 10px rgba(212, 175, 55, 0.6); }
         }
       `}</style>
-
-      {/* Navigation */}
-      <nav className="fixed top-0 w-full z-50 glass-effect border-b border-opacity-20" style={{ borderColor: colors.sage }}>
-        <div className="max-w-6xl mx-auto px-6 py-4">
-          <div className="flex items-center justify-between">
-            <Link to="/" className="flex items-center space-x-2">
-              <div className="w-12 h-12 rounded-lg overflow-hidden" style={{ backgroundColor: colors.cream }}>
-                <img src="/resources/oli-branch00.png" alt="Oli Logo" className="w-full h-full object-cover" />
-              </div>
-              <div className="flex flex-col leading-tight">
-                <span className="font-bold text-xl" style={{ color: colors.forest }}>Oli-Branch</span>
-                <span className="text-[10px] uppercase tracking-widest italic">
-                  Powered by AI
-                </span>
-              </div>
-            </Link>
+            {/* Navigation */}
+            <nav
+            className="fixed top-0 w-full z-50 glass-effect border-b border-opacity-20"
+            style={{ borderColor: colors.sage }}
+            >
+            <div className="max-w-6xl mx-auto px-6 py-4">
+                <div className="flex items-center justify-between">
+                <Link to="/" className="flex items-center space-x-2">
+                    <img
+                    src="/resources/oli-branch00.png"
+                    alt="Oli Logo"
+                    className="w-12 h-12 rounded-lg"
+                    />
+                    <div className="flex flex-col leading-tight">
+                    <span
+                        className="font-bold text-xl"
+                        style={{ color: colors.forest }}
+                    >
+                        Oli-Branch
+                    </span>
+                    <span className="text-[10px] uppercase tracking-widest italic">
+                        Powered by AI
+                    </span>
+                    </div>
+                </Link>
 
             <div className="hidden md:flex items-center space-x-8">
               <Link to="/" className="hover:opacity-70 transition-colors">Home</Link>
@@ -181,12 +190,12 @@ const ServicesPage = () => {
               <Link to="/about" className="hover:opacity-70 transition-colors">About</Link>
               <Link to="/login" className="hover:opacity-70 transition-colors">Login</Link>
               <a
-                href="https://smartmatch-6.preview.emergentagent.com/"
+                href="https://financial-mismatch.preview.emergentagent.com/"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="btn-primary px-6 py-2 rounded-lg font-medium inline-flex items-center justify-center"
               >
-                Free Audit
+                Demo Free Audit
               </a>
             </div>
           </div>
@@ -428,14 +437,15 @@ const ServicesPage = () => {
                 <p className="text-xl text-gray-600 mb-8 max-w-2xl mx-auto">
                   Answer a few questions and we'll show exactly where your banking setup is working against you, and how to fix it.
                 </p>
-                <Link to="/signup">
-                  <button
-                    type="button"
-                    className="btn-primary px-8 py-4 rounded-lg text-lg font-semibold"
-                  >
+                <a
+                href="https://financial-mismatch.preview.emergentagent.com/"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="btn-primary px-8 py-4 rounded-lg font-medium inline-flex items-center justify-center"
+                >
                     Start Mismatch Check
-                  </button>
-                </Link>
+                </a>
+
                 <p className="text-sm text-gray-500 mt-3">
                   No bank login required.
                 </p>
@@ -751,9 +761,6 @@ const ServicesPage = () => {
               <ul className="space-y-2 text-gray-300">
                 <li>
                   <Link to="/about#story" className="hover:text-white transition-colors">Our Story</Link>
-                </li>
-                <li>
-                  <Link to="/about#team" className="hover:text-white transition-colors">Team</Link>
                 </li>
                 <li>
                   <Link to="/about#values" className="hover:text-white transition-colors">Values</Link>

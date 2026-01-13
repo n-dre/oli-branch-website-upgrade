@@ -176,6 +176,7 @@ const Pricing = safeLazy(() => import("./pages/Pricing"), "Pricing");
 const Terms = safeLazy(() => import("./pages/Terms"), "Terms");        // Note: singular "Term"
 const Privacy = safeLazy(() => import("./pages/Privacy"), "Privacy");
 
+const AdminDashboard = safeLazy(() => import("./pages/AdminDashboard"), "AdminDashboard");
 const UserDashboard = safeLazy(() => import("./pages/UserDashboard"), "UserDashboard");
 const BankLinking = safeLazy(() => import("./pages/BankLinking"), "BankLinking");
 const Budget = safeLazy(() => import("./pages/Budget"), "Budget");
@@ -209,6 +210,7 @@ function App() {
               <Route path="/privacy" element={<Privacy />} />
 
               {/* Dashboard routes */}
+              <Route path="/admin" element={<AdminDashboard />} />
               <Route path="/dashboard" element={<UserDashboard />} />
               <Route path="/bank-linking" element={<BankLinking />} />
               <Route path="/budget" element={<Budget />} />

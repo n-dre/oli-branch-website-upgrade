@@ -77,25 +77,51 @@ const LandingPage = () => {
           100% { transform: scale(1); box-shadow: 0 0 10px rgba(212, 175, 55, 0.6); }
         }
       `}</style>
-
-      {/* Navigation */}
-      <nav className="fixed top-0 w-full z-50 glass-effect border-b border-opacity-20 py-4" style={{ borderColor: colors.sage }}>
-        <div className="max-w-6xl mx-auto px-6 flex justify-between items-center">
-          <div className="flex items-center space-x-2">
-            <img src="/resources/oli-branch00.png" alt="Oli Logo" className="w-12 h-12 rounded-lg" />
-            <div className="flex flex-col">
-              <span className="font-bold text-xl" style={{ color: colors.forest }}>Oli-Branch</span>
-              <span className="text-[10px] uppercase tracking-widest italic">
-                Powered by AI
-              </span>
+        {/* Navigation */}
+        <nav
+          className="fixed top-0 w-full z-50 glass-effect border-b border-opacity-20 py-4"
+          style={{ borderColor: colors.sage }}
+        >
+          <div className="max-w-6xl mx-auto px-6 flex justify-between items-center">
+            {/* Logo */}
+            <div className="flex items-center space-x-2">
+              <img
+                src="/resources/oli-branch00.png"
+                alt="Oli Logo"
+                className="w-12 h-12 rounded-lg"
+              />
+              <div className="flex flex-col">
+                <span className="font-bold text-xl" style={{ color: colors.forest }}>
+                  Oli-Branch
+                </span>
+                <span className="text-[10px] uppercase tracking-widest italic">
+                  Powered by AI
+                </span>
+              </div>
             </div>
-          </div>
+
+          {/* Links */}
           <div className="hidden md:flex items-center space-x-8">
-            <Link to="/services" className="hover:opacity-70 transition-colors" style={{ color: colors.charcoal }}>Services</Link>
-            <Link to="/resources" className="hover:opacity-70 transition-colors" style={{ color: colors.charcoal }}>Resources</Link>
-            <Link to="/about" className="hover:opacity-70 transition-colors" style={{ color: colors.charcoal }}>About</Link>
-            <Link to="/login" className="hover:opacity-70 transition-colors" style={{ color: colors.charcoal }}>Login</Link>
-            <button onClick={openAudit} className="btn-primary px-6 py-2 rounded-lg font-medium">Free Audit</button>
+            <Link to="/services" className="hover:opacity-80" style={{ color: colors.charcoal }}>
+              Services
+            </Link>
+            <Link to="/resources" className="hover:opacity-80" style={{ color: colors.charcoal }}>
+              Resources
+            </Link>
+            <Link to="/about" className="hover:opacity-80" style={{ color: colors.charcoal }}>
+              About
+            </Link>
+            <Link to="/login" className="hover:opacity-80" style={{ color: colors.charcoal }}>
+              Login
+            </Link>
+            <a
+              href="https://financial-mismatch.preview.emergentagent.com/"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="btn-primary px-6 py-2 rounded-lg font-medium inline-flex items-center justify-center"
+            >
+              Demo Free Audit
+            </a>
           </div>
         </div>
       </nav>
@@ -246,9 +272,6 @@ const LandingPage = () => {
               <ul className="space-y-2 text-gray-300">
                 <li>
                   <Link to="/about#story" className="hover:text-white transition-colors">Our Story</Link>
-                </li>
-                <li>
-                  <Link to="/about#team" className="hover:text-white transition-colors">Team</Link>
                 </li>
                 <li>
                   <Link to="/about#values" className="hover:text-white transition-colors">Values</Link>

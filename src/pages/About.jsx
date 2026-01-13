@@ -95,14 +95,6 @@ const About = () => {
     alert("Hi! I'm Oli. I'm currently analyzing account mismatches. How can I help you?");
   };
 
-  const startAudit = () => {
-    setShowAuditModal(true);
-    setAuditProgress(0);
-    setAuditStep(1);
-    setAuditResult("");
-    setMonthlyFee("");
-  };
-
   const closeAudit = () => setShowAuditModal(false);
 
   const processAudit = () => {
@@ -196,39 +188,47 @@ const About = () => {
 
         .timeline-item { transition: all 0.3s ease; }
       `}</style>
-
-      {/* Navigation */}
-      <nav className="fixed top-0 w-full z-50 glass-effect border-b border-opacity-20" style={{ borderColor: colors.sage }}>
-        <div className="max-w-6xl mx-auto px-6 py-4">
-          <div className="flex items-center justify-between">
-            <Link to="/" className="flex items-center space-x-2">
-              <div className="w-12 h-12 rounded-lg overflow-hidden" style={{ backgroundColor: colors.cream }}>
-                <img src="/resources/oli-branch00.png" alt="Oli Logo" className="w-full h-full object-cover" />
-              </div>
-              <div className="flex flex-col leading-tight">
-                <span className="font-bold text-xl" style={{ color: colors.forest }}>Oli-Branch</span>
-                <span className="text-[10px] uppercase tracking-widest italic">
-                  Powered by AI
-                </span>
-              </div>
-            </Link>
+            {/* Navigation */}
+            <nav
+            className="fixed top-0 w-full z-50 glass-effect border-b border-opacity-20"
+            style={{ borderColor: colors.sage }}
+            >
+            <div className="max-w-6xl mx-auto px-6 py-4">
+                <div className="flex items-center justify-between">
+                <Link to="/" className="flex items-center space-x-2">
+                    <img
+                    src="/resources/oli-branch00.png"
+                    alt="Oli Logo"
+                    className="w-12 h-12 rounded-lg"
+                    />
+                    <div className="flex flex-col leading-tight">
+                    <span
+                        className="font-bold text-xl"
+                        style={{ color: colors.forest }}
+                    >
+                        Oli-Branch
+                    </span>
+                    <span className="text-[10px] uppercase tracking-widest italic">
+                        Powered by AI
+                    </span>
+                    </div>
+                </Link>
 
             <div className="hidden md:flex items-center space-x-8">
+              <Link to="/" className="hover:opacity-80" style={{ color: colors.charcoal }}>Home</Link>
               <Link to="/services" className="hover:opacity-80" style={{ color: colors.charcoal }}>Services</Link>
               <Link to="/resources" className="hover:opacity-80" style={{ color: colors.charcoal }}>Resources</Link>
-              <Link to="/about" className="hover:opacity-80" style={{ color: colors.charcoal }}>About</Link>
               <Link to="/login" className="hover:opacity-80" style={{ color: colors.charcoal }}>Login</Link>
-              <button type="button" onClick={startAudit} className="btn-primary px-6 py-2 rounded-lg font-medium">
-                Free Audit
-              </button>
+             <a
+                href="https://financial-mismatch.preview.emergentagent.com/"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="btn-primary px-6 py-2 rounded-lg font-medium inline-flex items-center justify-center"
+              >
+                Demo Free Audit
+              </a>
             </div>
-
-            <button type="button" className="md:hidden" aria-label="Open menu" style={{ color: colors.forest }}>
-              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 6h16M4 12h16M4 18h16" />
-              </svg>
-            </button>
-          </div>
+            </div>
         </div>
       </nav>
 
@@ -332,7 +332,7 @@ const About = () => {
         </div>
       </section>
 
-      {/* Company Values */}
+      {/* Values */}
       <section id="values" className="py-20" style={{ backgroundColor: colors.cream }}>
         <div className="max-w-6xl mx-auto px-6">
           <div className="text-center mb-16 fade-in-up">
@@ -426,6 +426,7 @@ const About = () => {
           </div>
 
           <div className="space-y-12">
+
             {/* Founded */}
             <div className="timeline-item fade-in-up">
               <div className="bg-white p-6 rounded-xl border-l-4" style={{ borderColor: colors.sage }}>
@@ -499,6 +500,7 @@ const About = () => {
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+
             {/* Early Investors */}
             <div className="bg-white/10 backdrop-blur-sm p-6 rounded-xl">
               <h3 className="text-xl font-semibold mb-4">Early Investors</h3>
@@ -630,9 +632,6 @@ const About = () => {
               <ul className="space-y-2 text-gray-300">
                 <li>
                   <Link to="/about#story" className="hover:text-white transition-colors">Our Story</Link>
-                </li>
-                <li>
-                  <Link to="/about#team" className="hover:text-white transition-colors">Team</Link>
                 </li>
                 <li>
                   <Link to="/about#values" className="hover:text-white transition-colors">Values</Link>

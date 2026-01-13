@@ -20,6 +20,159 @@ import { useData } from '../context/DataContext';
 import { cn } from '../lib/utils';
 import { toast } from 'sonner';
 
+<style>{`
+  .hero-gradient {
+    background: linear-gradient(135deg, #1B4332 0%, #52796F 100%);
+  }
+
+  .glass-effect {
+    backdrop-filter: blur(10px);
+    background: rgba(248, 245, 240, 0.9);
+  }
+
+  .btn-primary {
+    background: #1B4332 !important;
+    color: #F8F5F0 !important;
+    transition: all 0.3s ease;
+  }
+
+  .btn-primary:hover {
+    background: #52796F !important;
+    transform: translateY(-2px);
+    box-shadow: 0 10px 20px rgba(27, 67, 50, 0.3);
+  }
+
+  .btn-secondary {
+    border: 2px solid #1B4332 !important;
+    color: #1B4332 !important;
+    background: transparent !important;
+    transition: all 0.3s ease;
+  }
+
+  .btn-secondary:hover {
+    background: #1B4332 !important;
+    color: #F8F5F0 !important;
+  }
+
+  .service-card {
+    transition: all 0.3s ease;
+    border: 1px solid rgba(82, 121, 111, 0.1);
+  }
+
+  .service-card:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+  }
+
+  .product-card {
+    transition: all 0.3s ease;
+    border: 1px solid rgba(82, 121, 111, 0.1);
+  }
+
+  .product-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 12px 24px rgba(0, 0, 0, 0.1);
+  }
+
+  .fade-in-up {
+    opacity: 0;
+    transform: translateY(24px);
+  }
+
+  .stagger-children > * {
+    opacity: 0;
+    transform: translateY(24px);
+  }
+
+  .tab-button {
+    padding: 12px 24px;
+    border: 2px solid transparent;
+    border-radius: 8px;
+    background: transparent;
+    color: #666;
+    cursor: pointer;
+    transition: all 0.3s ease;
+  }
+
+  .tab-button.active {
+    border-color: #52796F;
+    background: #52796F;
+    color: white;
+  }
+
+  .tab-button:hover:not(.active) {
+    border-color: #52796F;
+    color: #52796F;
+  }
+
+  /* Bank card specific styles */
+  .bank-card {
+    border-left: 4px solid #1B4332 !important;
+    transition: all 0.3s ease;
+  }
+
+  .bank-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 12px 24px rgba(27, 67, 50, 0.15);
+    border-color: #52796F !important;
+  }
+
+  .bank-name {
+    color: #1B4332 !important;
+    font-weight: 700;
+  }
+
+  .bank-address {
+    color: #52796F !important;
+  }
+
+  .bank-rating {
+    color: #F59E0B !important;
+  }
+
+  .bank-open {
+    color: #059669 !important;
+    font-weight: 600;
+  }
+
+  .bank-closed {
+    color: #DC2626 !important;
+    font-weight: 600;
+  }
+
+  .bank-badge {
+    background: rgba(27, 67, 50, 0.1) !important;
+    color: #1B4332 !important;
+    border: 1px solid rgba(27, 67, 50, 0.2) !important;
+  }
+
+  .bank-service-badge {
+    background: rgba(82, 121, 111, 0.1) !important;
+    color: #52796F !important;
+    border: 1px solid rgba(82, 121, 111, 0.2) !important;
+  }
+
+  .location-card {
+    background: linear-gradient(135deg, #1B4332 0%, #52796F 100%) !important;
+    color: #F8F5F0 !important;
+  }
+
+  .location-icon {
+    background: rgba(248, 245, 240, 0.2) !important;
+  }
+
+  .warning-note {
+    background: #FEF3C7 !important;
+    border-color: #F59E0B !important;
+    color: #92400E !important;
+  }
+
+  .map-placeholder {
+    background: #F8F5F0 !important;
+    border-color: #D6D3D1 !important;
+  }
+`}</style>
+
 // Mock bank data - In production, this would come from Google Maps API or similar
 const MOCK_BANKS = [
   {
@@ -202,28 +355,28 @@ export default function NearbyBanks() {
     <DashboardLayout title="Nearby Banks" subtitle={`Finding banks within ${radiusMiles} miles of your location`}>
       <div className="space-y-6">
         {/* Location Status */}
-        <Card>
+        <Card className="location-card">
           <CardContent className="p-6">
             <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
               <div className="flex items-center gap-4">
                 <div className={cn(
-                  "w-12 h-12 rounded-full flex items-center justify-center",
-                  location ? "bg-success/10" : "bg-warning/10"
+                  "w-12 h-12 rounded-full flex items-center justify-center location-icon",
+                  location ? "location-icon" : "location-icon"
                 )}>
                   {loading ? (
-                    <Loader2 className="h-6 w-6 text-primary animate-spin" />
+                    <Loader2 className="h-6 w-6 text-white animate-spin" />
                   ) : location ? (
-                    <Navigation className="h-6 w-6 text-success" />
+                    <Navigation className="h-6 w-6 text-white" />
                   ) : (
-                    <AlertCircle className="h-6 w-6 text-warning" />
+                    <AlertCircle className="h-6 w-6 text-white" />
                   )}
                 </div>
                 <div>
-                  <h3 className="font-semibold text-foreground">
+                  <h3 className="font-semibold text-white">
                     {loading ? 'Getting location...' : 
                      location ? 'Location found' : 'mode'}
                   </h3>
-                  <p className="text-sm text-muted-foreground">
+                  <p className="text-sm text-white/80">
                     {locationError || (
                       location 
                         ? `Lat: ${location.lat.toFixed(4)}, Lng: ${location.lng.toFixed(4)}`
@@ -233,7 +386,7 @@ export default function NearbyBanks() {
                 </div>
               </div>
               <div className="flex items-center gap-3">
-                <Badge variant="outline" className="text-sm">
+                <Badge variant="outline" className="text-sm bg-white/20 text-white border-white/30">
                   {radiusMiles} mile radius
                 </Badge>
                 <Button 
@@ -241,6 +394,7 @@ export default function NearbyBanks() {
                   size="sm" 
                   onClick={requestLocation}
                   disabled={loading}
+                  className="bg-white/10 text-white border-white/30 hover:bg-white/20"
                 >
                   <RefreshCw className={cn("h-4 w-4 mr-2", loading && "animate-spin")} />
                   Refresh
@@ -251,10 +405,10 @@ export default function NearbyBanks() {
         </Card>
 
         {/* Note about */}
-        <div className="p-4 rounded-lg bg-accent/10 border border-accent/20">
-          <p className="text-sm text-accent-foreground flex items-center gap-2">
+        <div className="warning-note p-4 rounded-lg border">
+          <p className="text-sm flex items-center gap-2">
             <AlertCircle className="h-4 w-4" />
-            <strong> Mode:</strong> Displaying sample bank data. In production, this would use Google Maps API with your actual location.
+            <strong>Mode:</strong> Displaying sample bank data. In production, this would use Google Maps API with your actual location.
           </p>
         </div>
 
@@ -280,19 +434,19 @@ export default function NearbyBanks() {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: index * 0.1 }}
               >
-                <Card className="h-full hover:shadow-elevated transition-shadow duration-300">
+                <Card className="h-full bank-card hover:shadow-elevated transition-shadow duration-300">
                   <CardContent className="p-6">
                     <div className="flex items-start justify-between mb-4">
                       <div>
-                        <h3 className="font-semibold text-lg text-foreground">{bank.name}</h3>
-                        <p className="text-sm text-muted-foreground flex items-center gap-1 mt-1">
+                        <h3 className="bank-name font-semibold text-lg">{bank.name}</h3>
+                        <p className="bank-address text-sm flex items-center gap-1 mt-1">
                           <MapPin className="h-3.5 w-3.5" />
                           {bank.address}
                         </p>
                       </div>
                       <Badge 
-                        variant={bank.distance <= 1 ? 'default' : 'secondary'}
-                        className="shrink-0"
+                        variant="default"
+                        className="shrink-0 bg-[#1B4332] text-white"
                       >
                         {bank.distance} mi
                       </Badge>
@@ -300,13 +454,13 @@ export default function NearbyBanks() {
 
                     <div className="flex items-center gap-4 mb-4">
                       <div className="flex items-center gap-1">
-                        <Star className="h-4 w-4 fill-accent text-accent" />
-                        <span className="font-medium">{bank.rating}</span>
+                        <Star className="h-4 w-4 fill-yellow-400 text-yellow-400" />
+                        <span className="bank-rating font-medium">{bank.rating}</span>
                         <span className="text-sm text-muted-foreground">({bank.reviews})</span>
                       </div>
                       <div className={cn(
-                        "flex items-center gap-1 text-sm",
-                        bank.isOpen ? "text-success" : "text-muted-foreground"
+                        "flex items-center gap-1 text-sm font-semibold",
+                        bank.isOpen ? "bank-open" : "bank-closed"
                       )}>
                         <Clock className="h-3.5 w-3.5" />
                         {bank.hours}
@@ -314,9 +468,9 @@ export default function NearbyBanks() {
                     </div>
 
                     <div className="flex flex-wrap gap-2 mb-4">
-                      <Badge variant="outline" className="text-xs">{bank.type}</Badge>
+                      <Badge variant="outline" className="text-xs bank-badge">{bank.type}</Badge>
                       {bank.services.slice(0, 2).map((service) => (
-                        <Badge key={service} variant="secondary" className="text-xs">
+                        <Badge key={service} variant="secondary" className="text-xs bank-service-badge">
                           {service}
                         </Badge>
                       ))}
@@ -326,7 +480,7 @@ export default function NearbyBanks() {
                       <Button 
                         variant="default" 
                         size="sm" 
-                        className="flex-1"
+                        className="flex-1 btn-primary"
                         onClick={() => getDirections(bank)}
                       >
                         <Navigation className="h-4 w-4 mr-2" />
@@ -335,6 +489,7 @@ export default function NearbyBanks() {
                       <Button 
                         variant="outline" 
                         size="sm"
+                        className="btn-secondary"
                         onClick={() => window.open(`tel:${bank.phone}`, '_self')}
                       >
                         <Phone className="h-4 w-4" />
@@ -353,7 +508,7 @@ export default function NearbyBanks() {
               <p className="text-muted-foreground mb-4">
                 No banks found within {radiusMiles} miles. Try increasing the radius in Settings.
               </p>
-              <Button variant="outline" asChild>
+              <Button variant="outline" asChild className="btn-secondary">
                 <a href="/settings">Go to Settings</a>
               </Button>
             </CardContent>
@@ -367,7 +522,7 @@ export default function NearbyBanks() {
             <CardDescription>Interactive map coming soon</CardDescription>
           </CardHeader>
           <CardContent>
-            <div className="h-64 rounded-lg bg-muted/50 flex items-center justify-center border-2 border-dashed border-border">
+            <div className="map-placeholder h-64 rounded-lg flex items-center justify-center border-2 border-dashed">
               <div className="text-center">
                 <MapPin className="h-12 w-12 mx-auto mb-3 text-muted-foreground/40" />
                 <p className="text-muted-foreground">
