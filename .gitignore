@@ -22,3 +22,23 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# AWS
+.aws/
+*.pem
+*.key
+*.secret
+
+# Environment
+.env
+.env.local
+.env.production
+
+# CDK
+aws-infrastructure/cdk/cdk.out/
+aws-infrastructure/cdk/node_modules/
+
+# Terraform
+aws-infrastructure/terraform/.terraform/
+aws-infrastructure/terraform/*.tfstate*
+aws-infrastructure/terraform/.terraform.lock.hcl

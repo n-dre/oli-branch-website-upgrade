@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { motion } from "framer-motion";
 import {
   MapPin,
@@ -6,7 +6,6 @@ import {
   Phone,
   Clock,
   Star,
-  ExternalLink,
   Loader2,
   RefreshCw,
   Building2,
@@ -20,160 +19,6 @@ import { useData } from '../context/DataContext';
 import { cn } from '../lib/utils';
 import { toast } from 'sonner';
 
-<style>{`
-  .hero-gradient {
-    background: linear-gradient(135deg, #1B4332 0%, #52796F 100%);
-  }
-
-  .glass-effect {
-    backdrop-filter: blur(10px);
-    background: rgba(248, 245, 240, 0.9);
-  }
-
-  .btn-primary {
-    background: #1B4332 !important;
-    color: #F8F5F0 !important;
-    transition: all 0.3s ease;
-  }
-
-  .btn-primary:hover {
-    background: #52796F !important;
-    transform: translateY(-2px);
-    box-shadow: 0 10px 20px rgba(27, 67, 50, 0.3);
-  }
-
-  .btn-secondary {
-    border: 2px solid #1B4332 !important;
-    color: #1B4332 !important;
-    background: transparent !important;
-    transition: all 0.3s ease;
-  }
-
-  .btn-secondary:hover {
-    background: #1B4332 !important;
-    color: #F8F5F0 !important;
-  }
-
-  .service-card {
-    transition: all 0.3s ease;
-    border: 1px solid rgba(82, 121, 111, 0.1);
-  }
-
-  .service-card:hover {
-    transform: translateY(-8px);
-    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
-  }
-
-  .product-card {
-    transition: all 0.3s ease;
-    border: 1px solid rgba(82, 121, 111, 0.1);
-  }
-
-  .product-card:hover {
-    transform: translateY(-4px);
-    box-shadow: 0 12px 24px rgba(0, 0, 0, 0.1);
-  }
-
-  .fade-in-up {
-    opacity: 0;
-    transform: translateY(24px);
-  }
-
-  .stagger-children > * {
-    opacity: 0;
-    transform: translateY(24px);
-  }
-
-  .tab-button {
-    padding: 12px 24px;
-    border: 2px solid transparent;
-    border-radius: 8px;
-    background: transparent;
-    color: #666;
-    cursor: pointer;
-    transition: all 0.3s ease;
-  }
-
-  .tab-button.active {
-    border-color: #52796F;
-    background: #52796F;
-    color: white;
-  }
-
-  .tab-button:hover:not(.active) {
-    border-color: #52796F;
-    color: #52796F;
-  }
-
-  /* Bank card specific styles */
-  .bank-card {
-    border-left: 4px solid #1B4332 !important;
-    transition: all 0.3s ease;
-  }
-
-  .bank-card:hover {
-    transform: translateY(-4px);
-    box-shadow: 0 12px 24px rgba(27, 67, 50, 0.15);
-    border-color: #52796F !important;
-  }
-
-  .bank-name {
-    color: #1B4332 !important;
-    font-weight: 700;
-  }
-
-  .bank-address {
-    color: #52796F !important;
-  }
-
-  .bank-rating {
-    color: #F59E0B !important;
-  }
-
-  .bank-open {
-    color: #059669 !important;
-    font-weight: 600;
-  }
-
-  .bank-closed {
-    color: #DC2626 !important;
-    font-weight: 600;
-  }
-
-  .bank-badge {
-    background: rgba(27, 67, 50, 0.1) !important;
-    color: #1B4332 !important;
-    border: 1px solid rgba(27, 67, 50, 0.2) !important;
-  }
-
-  .bank-service-badge {
-    background: rgba(82, 121, 111, 0.1) !important;
-    color: #52796F !important;
-    border: 1px solid rgba(82, 121, 111, 0.2) !important;
-  }
-
-  .location-card {
-    background: linear-gradient(135deg, #1B4332 0%, #52796F 100%) !important;
-    color: #F8F5F0 !important;
-  }
-
-  .location-icon {
-    background: rgba(248, 245, 240, 0.2) !important;
-  }
-
-  .warning-note {
-    background: #FEF3C7 !important;
-    border-color: #F59E0B !important;
-    color: #92400E !important;
-  }
-
-  .map-placeholder {
-    background: #F8F5F0 !important;
-    border-color: #D6D3D1 !important;
-  }
-`}</style>
-
-// Mock bank data - In production, this would come from Google Maps API or similar
 const MOCK_BANKS = [
   {
     id: 1,
@@ -282,23 +127,33 @@ const MOCK_BANKS = [
 ];
 
 export default function NearbyBanks() {
-  const { settings } = useData();
+  const { settings, updateSettings } = useData();
   const [loading, setLoading] = useState(true);
   const [location, setLocation] = useState(null);
   const [banks, setBanks] = useState([]);
   const [locationError, setLocationError] = useState(null);
+  const [radiusMiles, setRadiusMiles] = useState(settings?.gpsRadius || 3);
 
-  const radiusMiles = settings.gpsRadius || 3;
+  useEffect(() => {
+    if (settings?.gpsRadius && settings.gpsRadius !== radiusMiles) {
+      setRadiusMiles(settings.gpsRadius);
+    }
+  }, [settings?.gpsRadius, radiusMiles]);
 
-  const requestLocation = () => {
+  const loadMockBanks = useCallback((radius) => {
+    const filteredBanks = MOCK_BANKS.filter(bank => bank.distance <= radius);
+    setBanks(filteredBanks);
+    setLoading(false);
+  }, []);
+
+  const requestLocation = useCallback(() => {
     setLoading(true);
     setLocationError(null);
     
     if (!navigator.geolocation) {
       setLocationError('Geolocation is not supported by your browser');
       setLoading(false);
-      // Still show mock data
-      loadMockBanks();
+      loadMockBanks(radiusMiles);
       return;
     }
 
@@ -308,7 +163,7 @@ export default function NearbyBanks() {
           lat: position.coords.latitude,
           lng: position.coords.longitude
         });
-        loadMockBanks();
+        loadMockBanks(radiusMiles);
         toast.success('Location updated!');
       },
       (error) => {
@@ -327,41 +182,127 @@ export default function NearbyBanks() {
             message = 'Unknown error. Showing banks.';
         }
         setLocationError(message);
-        loadMockBanks();
+        loadMockBanks(radiusMiles);
         toast.error(message);
       },
       { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
     );
-  };
-
-  const loadMockBanks = () => {
-    // Filter banks within radius
-    const filteredBanks = MOCK_BANKS.filter(bank => bank.distance <= radiusMiles);
-    setBanks(filteredBanks);
-    setLoading(false);
-  };
+  }, [radiusMiles, loadMockBanks]);
 
   useEffect(() => {
     requestLocation();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [radiusMiles]);
+  }, [requestLocation]);
 
   const getDirections = (bank) => {
     const query = encodeURIComponent(bank.name + ' ' + bank.address);
     window.open(`https://www.google.com/maps/search/?api=1&query=${query}`, '_blank');
   };
 
+  const updateRadius = (newRadius) => {
+    setRadiusMiles(newRadius);
+    if (updateSettings) {
+      updateSettings({
+        ...settings,
+        gpsRadius: newRadius
+      });
+    }
+    toast.success(`Search radius updated to ${newRadius} miles`);
+  };
+
+  const radiusOptions = [1, 3, 5, 10, 15];
+
   return (
     <DashboardLayout title="Nearby Banks" subtitle={`Finding banks within ${radiusMiles} miles of your location`}>
+      <style>{`
+        .hero-gradient {
+          background: linear-gradient(135deg, #1B4332 0%, #52796F 100%);
+        }
+        .glass-effect {
+          backdrop-filter: blur(10px);
+          background: rgba(248, 245, 240, 0.9);
+        }
+        .btn-primary {
+          background: #1B4332 !important;
+          color: #F8F5F0 !important;
+          transition: all 0.3s ease;
+        }
+        .btn-primary:hover {
+          background: #52796F !important;
+          transform: translateY(-2px);
+          box-shadow: 0 10px 20px rgba(27, 67, 50, 0.3);
+        }
+        .btn-secondary {
+          border: 2px solid #1B4332 !important;
+          color: #1B4332 !important;
+          background: transparent !important;
+          transition: all 0.3s ease;
+        }
+        .btn-secondary:hover {
+          background: #1B4332 !important;
+          color: #F8F5F0 !important;
+        }
+        .bank-card {
+          border-left: 4px solid #1B4332 !important;
+          transition: all 0.3s ease;
+        }
+        .bank-card:hover {
+          transform: translateY(-4px);
+          box-shadow: 0 12px 24px rgba(27, 67, 50, 0.15);
+          border-color: #52796F !important;
+        }
+        .bank-name {
+          color: #1B4332 !important;
+          font-weight: 700;
+        }
+        .bank-address {
+          color: #52796F !important;
+        }
+        .bank-rating {
+          color: #F59E0B !important;
+        }
+        .bank-open {
+          color: #059669 !important;
+          font-weight: 600;
+        }
+        .bank-closed {
+          color: #DC2626 !important;
+          font-weight: 600;
+        }
+        .bank-badge {
+          background: rgba(27, 67, 50, 0.1) !important;
+          color: #1B4332 !important;
+          border: 1px solid rgba(27, 67, 50, 0.2) !important;
+        }
+        .bank-service-badge {
+          background: rgba(82, 121, 111, 0.1) !important;
+          color: #52796F !important;
+          border: 1px solid rgba(82, 121, 111, 0.2) !important;
+        }
+        .location-card {
+          background: linear-gradient(135deg, #1B4332 0%, #52796F 100%) !important;
+          color: #F8F5F0 !important;
+        }
+        .location-icon {
+          background: rgba(248, 245, 240, 0.2) !important;
+        }
+        .warning-note {
+          background: #FEF3C7 !important;
+          border-color: #F59E0B !important;
+          color: #92400E !important;
+        }
+        .map-placeholder {
+          background: #F8F5F0 !important;
+          border-color: #D6D3D1 !important;
+        }
+      `}</style>
+
       <div className="space-y-6">
-        {/* Location Status */}
         <Card className="location-card">
           <CardContent className="p-6">
             <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
               <div className="flex items-center gap-4">
                 <div className={cn(
-                  "w-12 h-12 rounded-full flex items-center justify-center location-icon",
-                  location ? "location-icon" : "location-icon"
+                  "w-12 h-12 rounded-full flex items-center justify-center location-icon"
                 )}>
                   {loading ? (
                     <Loader2 className="h-6 w-6 text-white animate-spin" />
@@ -374,12 +315,12 @@ export default function NearbyBanks() {
                 <div>
                   <h3 className="font-semibold text-white">
                     {loading ? 'Getting location...' : 
-                     location ? 'Location found' : 'mode'}
+                     location ? 'Location found' : 'Demo Mode'}
                   </h3>
                   <p className="text-sm text-white/80">
                     {locationError || (
                       location 
-                        ? `Lat: ${location.lat.toFixed(4)}, Lng: ${location.lng.toFixed(4)}`
+                        ? `Lat: ${location?.lat?.toFixed(4) || 0}, Lng: ${location?.lng?.toFixed(4) || 0}`
                         : 'Using sample bank data for demonstration'
                     )}
                   </p>
@@ -404,15 +345,54 @@ export default function NearbyBanks() {
           </CardContent>
         </Card>
 
-        {/* Note about */}
+        <Card>
+          <CardHeader>
+            <CardTitle>Search Radius</CardTitle>
+            <CardDescription>Adjust how far to search for banks</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-4">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm font-medium">Current radius: <span className="text-primary font-bold">{radiusMiles} miles</span></p>
+                  <p className="text-xs text-muted-foreground">Found {banks.length} banks within this radius</p>
+                </div>
+                <Button 
+                  variant="outline" 
+                  size="sm"
+                  className="btn-secondary"
+                  asChild
+                >
+                  <a href="/settings#gps">Edit in Settings</a>
+                </Button>
+              </div>
+              
+              <div className="flex flex-wrap gap-2">
+                {radiusOptions.map((radius) => (
+                  <Button
+                    key={radius}
+                    variant={radiusMiles === radius ? "default" : "outline"}
+                    size="sm"
+                    onClick={() => updateRadius(radius)}
+                    className={cn(
+                      radiusMiles === radius && "btn-primary"
+                    )}
+                  >
+                    {radius} miles
+                  </Button>
+                ))}
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
         <div className="warning-note p-4 rounded-lg border">
           <p className="text-sm flex items-center gap-2">
             <AlertCircle className="h-4 w-4" />
-            <strong>Mode:</strong> Displaying sample bank data. In production, this would use Google Maps API with your actual location.
+            <strong>Demo Mode:</strong> Displaying sample bank data. In production, this would use Google Maps API with your actual location.
           </p>
         </div>
 
-        {/* Banks Grid */}
         {loading ? (
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {[1, 2, 3, 4].map((i) => (
@@ -506,16 +486,28 @@ export default function NearbyBanks() {
               <Building2 className="h-12 w-12 mx-auto mb-4 text-muted-foreground/30" />
               <h3 className="text-lg font-semibold mb-2">No Banks Found</h3>
               <p className="text-muted-foreground mb-4">
-                No banks found within {radiusMiles} miles. Try increasing the radius in Settings.
+                No banks found within {radiusMiles} miles. Try increasing the radius.
               </p>
-              <Button variant="outline" asChild className="btn-secondary">
-                <a href="/settings">Go to Settings</a>
-              </Button>
+              <div className="flex flex-wrap gap-2 justify-center">
+                {radiusOptions.filter(r => r > radiusMiles).slice(0, 3).map((radius) => (
+                  <Button
+                    key={radius}
+                    variant="outline"
+                    size="sm"
+                    onClick={() => updateRadius(radius)}
+                    className="btn-secondary"
+                  >
+                    Try {radius} miles
+                  </Button>
+                ))}
+                <Button variant="outline" asChild className="btn-secondary">
+                  <a href="/settings#gps">Go to Settings</a>
+                </Button>
+              </div>
             </CardContent>
           </Card>
         )}
 
-        {/* Map Placeholder */}
         <Card>
           <CardHeader>
             <CardTitle>Map View</CardTitle>

@@ -1,81 +1,62 @@
-import React, { useRef } from 'react';
-import { useData } from '../../context/DataContext';
-import { useTheme } from '../../context/ThemeContext';
-import { Moon, Sun, Bell, Upload, Camera } from 'lucide-react';
-import { Button } from '../ui/button';
-import { Avatar, AvatarFallback, AvatarImage } from '../ui/avatar';
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from '../ui/dropdown-menu';
-
-import { toast } from 'sonner';
+import React from "react";
+import { useData } from "../../context/DataContext";
+import { useTheme } from "../../context/ThemeContext";
+import { Moon, Sun, Bell } from "lucide-react";
+import { Button } from "../ui/button";
+import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 
 export default function Header({ title, subtitle }) {
-  const { settings, profileImage, updateProfileImage } = useData();
+  const { settings, profileImage } = useData();
   const { theme, setTheme } = useTheme();
-  const fileInputRef = useRef(null);
 
-  const toggleTheme = () => {
-    setTheme(theme === 'light' ? 'dark' : 'light');
-  };
+  const toggleTheme = () => setTheme(theme === "light" ? "dark" : "light");
 
-  const handleImageUpload = (e) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-
-    const reader = new FileReader();
-    reader.onload = () => {
-      updateProfileImage(reader.result);
-      toast.success('Profile picture updated!');
-    };
-    reader.readAsDataURL(file);
-  };
-
-  const handleRemoveImage = () => {
-    updateProfileImage(null);
-    toast.success('Profile picture removed');
-  };
-
-  const initials = settings.profile?.companyName
-    ?.split(' ')
-    .map(word => word[0])
-    .join('')
-    .toUpperCase()
-    .slice(0, 2) || 'OB';
+  const initials =
+    settings.profile?.companyName
+      ?.split(" ")
+      .map((w) => w[0])
+      .join("")
+      .toUpperCase()
+      .slice(0, 2) || "OB";
 
   return (
-    <header className="sticky top-0 z-30 bg-card/80 backdrop-blur-md border-b border-border px-6 lg:px-8 py-4">
-      <div className="flex items-center justify-between">
-        <div className="lg:ml-0 ml-12">
-          <h1 className="font-display text-xl lg:text-2xl font-bold text-foreground">
+    <header className="sticky top-0 z-30 bg-card/80 backdrop-blur-md border-b border-border px-4 sm:px-6 lg:px-8 py-4">
+      {/* ✅ min-w-0 + gap prevents right icons from being pushed off */}
+      <div className="flex items-center justify-between gap-3 min-w-0">
+        {/* ✅ allow title block to shrink instead of pushing icons */}
+        <div className="lg:ml-0 ml-12 min-w-0 flex-1">
+          <h1 className="font-display text-xl lg:text-2xl font-bold text-foreground truncate">
             {title}
           </h1>
-          {subtitle && (
-            <p className="text-sm text-muted-foreground mt-0.5">{subtitle}</p>
-          )}
+          {subtitle ? (
+            <p className="text-sm text-muted-foreground mt-0.5 truncate">
+              {subtitle}
+            </p>
+          ) : null}
         </div>
 
-        <div className="flex items-center gap-3">
+        {/* ✅ shrink-0 stops bell/theme from collapsing */}
+        <div className="flex items-center gap-2 sm:gap-3 shrink-0">
+          {/* ✅ fixed tap target for mobile */}
           <Button
             variant="ghost"
             size="icon"
-            className="relative"
+            className="relative h-10 w-10 p-0"
+            type="button"
           >
             <Bell className="h-5 w-5" />
             <span className="absolute -top-0.5 -right-0.5 w-2 h-2 bg-accent rounded-full" />
           </Button>
 
+          {/* ✅ fixed tap target for mobile */}
           <Button
             variant="ghost"
             size="icon"
+            className="h-10 w-10 p-0"
             onClick={toggleTheme}
+            type="button"
           >
-            {theme === 'light' ? (
+            {theme === "light" ? (
               <Moon className="h-5 w-5" />
             ) : (
               <Sun className="h-5 w-5" />
@@ -85,52 +66,21 @@ export default function Header({ title, subtitle }) {
           <div className="flex items-center gap-3 pl-3 border-l border-border">
             <div className="text-right hidden sm:block">
               <p className="text-sm font-medium text-foreground">
-                {settings.profile?.companyName || 'Oli-Branch'}
+                {settings.profile?.companyName || "Oli-Branch"}
               </p>
               <p className="text-xs text-muted-foreground">
-                {settings.profile?.email || 'demo@olibranch.com'}
+                {settings.profile?.email || ""}
               </p>
             </div>
 
-            {/* Profile Avatar with Dropdown */}
-            <input
-              ref={fileInputRef}
-              type="file"
-              accept="image/*"
-              className="hidden"
-              onChange={handleImageUpload}
-            />
-            
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <button className="relative group">
-                  <Avatar className="h-10 w-10 cursor-pointer ring-2 ring-transparent hover:ring-primary transition-all">
-                    {profileImage ? (
-                      <AvatarImage src={profileImage} alt="Profile" />
-                    ) : null}
-                    <AvatarFallback className="bg-primary text-primary-foreground font-semibold">
-                      {initials}
-                    </AvatarFallback>
-                  </Avatar>
-                  <div className="absolute inset-0 bg-black/50 rounded-full opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
-                    <Camera className="h-4 w-4 text-white" />
-                  </div>
-                </button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end" className="w-48">
-                <DropdownMenuLabel>Profile Picture</DropdownMenuLabel>
-                <DropdownMenuSeparator />
-                <DropdownMenuItem onClick={() => fileInputRef.current?.click()}>
-                  <Upload className="h-4 w-4 mr-2" />
-                  Upload New Photo
-                </DropdownMenuItem>
-                {profileImage && (
-                  <DropdownMenuItem onClick={handleRemoveImage} className="text-destructive">
-                    Remove Photo
-                  </DropdownMenuItem>
-                )}
-              </DropdownMenuContent>
-            </DropdownMenu>
+            <Avatar className="h-10 w-10 ring-2 ring-transparent shrink-0">
+              {profileImage ? (
+                <AvatarImage src={profileImage} alt="Profile" />
+              ) : null}
+              <AvatarFallback className="bg-primary text-primary-foreground font-semibold">
+                {initials}
+              </AvatarFallback>
+            </Avatar>
           </div>
         </div>
       </div>

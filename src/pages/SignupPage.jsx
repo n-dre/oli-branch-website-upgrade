@@ -1,59 +1,39 @@
 // src/pages/SignupPage.jsx
-import React, { useState } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
+import React, { useState } from "react";
+import { useNavigate, Link } from "react-router-dom";
 
 const SignupPage = () => {
   const navigate = useNavigate();
-  
-  // Color definitions
+
   const colors = {
-    gold: '#D4AF37',
-    forest: '#1B4332',
-    sage: '#52796F',
-    cream: '#F8F5F0',
-    charcoal: '#2D3748'
+    gold: "#D4AF37",
+    forest: "#1B4332",
+    sage: "#52796F",
+    cream: "#F8F5F0",
+    charcoal: "#2D3748",
   };
 
-  // --- State Management for Form Data ---
   const [formData, setFormData] = useState({
-    fullName: '',
-    email: '',
-    password: '',
-    confirmPassword: '',
-    businessName: '',
-    entityType: '',
-    monthlyRevenue: '',
-    accountType: '',
-    monthlyBankingFees: '',
-    zipCode: '',
-    cashDeposits: false,
-    fundingInterest: false,
-    isVeteran: false,
-    isImmigrant: false,
+    fullName: "",
+    email: "",
+    password: "",
+    confirmPassword: "",
+    businessName: "",
+    businessType: "",
+    zipCode: "",
     agreeTerms: false,
   });
 
-  // --- UI State ---
   const [errors, setErrors] = useState({});
-  const [successMsg, setSuccessMsg] = useState('');
+  const [successMsg, setSuccessMsg] = useState("");
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
-  // Constants
-  const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwVja7KcSxwDAAuHnUmdBnPsdPDQe6cYAtxs10g8A7J5BbR0d0sze9h2AkH7QKLCoIG9g/exec";
-  const LOGIN_URL = "/login";
-
-  // --- Handlers ---
   const handleInputChange = (e) => {
     const { name, value, type, checked } = e.target;
-    setFormData(prev => ({
-      ...prev,
-      [name]: type === 'checkbox' ? checked : value
-    }));
-    if (errors[name]) {
-      setErrors(prev => ({ ...prev, [name]: '' }));
-    }
+    setFormData((prev) => ({ ...prev, [name]: type === "checkbox" ? checked : value }));
+    if (errors[name]) setErrors((prev) => ({ ...prev, [name]: "" }));
   };
 
   const validate = () => {
@@ -64,24 +44,13 @@ const SignupPage = () => {
     if (!formData.fullName || formData.fullName.trim().split(/\s+/).length < 2) {
       newErrors.fullName = "Please enter both first and last name.";
     }
-    if (!emailRegex.test(formData.email)) {
-      newErrors.email = "Enter a valid email address.";
-    }
-    if (!passRegex.test(formData.password)) {
-      newErrors.password = "8-12 chars, 1 Upper, 1 Lower, 1 Number/Symbol.";
-    }
-    if (formData.password !== formData.confirmPassword) {
-      newErrors.confirmPassword = "Passwords do not match.";
-    }
-    if (!formData.businessName) {
-      newErrors.businessName = "Business name is required.";
-    }
-    if (!formData.entityType) {
-      newErrors.entityType = "Select your entity type.";
-    }
-    if (!formData.agreeTerms) {
-      newErrors.agreeTerms = "You must agree to the terms.";
-    }
+    if (!emailRegex.test(formData.email)) newErrors.email = "Enter a valid email address.";
+    if (!passRegex.test(formData.password)) newErrors.password = "8-12 chars, 1 Upper, 1 Lower, 1 Number/Symbol.";
+    if (formData.password !== formData.confirmPassword) newErrors.confirmPassword = "Passwords do not match.";
+    if (!formData.businessName) newErrors.businessName = "Business name is required.";
+    if (!formData.businessType) newErrors.businessType = "Select your business type.";
+    if (!formData.zipCode || String(formData.zipCode).trim().length < 5) newErrors.zipCode = "Enter a valid ZIP code.";
+    if (!formData.agreeTerms) newErrors.agreeTerms = "You must agree to the terms.";
 
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
@@ -92,58 +61,41 @@ const SignupPage = () => {
     if (!validate()) return;
 
     setLoading(true);
+    setErrors({});
+    setSuccessMsg("");
 
     try {
-      // Check if email already exists
-      const existingUsers = JSON.parse(localStorage.getItem('registeredUsers') || '[]');
-      const emailExists = existingUsers.some(u => u.email === formData.email);
+      const payload = {
+        full_name: formData.fullName,
+        email: formData.email,
+        password: formData.password,
+        business_name: formData.businessName,
+        business_type: formData.businessType,
+        zip_code: formData.zipCode,
+      };
 
-      if (emailExists) {
-        setErrors({ form: "An account with this email already exists. Please login instead." });
+      const res = await fetch("/api/auth/signup", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      });
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        setErrors({ form: data?.detail || data?.error || "Signup failed." });
         setLoading(false);
         return;
       }
 
-      // Create user payload
-      const payload = {
-        name: formData.fullName,
-        email: formData.email,
-        password: formData.password,
-        business_name: formData.businessName,
-        entityType: formData.entityType,
-        monthlyRevenue: formData.monthlyRevenue,
-        accountType: formData.accountType,
-        monthlyBankingFees: formData.monthlyBankingFees,
-        zipCode: formData.zipCode,
-        cashDeposits: formData.cashDeposits,
-        fundingInterest: formData.fundingInterest,
-        isVeteran: formData.isVeteran,
-        isImmigrant: formData.isImmigrant,
-        timestamp: new Date().toISOString()
-      };
+      // Canonical: store auth + user id and move on
+      localStorage.setItem("oliBranchToken", data.token);
+      localStorage.setItem("oliBranchUserId", data.user_id);
 
-      // Try Google Apps Script integration (no-cors mode)
-      try {
-        await fetch(GOOGLE_SCRIPT_URL, {
-          method: "POST",
-          mode: "no-cors",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ action: "signup", ...payload })
-        });
-      } catch (err) {
-        console.log('Google Script integration skipped:', err);
-      }
-
-      // Save to localStorage
-      existingUsers.push(payload);
-      localStorage.setItem('registeredUsers', JSON.stringify(existingUsers));
-      localStorage.setItem('userEmail', formData.email);
-
-      setSuccessMsg("Account created successfully! Redirecting to login...");
-      setTimeout(() => navigate(LOGIN_URL), 1500);
-
+      setSuccessMsg("Account created. Redirecting to dashboard...");
+      setTimeout(() => navigate("/dashboard"), 800);
     } catch (err) {
-      console.error('Signup error:', err);
+      console.error(err);
       setErrors({ form: "An error occurred. Please try again." });
       setLoading(false);
     }
@@ -151,10 +103,8 @@ const SignupPage = () => {
 
   return (
     <div className="font-body bg-white min-h-screen flex flex-col lg:flex-row" style={{ color: colors.charcoal }}>
-      {/* CSS Styles */}
       <style>{`
         .hero-gradient { background: linear-gradient(135deg, #1B4332 0%, #1B4332 100%); }
-        .glass-effect { backdrop-filter: blur(10px); background: rgba(255,255,255,.95); }
         .btn-primary { background: #1B4332; color: #fff; transition: all 0.3s ease; }
         .btn-primary:hover { background: #52796F; transform: translateY(-2px); box-shadow: 0 10px 20px rgba(27, 67, 50, 0.3); }
         .btn-primary:disabled { opacity: 0.7; cursor: not-allowed; transform: none; }
@@ -164,7 +114,7 @@ const SignupPage = () => {
         @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
       `}</style>
 
-      {/* Left Side - Hero */}
+      {/* Left Hero */}
       <div className="hidden lg:flex lg:w-2/5 hero-gradient flex-col justify-between p-8 xl:p-12 text-white relative">
         <div className="flex items-center">
           <Link to="/">
@@ -186,7 +136,7 @@ const SignupPage = () => {
         </div>
       </div>
 
-      {/* Right Side - Form */}
+      {/* Right Form */}
       <div className="flex-1 flex items-center justify-center p-4 sm:p-6 lg:p-8 bg-white overflow-y-auto">
         <div className="w-full max-w-md space-y-4 sm:space-y-6">
           {/* Mobile Logo */}
@@ -196,7 +146,7 @@ const SignupPage = () => {
             </Link>
           </div>
 
-          {/* Back to Login Link */}
+          {/* Back to Login */}
           <Link to="/login" className="inline-flex items-center gap-2 text-gray-500 hover:text-green-800 transition-colors text-sm">
             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
@@ -205,286 +155,123 @@ const SignupPage = () => {
           </Link>
 
           <div>
-            <h2 className="font-display text-2xl sm:text-3xl font-bold" style={{ color: colors.charcoal }}>Create Account</h2>
+            <h2 className="font-display text-2xl sm:text-3xl font-bold" style={{ color: colors. forest}}>
+              Create Account
+            </h2>
             <p className="mt-2 text-sm sm:text-base text-gray-500">Start your financial journey with Oli-Branch</p>
           </div>
 
           <form onSubmit={handleSubmit} className="space-y-4" noValidate>
-            {/* Full Name */}
             <div>
-              <label className="block text-sm font-medium mb-1.5" style={{ color: colors.charcoal }}>Full Name *</label>
-              <input 
-                type="text" 
-                name="fullName" 
-                value={formData.fullName} 
-                onChange={handleInputChange} 
-                className="form-input" 
-                placeholder="Enter your full name" 
-              />
+              <label className="block text-sm font-medium mb-1.5">Full Name *</label>
+              <input name="fullName" value={formData.fullName} onChange={handleInputChange} className="form-input" placeholder="Enter your full name" />
               {errors.fullName && <div className="text-red-500 text-xs mt-1">{errors.fullName}</div>}
             </div>
 
-            {/* Email */}
             <div>
-              <label className="block text-sm font-medium mb-1.5" style={{ color: colors.charcoal }}>Email Address *</label>
-              <input 
-                type="email" 
-                name="email" 
-                value={formData.email} 
-                onChange={handleInputChange} 
-                className="form-input" 
-                placeholder="Enter your email address" 
-              />
+              <label className="block text-sm font-medium mb-1.5">Email Address *</label>
+              <input type="email" name="email" value={formData.email} onChange={handleInputChange} className="form-input" placeholder="Enter your email address" />
               {errors.email && <div className="text-red-500 text-xs mt-1">{errors.email}</div>}
             </div>
 
-            {/* Password */}
             <div>
-              <label className="block text-sm font-medium mb-1.5" style={{ color: colors.charcoal }}>Password *</label>
+              <label className="block text-sm font-medium mb-1.5">Password *</label>
               <div className="relative">
-                <input 
-                  type={showPassword ? "text" : "password"} 
-                  name="password" 
-                  value={formData.password} 
-                  onChange={handleInputChange} 
-                  className="form-input pr-16" 
-                  placeholder="8-12 chars, Upper, Lower, Symbol" 
+                <input
+                  type={showPassword ? "text" : "password"}
+                  name="password"
+                  value={formData.password}
+                  onChange={handleInputChange}
+                  className="form-input pr-16"
+                  placeholder="8-12 chars, Upper, Lower, Symbol"
                 />
-                <button 
-                  type="button" 
-                  onClick={() => setShowPassword(!showPassword)} 
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-green-800 text-sm"
-                >
+                <button type="button" onClick={() => setShowPassword((s) => !s)} className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-green-800 text-sm">
                   {showPassword ? "Hide" : "Show"}
                 </button>
               </div>
               {errors.password && <div className="text-red-500 text-xs mt-1">{errors.password}</div>}
             </div>
 
-            {/* Confirm Password */}
             <div>
-              <label className="block text-sm font-medium mb-1.5" style={{ color: colors.charcoal }}>Confirm Password *</label>
+              <label className="block text-sm font-medium mb-1.5">Confirm Password *</label>
               <div className="relative">
-                <input 
-                  type={showConfirmPassword ? "text" : "password"} 
-                  name="confirmPassword" 
-                  value={formData.confirmPassword} 
-                  onChange={handleInputChange} 
-                  className="form-input pr-16" 
-                  placeholder="Confirm your password" 
+                <input
+                  type={showConfirmPassword ? "text" : "password"}
+                  name="confirmPassword"
+                  value={formData.confirmPassword}
+                  onChange={handleInputChange}
+                  className="form-input pr-16"
+                  placeholder="Confirm your password"
                 />
-                <button 
-                  type="button" 
-                  onClick={() => setShowConfirmPassword(!showConfirmPassword)} 
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-green-800 text-sm"
-                >
+                <button type="button" onClick={() => setShowConfirmPassword((s) => !s)} className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-green-800 text-sm">
                   {showConfirmPassword ? "Hide" : "Show"}
                 </button>
               </div>
               {errors.confirmPassword && <div className="text-red-500 text-xs mt-1">{errors.confirmPassword}</div>}
             </div>
 
-            {/* Business Details Group */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <div>
-                <label className="block text-sm font-medium mb-1.5" style={{ color: colors.charcoal }}>Business Name *</label>
-                <input 
-                  type="text" 
-                  name="businessName" 
-                  value={formData.businessName} 
-                  onChange={handleInputChange} 
-                  className="form-input" 
-                  placeholder="Business name" 
-                />
-                {errors.businessName && <div className="text-red-500 text-xs mt-1">{errors.businessName}</div>}
-              </div>
-              <div>
-                <label className="block text-sm font-medium mb-1.5" style={{ color: colors.charcoal }}>Entity Type *</label>
-                <select 
-                  name="entityType" 
-                  value={formData.entityType} 
-                  onChange={handleInputChange} 
-                  className="form-input"
-                >
-                  <option value="">Select</option>
-                  <option value="sole_proprietor">Sole Proprietor</option>
-                  <option value="llc">LLC</option>
-                  <option value="s_corp">S-Corp</option>
-                  <option value="c_corp">C-Corp</option>
-                  <option value="partnership">Partnership</option>
-                  <option value="nonprofit">Nonprofit</option>
-                </select>
-                {errors.entityType && <div className="text-red-500 text-xs mt-1">{errors.entityType}</div>}
-              </div>
+            <div>
+              <label className="block text-sm font-medium mb-1.5">Business Name *</label>
+              <input name="businessName" value={formData.businessName} onChange={handleInputChange} className="form-input" placeholder="Business name" />
+              {errors.businessName && <div className="text-red-500 text-xs mt-1">{errors.businessName}</div>}
             </div>
 
-            {/* Financial Details */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <div>
-                <label className="block text-sm font-medium mb-1.5" style={{ color: colors.charcoal }}>Monthly Revenue</label>
-                <input 
-                  type="number" 
-                  name="monthlyRevenue" 
-                  value={formData.monthlyRevenue} 
-                  onChange={handleInputChange} 
-                  className="form-input" 
-                  placeholder="$0" 
-                  min="0"
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium mb-1.5" style={{ color: colors.charcoal }}>Monthly Banking Fees</label>
-                <input 
-                  type="number" 
-                  name="monthlyBankingFees" 
-                  value={formData.monthlyBankingFees} 
-                  onChange={handleInputChange} 
-                  className="form-input" 
-                  placeholder="$0" 
-                  min="0"
-                />
-              </div>
+            <div>
+              <label className="block text-sm font-medium mb-1.5">Business Type *</label>
+              <select name="businessType" value={formData.businessType} onChange={handleInputChange} className="form-input">
+                <option value="">Select</option>
+                <option value="LLC">LLC</option>
+                <option value="Sole Proprietor">Sole Proprietor</option>
+                <option value="S-Corp">S-Corp</option>
+                <option value="C-Corp">C-Corp</option>
+                <option value="Partnership">Partnership</option>
+                <option value="Nonprofit">Nonprofit</option>
+              </select>
+              {errors.businessType && <div className="text-red-500 text-xs mt-1">{errors.businessType}</div>}
             </div>
 
-            {/* Account Type and ZIP */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <div>
-                <label className="block text-sm font-medium mb-1.5" style={{ color: colors.charcoal }}>Account Type</label>
-                <select 
-                  name="accountType" 
-                  value={formData.accountType} 
-                  onChange={handleInputChange} 
-                  className="form-input"
-                >
-                  <option value="">Select</option>
-                  <option value="checking">Business Checking</option>
-                  <option value="savings">Business Savings</option>
-                  <option value="both">Both</option>
-                  <option value="none">No Business Account</option>
-                </select>
-              </div>
-              <div>
-                <label className="block text-sm font-medium mb-1.5" style={{ color: colors.charcoal }}>ZIP Code</label>
-                <input 
-                  type="text" 
-                  name="zipCode" 
-                  value={formData.zipCode} 
-                  onChange={handleInputChange} 
-                  className="form-input" 
-                  placeholder="12345" 
-                  maxLength="5"
-                />
-              </div>
+            <div>
+              <label className="block text-sm font-medium mb-1.5">ZIP Code *</label>
+              <input name="zipCode" value={formData.zipCode} onChange={handleInputChange} className="form-input" placeholder="12345" maxLength={10} />
+              {errors.zipCode && <div className="text-red-500 text-xs mt-1">{errors.zipCode}</div>}
             </div>
 
-            {/* Checkboxes Group */}
-            <div className="space-y-2 py-2">
-              <div className="flex items-start">
-                <input 
-                  type="checkbox" 
-                  name="cashDeposits" 
-                  id="cashDeposits" 
-                  checked={formData.cashDeposits} 
-                  onChange={handleInputChange} 
-                  className="mt-1 h-4 w-4 rounded border-gray-300"
-                  style={{ accentColor: colors.forest }}
-                />
-                <label htmlFor="cashDeposits" className="ml-2.5 text-sm text-gray-600 cursor-pointer">
-                  Do you regularly make cash deposits?
-                </label>
-              </div>
-
-              <div className="flex items-start">
-                <input 
-                  type="checkbox" 
-                  name="fundingInterest" 
-                  id="fundingInterest" 
-                  checked={formData.fundingInterest} 
-                  onChange={handleInputChange} 
-                  className="mt-1 h-4 w-4 rounded border-gray-300"
-                  style={{ accentColor: colors.forest }}
-                />
-                <label htmlFor="fundingInterest" className="ml-2.5 text-sm text-gray-600 cursor-pointer">
-                  Interested in business funding options?
-                </label>
-              </div>
-
-              <div className="flex items-start">
-                <input 
-                  type="checkbox" 
-                  name="isVeteran" 
-                  id="isVeteran" 
-                  checked={formData.isVeteran} 
-                  onChange={handleInputChange} 
-                  className="mt-1 h-4 w-4 rounded border-gray-300"
-                  style={{ accentColor: colors.forest }}
-                />
-                <label htmlFor="isVeteran" className="ml-2.5 text-sm text-gray-600 cursor-pointer">
-                  Veteran-owned business
-                </label>
-              </div>
-
-              <div className="flex items-start">
-                <input 
-                  type="checkbox" 
-                  name="isImmigrant" 
-                  id="isImmigrant" 
-                  checked={formData.isImmigrant} 
-                  onChange={handleInputChange} 
-                  className="mt-1 h-4 w-4 rounded border-gray-300"
-                  style={{ accentColor: colors.forest }}
-                />
-                <label htmlFor="isImmigrant" className="ml-2.5 text-sm text-gray-600 cursor-pointer">
-                  Immigrant founder
-                </label>
-              </div>
-            </div>
-
-            {/* Terms Agreement */}
             <div className="flex items-start pt-2">
-              <input 
-                type="checkbox" 
-                name="agreeTerms" 
-                id="agreeTerms" 
-                checked={formData.agreeTerms} 
-                onChange={handleInputChange} 
+              <input
+                type="checkbox"
+                name="agreeTerms"
+                id="agreeTerms"
+                checked={formData.agreeTerms}
+                onChange={handleInputChange}
                 className="mt-1 h-4 w-4 rounded border-gray-300"
                 style={{ accentColor: colors.forest }}
               />
               <label htmlFor="agreeTerms" className="ml-2.5 text-sm text-gray-500 cursor-pointer">
-                I agree to the{' '}
-                <Link to="/terms" className="hover:underline" style={{ color: colors.forest }}>Terms of Service</Link>
-                {' '}and{' '}
-                <Link to="/privacy" className="hover:underline" style={{ color: colors.forest }}>Privacy Policy</Link>
+                I agree to the{" "}
+                <Link to="/terms" className="hover:underline" style={{ color: colors.forest }}>
+                  Terms of Service
+                </Link>{" "}
+                and{" "}
+                <Link to="/privacy" className="hover:underline" style={{ color: colors.forest }}>
+                  Privacy Policy
+                </Link>
               </label>
             </div>
             {errors.agreeTerms && <div className="text-red-500 text-xs">{errors.agreeTerms}</div>}
 
-            {/* Form Error */}
             {errors.form && <div className="text-red-500 text-sm text-center p-2 bg-red-50 rounded-lg">{errors.form}</div>}
 
-            {/* Submit Button */}
-            <button 
-              type="submit" 
-              disabled={loading} 
-              className="w-full btn-primary py-3 sm:py-4 px-6 rounded-lg font-semibold text-lg flex items-center justify-center gap-2"
-            >
+            <button type="submit" disabled={loading} className="w-full btn-primary py-3 sm:py-4 px-6 rounded-lg font-semibold text-lg flex items-center justify-center gap-2">
               {loading && <div className="spinner w-5 h-5 border-2 border-white border-t-transparent rounded-full" />}
               <span>{loading ? "Creating Account..." : "Create Account"}</span>
             </button>
 
-            {/* Success Message */}
-            {successMsg && (
-              <div className="text-green-600 text-center text-sm font-medium p-3 bg-green-50 rounded-lg">
-                {successMsg}
-              </div>
-            )}
+            {successMsg && <div className="text-green-600 text-center text-sm font-medium p-3 bg-green-50 rounded-lg">{successMsg}</div>}
           </form>
 
-          {/* Login Link */}
           <div className="border-t border-gray-200 pt-4">
             <p className="text-center text-sm text-gray-500">
-              Already have an account?{' '}
+              Already have an account?{" "}
               <Link to="/login" className="font-semibold" style={{ color: colors.forest }}>
                 Sign In →
               </Link>

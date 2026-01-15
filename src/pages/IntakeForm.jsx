@@ -147,6 +147,122 @@ export default function IntakeForm() {
 
   return (
     <DashboardLayout title="Business Intake Form" subtitle="Complete this form to analyze your financial mismatch">
+      <style>{`
+        .hero-gradient {
+          background: linear-gradient(135deg, #1B4332 0%, #52796F 100%);
+        }
+
+        .btn-primary {
+          background: #1B4332 !important;
+          color: #F8F5F0 !important;
+          transition: all 0.3s ease;
+        }
+
+        .btn-primary:hover {
+          background: #52796F !important;
+          transform: translateY(-2px);
+          box-shadow: 0 10px 20px rgba(27, 67, 50, 0.3);
+        }
+
+        .btn-secondary {
+          border: 2px solid #1B4332 !important;
+          color: #1B4332 !important;
+          background: transparent !important;
+          transition: all 0.3s ease;
+        }
+
+        .btn-secondary:hover {
+          background: #1B4332 !important;
+          color: #F8F5F0 !important;
+        }
+
+        .course-card {
+          transition: all 0.3s ease;
+          border: 1px solid rgba(82, 121, 111, 0.1);
+          background: linear-gradient(135deg, rgba(27, 67, 50, 0.02) 0%, rgba(82, 121, 111, 0.02) 100%);
+        }
+
+        .course-card:hover {
+          transform: translateY(-8px);
+          box-shadow: 0 20px 40px rgba(27, 67, 50, 0.15);
+          border-color: #52796F;
+        }
+
+        .achievement-card {
+          border-left: 4px solid #1B4332 !important;
+          transition: all 0.3s ease;
+          background: linear-gradient(135deg, rgba(27, 67, 50, 0.05) 0%, rgba(82, 121, 111, 0.05) 100%);
+        }
+
+        .achievement-card:hover {
+          transform: translateY(-4px);
+          box-shadow: 0 12px 24px rgba(27, 67, 50, 0.15);
+          border-color: #52796F !important;
+        }
+
+        .stats-card {
+          background: linear-gradient(135deg, rgba(27, 67, 50, 0.05) 0%, rgba(82, 121, 111, 0.05) 100%);
+          border: 1px solid rgba(82, 121, 111, 0.1);
+        }
+
+        .stats-card:hover {
+          transform: translateY(-2px);
+          box-shadow: 0 8px 16px rgba(27, 67, 50, 0.1);
+        }
+
+        .progress-gradient {
+          background: linear-gradient(90deg, #1B4332 0%, #52796F 100%);
+        }
+
+        .tag-badge {
+          background: rgba(27, 67, 50, 0.1) !important;
+          color: #1B4332 !important;
+          border: 1px solid rgba(27, 67, 50, 0.2) !important;
+        }
+
+        .category-badge {
+          background: rgba(82, 121, 111, 0.1) !important;
+          color: #52796F !important;
+          border: 1px solid rgba(82, 121, 111, 0.2) !important;
+        }
+
+        @media (max-width: 640px) {
+          .mobile-stack {
+            flex-direction: column !important;
+          }
+          
+          .mobile-full {
+            width: 100% !important;
+          }
+          
+          .mobile-text-center {
+            text-align: center !important;
+          }
+          
+          .mobile-p-4 {
+            padding: 1rem !important;
+          }
+          
+          .mobile-gap-4 {
+            gap: 1rem !important;
+          }
+        }
+
+        @media (max-width: 768px) {
+          .tablet-flex-col {
+            flex-direction: column !important;
+          }
+          
+          .tablet-w-full {
+            width: 100% !important;
+          }
+          
+          .tablet-mb-4 {
+            margin-bottom: 1rem !important;
+          }
+        }
+      `}</style>
+      
       <div className="max-w-3xl mx-auto">
         {/* Progress Steps */}
         <div className="mb-8">
@@ -457,7 +573,7 @@ export default function IntakeForm() {
                   <ArrowLeft className="h-4 w-4" />
                   Previous
                 </Button>
-                <Button onClick={handleNext} className="gap-2">
+                <Button onClick={handleNext} className="gap-2 btn-primary">
                   {currentStep === 4 ? 'Submit' : 'Next'}
                   <ArrowRight className="h-4 w-4" />
                 </Button>

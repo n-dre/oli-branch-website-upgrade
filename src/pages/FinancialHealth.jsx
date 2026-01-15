@@ -32,7 +32,8 @@ import { Label } from '../components/ui/label';
 import { Badge } from '../components/ui/badge';
 import { useData } from '../context/DataContext';
 
-const DONUT_COLORS = ['hsl(150, 40%, 35%)', 'hsl(42, 70%, 52%)', 'hsl(200, 70%, 50%)'];
+// Updated colors to match your theme
+const DONUT_COLORS = ['#1B4332', '#52796F', '#84A98C'];
 
 export default function FinancialHealth() {
   const { 
@@ -131,9 +132,9 @@ export default function FinancialHealth() {
   const revenue = Number(healthInputs?.revenue || 0);
   const expenses = Number(healthInputs?.expenses || 0);
   const feeImpactData = currentResult ? [
-    { name: 'Revenue', value: revenue, fill: 'hsl(145, 60%, 40%)' },
-    { name: 'Expenses', value: expenses, fill: 'hsl(0, 72%, 58%)' },
-    { name: 'Net', value: Math.max(0, revenue - expenses), fill: 'hsl(200, 70%, 50%)' }
+    { name: 'Revenue', value: revenue, fill: '#10B981' },
+    { name: 'Expenses', value: expenses, fill: '#DC2626' },
+    { name: 'Net', value: Math.max(0, revenue - expenses), fill: '#3B82F6' }
   ] : [];
 
   // Key Mismatch Areas
@@ -206,11 +207,184 @@ export default function FinancialHealth() {
   ];
 
   return (
-    <DashboardLayout title="Financial Health" subtitle="Assess your business financial health">
+    <DashboardLayout 
+      title="Financial Health" 
+      subtitle="Assess your business financial health"
+      className="bg-[#F8F5F0]"
+    >
+      <style>{`
+        .hero-gradient {
+          background: linear-gradient(135deg, #1B4332 0%, #52796F 100%);
+        }
+
+        .btn-primary {
+          background: #1B4332 !important;
+          color: #F8F5F0 !important;
+          transition: all 0.3s ease;
+        }
+
+        .btn-primary:hover {
+          background: #52796F !important;
+          transform: translateY(-2px);
+          box-shadow: 0 10px 20px rgba(27, 67, 50, 0.3);
+        }
+
+        .btn-secondary {
+          border: 2px solid #1B4332 !important;
+          color: #1B4332 !important;
+          background: transparent !important;
+          transition: all 0.3s ease;
+        }
+
+        .btn-secondary:hover {
+          background: #1B4332 !important;
+          color: #F8F5F0 !important;
+        }
+
+        .course-card {
+          transition: all 0.3s ease;
+          border: 1px solid rgba(82, 121, 111, 0.1);
+          background: linear-gradient(135deg, rgba(27, 67, 50, 0.02) 0%, rgba(82, 121, 111, 0.02) 100%);
+        }
+
+        .course-card:hover {
+          transform: translateY(-8px);
+          box-shadow: 0 20px 40px rgba(27, 67, 50, 0.15);
+          border-color: #52796F;
+        }
+
+        .achievement-card {
+          border-left: 4px solid #1B4332 !important;
+          transition: all 0.3s ease;
+          background: linear-gradient(135deg, rgba(27, 67, 50, 0.05) 0%, rgba(82, 121, 111, 0.05) 100%);
+        }
+
+        .achievement-card:hover {
+          transform: translateY(-4px);
+          box-shadow: 0 12px 24px rgba(27, 67, 50, 0.15);
+          border-color: #52796F !important;
+        }
+
+        .stats-card {
+          background: linear-gradient(135deg, rgba(27, 67, 50, 0.05) 0%, rgba(82, 121, 111, 0.05) 100%);
+          border: 1px solid rgba(82, 121, 111, 0.1);
+        }
+
+        .stats-card:hover {
+          transform: translateY(-2px);
+          box-shadow: 0 8px 16px rgba(27, 67, 50, 0.1);
+        }
+
+        .progress-gradient {
+          background: linear-gradient(90deg, #1B4332 0%, #52796F 100%);
+        }
+
+        .tag-badge {
+          background: rgba(27, 67, 50, 0.1) !important;
+          color: #1B4332 !important;
+          border: 1px solid rgba(27, 67, 50, 0.2) !important;
+        }
+
+        .category-badge {
+          background: rgba(82, 121, 111, 0.1) !important;
+          color: #52796F !important;
+          border: 1px solid rgba(82, 121, 111, 0.2) !important;
+        }
+
+        .leak-card-high {
+          background: linear-gradient(135deg, rgba(220, 38, 38, 0.05) 0%, rgba(239, 68, 68, 0.05) 100%);
+          border: 1px solid rgba(220, 38, 38, 0.2);
+        }
+
+        .leak-card-medium {
+          background: linear-gradient(135deg, rgba(245, 158, 11, 0.05) 0%, rgba(251, 191, 36, 0.05) 100%);
+          border: 1px solid rgba(245, 158, 11, 0.2);
+        }
+
+        .leak-card-low {
+          background: linear-gradient(135deg, rgba(16, 185, 129, 0.05) 0%, rgba(52, 211, 153, 0.05) 100%);
+          border: 1px solid rgba(16, 185, 129, 0.2);
+        }
+
+        .chart-container {
+          background: white;
+          border-radius: 12px;
+          padding: 20px;
+          box-shadow: 0 4px 12px rgba(27, 67, 50, 0.08);
+        }
+
+        .health-score-card {
+          background: linear-gradient(135deg, rgba(27, 67, 50, 0.1) 0%, rgba(82, 121, 111, 0.1) 100%);
+          border: 2px solid rgba(27, 67, 50, 0.2);
+        }
+
+        .metric-card-green {
+          background: linear-gradient(135deg, rgba(16, 185, 129, 0.05) 0%, rgba(52, 211, 153, 0.05) 100%);
+          border: 1px solid rgba(16, 185, 129, 0.2);
+        }
+
+        .metric-card-blue {
+          background: linear-gradient(135deg, rgba(59, 130, 246, 0.05) 0%, rgba(96, 165, 250, 0.05) 100%);
+          border: 1px solid rgba(59, 130, 246, 0.2);
+        }
+
+        .metric-card-amber {
+          background: linear-gradient(135deg, rgba(245, 158, 11, 0.05) 0%, rgba(251, 191, 36, 0.05) 100%);
+          border: 1px solid rgba(245, 158, 11, 0.2);
+        }
+
+        .insight-card {
+          transition: all 0.3s ease;
+          background: white;
+          border: 1px solid rgba(82, 121, 111, 0.1);
+        }
+
+        .insight-card:hover {
+          transform: translateY(-4px);
+          box-shadow: 0 12px 24px rgba(27, 67, 50, 0.15);
+        }
+
+        @media (max-width: 640px) {
+          .mobile-stack {
+            flex-direction: column !important;
+          }
+          
+          .mobile-full {
+            width: 100% !important;
+          }
+          
+          .mobile-text-center {
+            text-align: center !important;
+          }
+          
+          .mobile-p-4 {
+            padding: 1rem !important;
+          }
+          
+          .mobile-gap-4 {
+            gap: 1rem !important;
+          }
+        }
+
+        @media (max-width: 768px) {
+          .tablet-flex-col {
+            flex-direction: column !important;
+          }
+          
+          .tablet-w-full {
+            width: 100% !important;
+          }
+          
+          .tablet-mb-4 {
+            margin-bottom: 1rem !important;
+          }
+        }
+      `}</style>
+      
       {/* Responsive Tabs Container */}
-      <div className="mb-6 bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+      <div className="mb-6 bg-white rounded-xl shadow-sm border border-[#52796F]/20 overflow-hidden">
         {/* Tabs Header - Responsive Design */}
-        <div className="flex flex-col md:flex-row bg-gray-50 border-b border-gray-200 overflow-x-auto">
+        <div className="flex flex-col md:flex-row bg-[#F8F5F0] border-b border-[#52796F]/20 overflow-x-auto">
           {tabs.map((tab) => {
             const Icon = tab.icon;
             return (
@@ -222,26 +396,26 @@ export default function FinancialHealth() {
                   text-sm md:text-base font-medium whitespace-nowrap
                   transition-all duration-200 relative
                   ${activeTab === tab.id 
-                    ? 'text-blue-600 bg-white font-semibold' 
-                    : 'text-gray-600 hover:text-gray-900 hover:bg-gray-100'
+                    ? 'text-[#1B4332] bg-white font-semibold' 
+                    : 'text-[#52796F] hover:text-[#1B4332] hover:bg-white/80'
                   }
-                  border-b-2 md:border-b-0 md:border-r border-gray-200 last:border-r-0
+                  border-b-2 md:border-b-0 md:border-r border-[#52796F]/20 last:border-r-0
                   min-w-[120px] md:flex-1
                 `}
               >
                 <Icon className="w-4 h-4 md:w-5 md:h-5" />
                 <span>{tab.label}</span>
                 {tab.badge && (
-                  <span className="bg-red-500 text-white text-xs px-2 py-0.5 rounded-full ml-2">
+                  <span className="bg-[#DC2626] text-white text-xs px-2 py-0.5 rounded-full ml-2">
                     {tab.badge}
                   </span>
                 )}
                 {activeTab === tab.id && (
                   <>
                     {/* Desktop active indicator */}
-                    <div className="hidden md:block absolute bottom-0 left-0 right-0 h-0.5 bg-blue-500" />
+                    <div className="hidden md:block absolute bottom-0 left-0 right-0 h-0.5 bg-[#1B4332]" />
                     {/* Mobile active indicator */}
-                    <div className="md:hidden absolute bottom-0 left-0 top-0 w-0.5 bg-blue-500" />
+                    <div className="md:hidden absolute bottom-0 left-0 top-0 w-0.5 bg-[#1B4332]" />
                   </>
                 )}
               </button>
@@ -260,65 +434,65 @@ export default function FinancialHealth() {
             >
               {/* Quick Stats Bar */}
               <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
-                <div className="bg-gradient-to-br from-white to-gray-50 p-4 rounded-lg border border-gray-200 shadow-sm">
+                <div className="stats-card p-4 rounded-lg">
                   <div className="flex items-center justify-between">
                     <div>
-                      <p className="text-xs md:text-sm text-gray-600">Revenue</p>
-                      <p className="text-xl md:text-2xl font-bold text-gray-900">
+                      <p className="text-xs md:text-sm text-[#52796F]">Revenue</p>
+                      <p className="text-xl md:text-2xl font-bold text-[#1B4332]">
                         {formData.revenue ? `$${parseInt(formData.revenue).toLocaleString()}` : '--'}
                       </p>
                     </div>
-                    <DollarSign className="w-6 h-6 md:w-8 md:h-8 text-green-500" />
+                    <DollarSign className="w-6 h-6 md:w-8 md:h-8 text-[#10B981]" />
                   </div>
                 </div>
                 
-                <div className="bg-gradient-to-br from-white to-gray-50 p-4 rounded-lg border border-gray-200 shadow-sm">
+                <div className="stats-card p-4 rounded-lg">
                   <div className="flex items-center justify-between">
                     <div>
-                      <p className="text-xs md:text-sm text-gray-600">Expenses</p>
-                      <p className="text-xl md:text-2xl font-bold text-gray-900">
+                      <p className="text-xs md:text-sm text-[#52796F]">Expenses</p>
+                      <p className="text-xl md:text-2xl font-bold text-[#1B4332]">
                         {formData.expenses ? `$${parseInt(formData.expenses).toLocaleString()}` : '--'}
                       </p>
                     </div>
-                    <TrendingDown className="w-6 h-6 md:w-8 md:h-8 text-red-500" />
+                    <TrendingDown className="w-6 h-6 md:w-8 md:h-8 text-[#DC2626]" />
                   </div>
                 </div>
                 
-                <div className="bg-gradient-to-br from-white to-gray-50 p-4 rounded-lg border border-gray-200 shadow-sm">
+                <div className="stats-card p-4 rounded-lg">
                   <div className="flex items-center justify-between">
                     <div>
-                      <p className="text-xs md:text-sm text-gray-600">Debt</p>
-                      <p className="text-xl md:text-2xl font-bold text-gray-900">
+                      <p className="text-xs md:text-sm text-[#52796F]">Debt</p>
+                      <p className="text-xl md:text-2xl font-bold text-[#1B4332]">
                         {formData.debt ? `$${parseInt(formData.debt).toLocaleString()}` : '--'}
                       </p>
                     </div>
-                    <Shield className="w-6 h-6 md:w-8 md:h-8 text-yellow-500" />
+                    <Shield className="w-6 h-6 md:w-8 md:h-8 text-[#F59E0B]" />
                   </div>
                 </div>
                 
-                <div className="bg-gradient-to-br from-white to-gray-50 p-4 rounded-lg border border-gray-200 shadow-sm">
+                <div className="stats-card p-4 rounded-lg">
                   <div className="flex items-center justify-between">
                     <div>
-                      <p className="text-xs md:text-sm text-gray-600">Cash</p>
-                      <p className="text-xl md:text-2xl font-bold text-gray-900">
+                      <p className="text-xs md:text-sm text-[#52796F]">Cash</p>
+                      <p className="text-xl md:text-2xl font-bold text-[#1B4332]">
                         {formData.cash ? `$${parseInt(formData.cash).toLocaleString()}` : '--'}
                       </p>
                     </div>
-                    <Users className="w-6 h-6 md:w-8 md:h-8 text-blue-500" />
+                    <Users className="w-6 h-6 md:w-8 md:h-8 text-[#3B82F6]" />
                   </div>
                 </div>
               </div>
 
               {/* Main Input Card */}
-              <Card className="border-2 border-blue-100 shadow-lg">
+              <Card className="achievement-card">
                 <CardHeader className="pb-4">
                   <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
                     <div>
-                      <CardTitle className="flex items-center gap-2 text-lg md:text-xl">
-                        <Calculator className="h-5 w-5 md:h-6 md:w-6 text-blue-600" />
+                      <CardTitle className="flex items-center gap-2 text-lg md:text-xl text-[#1B4332]">
+                        <Calculator className="h-5 w-5 md:h-6 md:w-6 text-[#1B4332]" />
                         Financial Health Inputs
                       </CardTitle>
-                      <CardDescription className="mt-1">
+                      <CardDescription className="mt-1 text-[#52796F]">
                         Enter your financial details to calculate your health score
                       </CardDescription>
                     </div>
@@ -327,7 +501,7 @@ export default function FinancialHealth() {
                         variant="outline"
                         size="sm"
                         onClick={handleQuickExample}
-                        className="text-xs md:text-sm"
+                        className="text-xs md:text-sm btn-secondary"
                       >
                         Load Example
                       </Button>
@@ -335,7 +509,7 @@ export default function FinancialHealth() {
                         variant="outline"
                         size="sm"
                         onClick={handleExport}
-                        className="text-xs md:text-sm hidden md:flex"
+                        className="text-xs md:text-sm hidden md:flex btn-secondary"
                       >
                         <Download className="w-3 h-3 md:w-4 md:h-4 mr-1" />
                         Export
@@ -349,12 +523,12 @@ export default function FinancialHealth() {
                     <div className="space-y-5">
                       <div className="space-y-3">
                         <div className="flex items-center justify-between">
-                          <Label className="text-sm font-medium">Monthly Revenue</Label>
-                          <Info className="h-4 w-4 text-gray-400" />
+                          <Label className="text-sm font-medium text-[#1B4332]">Monthly Revenue</Label>
+                          <Info className="h-4 w-4 text-[#52796F]" />
                         </div>
                         <div className="relative">
                           <div className="absolute left-3 top-1/2 -translate-y-1/2">
-                            <span className="text-lg font-semibold text-green-600">$</span>
+                            <span className="text-lg font-semibold text-[#10B981]">$</span>
                           </div>
                           <Input
                             type="number"
@@ -362,19 +536,19 @@ export default function FinancialHealth() {
                             placeholder="e.g., 25,000"
                             value={formData.revenue}
                             onChange={(e) => updateField('revenue', e.target.value)}
-                            className="pl-10 text-lg h-12"
+                            className="pl-10 text-lg h-12 border-[#52796F]/20 focus:border-[#1B4332]"
                           />
                         </div>
                       </div>
 
                       <div className="space-y-3">
                         <div className="flex items-center justify-between">
-                          <Label className="text-sm font-medium">Monthly Expenses</Label>
-                          <Info className="h-4 w-4 text-gray-400" />
+                          <Label className="text-sm font-medium text-[#1B4332]">Monthly Expenses</Label>
+                          <Info className="h-4 w-4 text-[#52796F]" />
                         </div>
                         <div className="relative">
                           <div className="absolute left-3 top-1/2 -translate-y-1/2">
-                            <span className="text-lg font-semibold text-red-600">$</span>
+                            <span className="text-lg font-semibold text-[#DC2626]">$</span>
                           </div>
                           <Input
                             type="number"
@@ -382,7 +556,7 @@ export default function FinancialHealth() {
                             placeholder="e.g., 18,000"
                             value={formData.expenses}
                             onChange={(e) => updateField('expenses', e.target.value)}
-                            className="pl-10 text-lg h-12"
+                            className="pl-10 text-lg h-12 border-[#52796F]/20 focus:border-[#1B4332]"
                           />
                         </div>
                       </div>
@@ -392,8 +566,8 @@ export default function FinancialHealth() {
                     <div className="space-y-5">
                       <div className="space-y-3">
                         <div className="flex items-center justify-between">
-                          <Label className="text-sm font-medium">Total Debt</Label>
-                          <Info className="h-4 w-4 text-gray-400" />
+                          <Label className="text-sm font-medium text-[#1B4332]">Total Debt</Label>
+                          <Info className="h-4 w-4 text-[#52796F]" />
                         </div>
                         <Input
                           type="number"
@@ -401,14 +575,14 @@ export default function FinancialHealth() {
                           placeholder="e.g., 40,000"
                           value={formData.debt}
                           onChange={(e) => updateField('debt', e.target.value)}
-                          className="text-lg h-12"
+                          className="text-lg h-12 border-[#52796F]/20 focus:border-[#1B4332]"
                         />
                       </div>
 
                       <div className="space-y-3">
                         <div className="flex items-center justify-between">
-                          <Label className="text-sm font-medium">Cash on Hand</Label>
-                          <Info className="h-4 w-4 text-gray-400" />
+                          <Label className="text-sm font-medium text-[#1B4332]">Cash on Hand</Label>
+                          <Info className="h-4 w-4 text-[#52796F]" />
                         </div>
                         <Input
                           type="number"
@@ -416,18 +590,18 @@ export default function FinancialHealth() {
                           placeholder="e.g., 12,000"
                           value={formData.cash}
                           onChange={(e) => updateField('cash', e.target.value)}
-                          className="text-lg h-12"
+                          className="text-lg h-12 border-[#52796F]/20 focus:border-[#1B4332]"
                         />
                       </div>
                     </div>
                   </div>
 
                   {/* Action Buttons */}
-                  <div className="flex flex-col sm:flex-row gap-3 pt-6 mt-6 border-t">
+                  <div className="flex flex-col sm:flex-row gap-3 pt-6 mt-6 border-t border-[#52796F]/20">
                     <Button
                       onClick={handleCalculate}
                       disabled={isCalculating}
-                      className="flex-1 h-12 text-lg"
+                      className="flex-1 h-12 text-lg btn-primary"
                       size="lg"
                     >
                       {isCalculating ? (
@@ -438,7 +612,7 @@ export default function FinancialHealth() {
                       ) : (
                         <>
                           <Zap className="w-5 h-5 mr-2" />
-                      Calculate Health Score
+                          Calculate Health Score
                         </>
                       )}
                     </Button>
@@ -447,14 +621,14 @@ export default function FinancialHealth() {
                       <Button
                         variant="outline"
                         onClick={handleClear}
-                        className="h-12 flex-1 sm:flex-none"
+                        className="h-12 flex-1 sm:flex-none btn-secondary"
                       >
                         Clear All
                       </Button>
                       <Button
                         variant="outline"
                         onClick={handleQuickExample}
-                        className="h-12 flex-1 sm:flex-none"
+                        className="h-12 flex-1 sm:flex-none btn-secondary"
                       >
                         Load Example
                       </Button>
@@ -462,10 +636,10 @@ export default function FinancialHealth() {
                   </div>
 
                   {/* Help Text */}
-                  <div className="mt-4 p-3 bg-blue-50 rounded-lg border border-blue-200">
+                  <div className="mt-4 p-3 bg-[#1B4332]/10 rounded-lg border border-[#1B4332]/20">
                     <div className="flex items-start gap-2">
-                      <Info className="w-4 h-4 text-blue-600 mt-0.5 flex-shrink-0" />
-                      <p className="text-sm text-blue-800">
+                      <Info className="w-4 h-4 text-[#1B4332] mt-0.5 flex-shrink-0" />
+                      <p className="text-sm text-[#1B4332]">
                         <span className="font-semibold">Tip:</span> All calculations are done locally in your browser. 
                         Your data is stored only on your device for privacy.
                       </p>
@@ -480,24 +654,24 @@ export default function FinancialHealth() {
           {activeTab === 'results' && (
             <div className="p-6 space-y-6">
               {/* Score Header */}
-              <div className="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-2xl p-6 border border-blue-200">
+              <div className="health-score-card rounded-2xl p-6">
                 <div className="flex flex-col md:flex-row items-center justify-between gap-6">
                   <div className="text-center md:text-left">
                     <div className="flex items-center justify-center md:justify-start gap-2 mb-2">
-                      <Heart className="h-6 w-6 text-red-500" />
-                      <span className="text-sm font-medium text-gray-600">FINANCIAL HEALTH SCORE</span>
+                      <Heart className="h-6 w-6 text-[#DC2626]" />
+                      <span className="text-sm font-medium text-[#52796F]">FINANCIAL HEALTH SCORE</span>
                     </div>
                     <div className="flex flex-col md:flex-row items-center gap-4">
                       <div className="relative">
-                        <div className="text-5xl md:text-6xl font-bold text-gray-900">{currentResult?.score || '--'}</div>
-                        <div className="text-sm text-gray-600 text-center">/100</div>
+                        <div className="text-5xl md:text-6xl font-bold text-[#1B4332]">{currentResult?.score || '--'}</div>
+                        <div className="text-sm text-[#52796F] text-center">/100</div>
                       </div>
                       {currentResult && (
                         <div>
                           <Badge className={`px-4 py-2 text-lg font-semibold ${getHealthBadgeColor(currentResult.score)}`}>
                             {healthLabel(currentResult.score).toUpperCase()}
                           </Badge>
-                          <p className="text-gray-600 mt-2 max-w-md">
+                          <p className="text-[#52796F] mt-2 max-w-md">
                             Your business financial health is {healthLabel(currentResult.score).toLowerCase()}. 
                             {currentResult.score >= 80 
                               ? ' Keep up the great work!' 
@@ -512,7 +686,7 @@ export default function FinancialHealth() {
                     <Button
                       onClick={() => setActiveTab('input')}
                       variant="outline"
-                      className="whitespace-nowrap"
+                      className="whitespace-nowrap btn-secondary"
                     >
                       <RefreshCw className="w-4 h-4 mr-2" />
                       Recalculate
@@ -526,9 +700,9 @@ export default function FinancialHealth() {
                   {/* Analysis Cards Grid */}
                   <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
                     {/* Donut Chart Card */}
-                    <Card>
+                    <Card className="chart-container">
                       <CardHeader>
-                        <CardTitle className="flex items-center gap-2 text-sm">
+                        <CardTitle className="flex items-center gap-2 text-sm text-[#1B4332]">
                           <PieChartIcon className="h-4 w-4" />
                           Score Breakdown
                         </CardTitle>
@@ -555,15 +729,16 @@ export default function FinancialHealth() {
                                 <Tooltip 
                                   formatter={(value, name) => [`${value} pts`, name]}
                                   contentStyle={{
-                                    backgroundColor: 'hsl(var(--card))',
-                                    border: '1px solid hsl(var(--border))',
-                                    borderRadius: '8px'
+                                    backgroundColor: 'white',
+                                    border: '1px solid rgba(27, 67, 50, 0.1)',
+                                    borderRadius: '8px',
+                                    color: '#1B4332'
                                   }}
                                 />
                               </PieChart>
                             </ResponsiveContainer>
                             <div className="absolute inset-0 flex flex-col items-center justify-center">
-                              <span className="text-3xl font-bold text-foreground">{currentResult.score}</span>
+                              <span className="text-3xl font-bold text-[#1B4332]">{currentResult.score}</span>
                             </div>
                           </div>
                           
@@ -575,9 +750,9 @@ export default function FinancialHealth() {
                                     className="w-3 h-3 rounded-full" 
                                     style={{ backgroundColor: entry.color }}
                                   />
-                                  <span className="text-sm font-medium">{entry.name}</span>
+                                  <span className="text-sm font-medium text-[#1B4332]">{entry.name}</span>
                                 </div>
-                                <span className="text-sm font-semibold">{entry.value} pts</span>
+                                <span className="text-sm font-semibold text-[#52796F]">{entry.value} pts</span>
                               </div>
                             ))}
                           </div>
@@ -586,46 +761,46 @@ export default function FinancialHealth() {
                     </Card>
 
                     {/* Key Metrics Card */}
-                    <Card>
+                    <Card className="chart-container">
                       <CardHeader>
-                        <CardTitle className="flex items-center gap-2 text-sm">
+                        <CardTitle className="flex items-center gap-2 text-sm text-[#1B4332]">
                           <Target className="h-4 w-4" />
                           Key Metrics
                         </CardTitle>
                       </CardHeader>
                       <CardContent className="space-y-4">
-                        <div className="p-4 rounded-lg bg-gradient-to-r from-green-50 to-emerald-50 border border-green-200">
+                        <div className="metric-card-green p-4 rounded-lg">
                           <div className="flex items-center justify-between mb-2">
-                            <span className="text-sm font-medium text-green-800">Profit Margin</span>
-                            <TrendingUp className="h-4 w-4 text-green-600" />
+                            <span className="text-sm font-medium text-[#10B981]">Profit Margin</span>
+                            <TrendingUp className="h-4 w-4 text-[#10B981]" />
                           </div>
-                          <div className="text-2xl font-bold text-green-900">{(metrics.margin * 100).toFixed(1)}%</div>
-                          <div className="mt-2 h-2 bg-green-200 rounded-full overflow-hidden">
+                          <div className="text-2xl font-bold text-[#1B4332]">{(metrics.margin * 100).toFixed(1)}%</div>
+                          <div className="mt-2 h-2 bg-[#10B981]/20 rounded-full overflow-hidden">
                             <div 
-                              className="h-full bg-green-500 rounded-full"
+                              className="h-full bg-[#10B981] rounded-full progress-gradient"
                               style={{ width: `${Math.min(100, metrics.margin * 200)}%` }}
                             />
                           </div>
                         </div>
 
-                        <div className="p-4 rounded-lg bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-200">
+                        <div className="metric-card-blue p-4 rounded-lg">
                           <div className="flex items-center justify-between mb-2">
-                            <span className="text-sm font-medium text-blue-800">Runway</span>
-                            <Calendar className="h-4 w-4 text-blue-600" />
+                            <span className="text-sm font-medium text-[#3B82F6]">Runway</span>
+                            <Calendar className="h-4 w-4 text-[#3B82F6]" />
                           </div>
-                          <div className="text-2xl font-bold text-blue-900">{Number.isFinite(metrics.runway) ? metrics.runway.toFixed(1) : '12.0'} months</div>
-                          <div className="text-sm text-blue-700 mt-1">
+                          <div className="text-2xl font-bold text-[#1B4332]">{Number.isFinite(metrics.runway) ? metrics.runway.toFixed(1) : '12.0'} months</div>
+                          <div className="text-sm text-[#3B82F6] mt-1">
                             {metrics.runway >= 6 ? 'Excellent' : metrics.runway >= 3 ? 'Good' : 'Critical'}
                           </div>
                         </div>
 
-                        <div className="p-4 rounded-lg bg-gradient-to-r from-amber-50 to-orange-50 border border-amber-200">
+                        <div className="metric-card-amber p-4 rounded-lg">
                           <div className="flex items-center justify-between mb-2">
-                            <span className="text-sm font-medium text-amber-800">Debt Load</span>
-                            <Shield className="h-4 w-4 text-amber-600" />
+                            <span className="text-sm font-medium text-[#F59E0B]">Debt Load</span>
+                            <Shield className="h-4 w-4 text-[#F59E0B]" />
                           </div>
-                          <div className="text-2xl font-bold text-amber-900">{(metrics.debtLoad * 100).toFixed(0)}%</div>
-                          <div className="text-sm text-amber-700 mt-1">
+                          <div className="text-2xl font-bold text-[#1B4332]">{(metrics.debtLoad * 100).toFixed(0)}%</div>
+                          <div className="text-sm text-[#F59E0B] mt-1">
                             {metrics.debtLoad < 0.3 ? 'Low' : metrics.debtLoad < 0.6 ? 'Moderate' : 'High'}
                           </div>
                         </div>
@@ -633,9 +808,9 @@ export default function FinancialHealth() {
                     </Card>
 
                     {/* Quick Insights */}
-                    <Card>
+                    <Card className="chart-container">
                       <CardHeader>
-                        <CardTitle className="flex items-center gap-2 text-sm">
+                        <CardTitle className="flex items-center gap-2 text-sm text-[#1B4332]">
                           <Lightbulb className="h-4 w-4" />
                           Quick Insights
                         </CardTitle>
@@ -645,32 +820,32 @@ export default function FinancialHealth() {
                           mismatchAreas.slice(0, 3).map((item, idx) => (
                             <div 
                               key={idx}
-                              className={`p-3 rounded-lg ${
+                              className={`insight-card p-3 rounded-lg ${
                                 item.severity === 'critical' 
-                                  ? 'bg-red-50 border-red-200' 
-                                  : 'bg-amber-50 border-amber-200'
-                              } border`}
+                                  ? 'leak-card-high' 
+                                  : 'leak-card-medium'
+                              }`}
                             >
                               <div className="flex items-center gap-2">
                                 <AlertTriangle className={`h-4 w-4 ${
-                                  item.severity === 'critical' ? 'text-red-600' : 'text-amber-600'
+                                  item.severity === 'critical' ? 'text-[#DC2626]' : 'text-[#F59E0B]'
                                 }`} />
-                                <span className="font-semibold text-sm">{item.area}</span>
+                                <span className="font-semibold text-sm text-[#1B4332]">{item.area}</span>
                               </div>
-                              <p className="text-xs text-gray-600 mt-1">{item.description}</p>
+                              <p className="text-xs text-[#52796F] mt-1">{item.description}</p>
                             </div>
                           ))
                         ) : (
-                          <div className="p-4 rounded-lg bg-green-50 border border-green-200 text-center">
-                            <CheckCircle className="h-8 w-8 mx-auto mb-2 text-green-600" />
-                            <p className="font-semibold text-green-800">All Good!</p>
-                            <p className="text-xs text-green-700 mt-1">No critical issues detected</p>
+                          <div className="p-4 rounded-lg metric-card-green text-center">
+                            <CheckCircle className="h-8 w-8 mx-auto mb-2 text-[#10B981]" />
+                            <p className="font-semibold text-[#1B4332]">All Good!</p>
+                            <p className="text-xs text-[#52796F] mt-1">No critical issues detected</p>
                           </div>
                         )}
                         
                         <Button
                           variant="outline"
-                          className="w-full mt-4"
+                          className="w-full mt-4 btn-secondary"
                           onClick={() => setActiveTab('results')}
                         >
                           View Full Analysis
@@ -683,28 +858,29 @@ export default function FinancialHealth() {
                   {/* Full Results */}
                   <div className="space-y-6">
                     {/* Fee Impact Analysis */}
-                    <Card>
+                    <Card className="achievement-card">
                       <CardHeader>
-                        <CardTitle className="flex items-center gap-2">
-                          <BarChart3 className="h-5 w-5 text-accent" />
+                        <CardTitle className="flex items-center gap-2 text-[#1B4332]">
+                          <BarChart3 className="h-5 w-5" />
                           Fee Impact Analysis
                         </CardTitle>
-                        <CardDescription>How your expenses impact your bottom line</CardDescription>
+                        <CardDescription className="text-[#52796F]">How your expenses impact your bottom line</CardDescription>
                       </CardHeader>
                       <CardContent>
                         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                           <div className="h-[250px]">
                             <ResponsiveContainer width="100%" height="100%">
                               <BarChart data={feeImpactData} margin={{ top: 20, right: 30, left: 20, bottom: 5 }}>
-                                <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
-                                <XAxis dataKey="name" stroke="hsl(var(--muted-foreground))" />
-                                <YAxis stroke="hsl(var(--muted-foreground))" />
+                                <CartesianGrid strokeDasharray="3 3" stroke="rgba(27, 67, 50, 0.1)" />
+                                <XAxis dataKey="name" stroke="#52796F" />
+                                <YAxis stroke="#52796F" />
                                 <Tooltip 
                                   formatter={(value) => [`$${value.toLocaleString()}`, '']}
                                   contentStyle={{
-                                    backgroundColor: 'hsl(var(--card))',
-                                    border: '1px solid hsl(var(--border))',
-                                    borderRadius: '8px'
+                                    backgroundColor: 'white',
+                                    border: '1px solid rgba(27, 67, 50, 0.1)',
+                                    borderRadius: '8px',
+                                    color: '#1B4332'
                                   }}
                                 />
                                 <Bar dataKey="value" radius={[8, 8, 0, 0]}>
@@ -717,32 +893,32 @@ export default function FinancialHealth() {
                           </div>
 
                           <div className="space-y-4">
-                            <div className="p-4 rounded-lg bg-gradient-to-r from-green-50 to-emerald-50 border border-green-200">
+                            <div className="metric-card-green p-4 rounded-lg">
                               <div className="flex items-center gap-2 mb-2">
-                                <TrendingUp className="h-5 w-5 text-green-600" />
-                                <span className="font-semibold text-green-800">Monthly Revenue</span>
+                                <TrendingUp className="h-5 w-5 text-[#10B981]" />
+                                <span className="font-semibold text-[#1B4332]">Monthly Revenue</span>
                               </div>
-                              <p className="text-2xl font-bold">${revenue.toLocaleString()}</p>
+                              <p className="text-2xl font-bold text-[#1B4332]">${revenue.toLocaleString()}</p>
                             </div>
 
-                            <div className="p-4 rounded-lg bg-gradient-to-r from-red-50 to-rose-50 border border-red-200">
+                            <div className="leak-card-high p-4 rounded-lg">
                               <div className="flex items-center gap-2 mb-2">
-                                <DollarSign className="h-5 w-5 text-red-600" />
-                                <span className="font-semibold text-red-800">Monthly Expenses</span>
+                                <DollarSign className="h-5 w-5 text-[#DC2626]" />
+                                <span className="font-semibold text-[#1B4332]">Monthly Expenses</span>
                               </div>
-                              <p className="text-2xl font-bold">${expenses.toLocaleString()}</p>
-                              <p className="text-sm text-red-700 mt-1">
+                              <p className="text-2xl font-bold text-[#1B4332]">${expenses.toLocaleString()}</p>
+                              <p className="text-sm text-[#DC2626] mt-1">
                                 {revenue > 0 ? `${((expenses / revenue) * 100).toFixed(1)}% of revenue` : '0% of revenue'}
                               </p>
                             </div>
 
-                            <div className="p-4 rounded-lg bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-200">
+                            <div className="metric-card-blue p-4 rounded-lg">
                               <div className="flex items-center gap-2 mb-2">
-                                <Target className="h-5 w-5 text-blue-600" />
-                                <span className="font-semibold text-blue-800">Net Profit</span>
+                                <Target className="h-5 w-5 text-[#3B82F6]" />
+                                <span className="font-semibold text-[#1B4332]">Net Profit</span>
                               </div>
-                              <p className="text-2xl font-bold">${Math.max(0, revenue - expenses).toLocaleString()}</p>
-                              <p className="text-sm text-blue-700 mt-1">
+                              <p className="text-2xl font-bold text-[#1B4332]">${Math.max(0, revenue - expenses).toLocaleString()}</p>
+                              <p className="text-sm text-[#3B82F6] mt-1">
                                 {(metrics.margin * 100).toFixed(1)}% profit margin
                               </p>
                             </div>
@@ -754,13 +930,13 @@ export default function FinancialHealth() {
                     {/* Key Mismatch Areas & Recommendations */}
                     <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                       {/* Key Mismatch Areas */}
-                      <Card>
+                      <Card className="achievement-card">
                         <CardHeader>
-                          <CardTitle className="flex items-center gap-2">
-                            <AlertTriangle className="h-5 w-5 text-warning" />
+                          <CardTitle className="flex items-center gap-2 text-[#1B4332]">
+                            <AlertTriangle className="h-5 w-5 text-[#F59E0B]" />
                             Key Mismatch Areas
                           </CardTitle>
-                          <CardDescription>Areas requiring attention based on your financial data</CardDescription>
+                          <CardDescription className="text-[#52796F]">Areas requiring attention based on your financial data</CardDescription>
                         </CardHeader>
                         <CardContent>
                           {mismatchAreas.length > 0 ? (
@@ -768,34 +944,38 @@ export default function FinancialHealth() {
                               {mismatchAreas.map((item, idx) => (
                                 <div 
                                   key={idx}
-                                  className={`p-4 rounded-lg border ${
+                                  className={`p-4 rounded-lg ${
                                     item.severity === 'critical' 
-                                      ? 'bg-gradient-to-r from-red-50 to-rose-50 border-red-300' 
-                                      : 'bg-gradient-to-r from-amber-50 to-orange-50 border-amber-300'
+                                      ? 'leak-card-high' 
+                                      : 'leak-card-medium'
                                   }`}
                                 >
                                   <div className="flex items-center gap-2 mb-2">
                                     <AlertTriangle className={`h-5 w-5 ${
-                                      item.severity === 'critical' ? 'text-red-600' : 'text-amber-600'
+                                      item.severity === 'critical' ? 'text-[#DC2626]' : 'text-[#F59E0B]'
                                     }`} />
-                                    <span className="font-semibold">{item.area}</span>
-                                    <Badge variant={item.severity === 'critical' ? 'destructive' : 'warning'} className="ml-auto">
+                                    <span className="font-semibold text-[#1B4332]">{item.area}</span>
+                                    <Badge className={`ml-auto ${
+                                      item.severity === 'critical' 
+                                        ? 'bg-[#DC2626]/10 text-[#DC2626] border-[#DC2626]/20' 
+                                        : 'bg-[#F59E0B]/10 text-[#F59E0B] border-[#F59E0B]/20'
+                                    }`}>
                                       {item.severity}
                                     </Badge>
                                   </div>
-                                  <p className="text-sm text-gray-700 mb-3">{item.description}</p>
+                                  <p className="text-sm text-[#52796F] mb-3">{item.description}</p>
                                   <div className="flex items-center gap-2 text-sm">
-                                    <Lightbulb className="h-4 w-4 text-accent" />
-                                    <span className="font-medium">{item.action}</span>
+                                    <Lightbulb className="h-4 w-4 text-[#1B4332]" />
+                                    <span className="font-medium text-[#1B4332]">{item.action}</span>
                                   </div>
                                 </div>
                               ))}
                             </div>
                           ) : (
-                            <div className="p-6 rounded-lg bg-gradient-to-r from-green-50 to-emerald-50 border border-green-300 text-center">
-                              <CheckCircle className="h-12 w-12 mx-auto mb-3 text-green-600" />
-                              <p className="font-semibold text-green-800 text-lg">No Major Mismatches Detected!</p>
-                              <p className="text-sm text-green-700 mt-2">
+                            <div className="p-6 rounded-lg metric-card-green text-center">
+                              <CheckCircle className="h-12 w-12 mx-auto mb-3 text-[#10B981]" />
+                              <p className="font-semibold text-[#1B4332] text-lg">No Major Mismatches Detected!</p>
+                              <p className="text-sm text-[#52796F] mt-2">
                                 Your financial health looks good. Keep monitoring regularly.
                               </p>
                             </div>
@@ -804,29 +984,29 @@ export default function FinancialHealth() {
                       </Card>
 
                       {/* Recommendations */}
-                      <Card>
+                      <Card className="achievement-card">
                         <CardHeader>
-                          <CardTitle className="flex items-center gap-2">
-                            <Lightbulb className="h-5 w-5 text-accent" />
+                          <CardTitle className="flex items-center gap-2 text-[#1B4332]">
+                            <Lightbulb className="h-5 w-5" />
                             Recommendations
                           </CardTitle>
                         </CardHeader>
                         <CardContent>
                           <ul className="space-y-3">
                             {recommendations.map((rec, i) => (
-                              <li key={i} className="flex items-start gap-3 p-4 rounded-lg bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-200">
+                              <li key={i} className="flex items-start gap-3 p-4 rounded-lg metric-card-blue">
                                 <div className="flex-shrink-0 mt-0.5">
-                                  <div className="w-6 h-6 rounded-full bg-blue-100 flex items-center justify-center">
-                                    <span className="text-xs font-semibold text-blue-700">{i + 1}</span>
+                                  <div className="w-6 h-6 rounded-full bg-[#1B4332]/10 flex items-center justify-center">
+                                    <span className="text-xs font-semibold text-[#1B4332]">{i + 1}</span>
                                   </div>
                                 </div>
                                 <div>
-                                  <span className="text-sm font-medium">{rec}</span>
+                                  <span className="text-sm font-medium text-[#1B4332]">{rec}</span>
                                   <div className="flex gap-2 mt-2">
-                                    <Button size="sm" variant="outline" className="h-7 text-xs">
+                                    <Button size="sm" variant="outline" className="h-7 text-xs btn-secondary">
                                       Learn More
                                     </Button>
-                                    <Button size="sm" className="h-7 text-xs">
+                                    <Button size="sm" className="h-7 text-xs btn-primary">
                                       Take Action
                                     </Button>
                                   </div>
@@ -840,14 +1020,14 @@ export default function FinancialHealth() {
                   </div>
                 </>
               ) : (
-                <Card>
+                <Card className="achievement-card">
                   <CardContent className="p-8 text-center">
-                    <Calculator className="h-16 w-16 mx-auto mb-4 text-gray-300" />
-                    <h3 className="text-lg font-semibold text-gray-700 mb-2">No Results Yet</h3>
-                    <p className="text-gray-500 mb-4">
+                    <Calculator className="h-16 w-16 mx-auto mb-4 text-[#52796F]/30" />
+                    <h3 className="text-lg font-semibold text-[#1B4332] mb-2">No Results Yet</h3>
+                    <p className="text-[#52796F] mb-4">
                       Calculate your financial health score to see detailed results and insights
                     </p>
-                    <Button onClick={() => setActiveTab('input')}>
+                    <Button onClick={() => setActiveTab('input')} className="btn-primary">
                       Go to Input
                     </Button>
                   </CardContent>
@@ -859,44 +1039,45 @@ export default function FinancialHealth() {
           {/* History Tab */}
           {activeTab === 'history' && (
             <div className="p-6">
-              <Card>
+              <Card className="achievement-card">
                 <CardHeader>
-                  <CardTitle className="flex items-center gap-2">
-                    <TrendingUp className="h-5 w-5 text-primary" />
+                  <CardTitle className="flex items-center gap-2 text-[#1B4332]">
+                    <TrendingUp className="h-5 w-5" />
                     Health Score History
                   </CardTitle>
-                  <CardDescription>Track your score over time</CardDescription>
+                  <CardDescription className="text-[#52796F]">Track your score over time</CardDescription>
                 </CardHeader>
                 <CardContent>
                   <div className="h-[300px]">
                     {chartData.length > 0 ? (
                       <ResponsiveContainer width="100%" height="100%">
                         <LineChart data={chartData} margin={{ top: 10, right: 30, left: 0, bottom: 0 }}>
-                          <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
-                          <XAxis dataKey="date" stroke="hsl(var(--muted-foreground))" />
-                          <YAxis domain={[0, 100]} stroke="hsl(var(--muted-foreground))" />
+                          <CartesianGrid strokeDasharray="3 3" stroke="rgba(27, 67, 50, 0.1)" />
+                          <XAxis dataKey="date" stroke="#52796F" />
+                          <YAxis domain={[0, 100]} stroke="#52796F" />
                           <Tooltip 
                             contentStyle={{ 
-                              backgroundColor: 'hsl(var(--card))', 
-                              border: '1px solid hsl(var(--border))',
-                              borderRadius: '8px'
+                              backgroundColor: 'white', 
+                              border: '1px solid rgba(27, 67, 50, 0.1)',
+                              borderRadius: '8px',
+                              color: '#1B4332'
                             }} 
                           />
                           <Line 
                             type="monotone" 
                             dataKey="score" 
-                            stroke="hsl(var(--primary))" 
+                            stroke="#1B4332" 
                             strokeWidth={3}
-                            dot={{ fill: 'hsl(var(--primary))', strokeWidth: 2 }}
+                            dot={{ fill: '#1B4332', strokeWidth: 2 }}
                           />
                         </LineChart>
                       </ResponsiveContainer>
                     ) : (
                       <div className="h-full flex flex-col items-center justify-center">
-                        <TrendingUp className="h-16 w-16 text-gray-300 mb-4" />
-                        <p className="text-gray-500 text-lg font-medium mb-2">No history yet</p>
-                        <p className="text-gray-400 text-sm mb-4">Calculate your first score to start tracking</p>
-                        <Button onClick={() => setActiveTab('input')}>
+                        <TrendingUp className="h-16 w-16 text-[#52796F]/30 mb-4" />
+                        <p className="text-[#1B4332] text-lg font-medium mb-2">No history yet</p>
+                        <p className="text-[#52796F] text-sm mb-4">Calculate your first score to start tracking</p>
+                        <Button onClick={() => setActiveTab('input')} className="btn-primary">
                           <Calculator className="w-4 h-4 mr-2" />
                           Calculate Score
                         </Button>

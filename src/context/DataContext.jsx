@@ -1,137 +1,14 @@
 /* eslint-disable react-refresh/only-export-components */
-import React, { createContext, useContext, useState, useEffect, useCallback } from "react";
+import React, {
+  createContext,
+  useContext,
+  useState,
+  useEffect,
+  useCallback,
+} from "react";
 
 const DataContext = createContext();
-
-// --------------------
-// Demo seed data
-// --------------------
-const SAMPLE_RESPONSES = [
-  {
-    id: 1,
-    timestamp: "2025-01-15T10:30:00Z",
-    email: "maria@smallbiz.com",
-    businessName: "Maria's Bakery LLC",
-    entityType: "LLC",
-    monthlyRevenue: 12000,
-    accountType: "business",
-    cashDeposits: true,
-    monthlyFees: 45,
-    wantsGrants: true,
-    veteranOwned: false,
-    immigrantFounder: true,
-    zipCode: "10001",
-    consent: true,
-  },
-  {
-    id: 2,
-    timestamp: "2025-01-14T14:20:00Z",
-    email: "john@techstart.io",
-    businessName: "TechStart Solutions",
-    entityType: "S-Corp",
-    monthlyRevenue: 35000,
-    accountType: "business",
-    cashDeposits: false,
-    monthlyFees: 120,
-    wantsGrants: true,
-    veteranOwned: true,
-    immigrantFounder: false,
-    zipCode: "94102",
-    consent: true,
-  },
-  {
-    id: 3,
-    timestamp: "2025-01-13T09:15:00Z",
-    email: "sarah@freelance.co",
-    businessName: "Sarah Design Studio",
-    entityType: "Sole Proprietor",
-    monthlyRevenue: 4500,
-    accountType: "personal",
-    cashDeposits: false,
-    monthlyFees: 25,
-    wantsGrants: true,
-    veteranOwned: false,
-    immigrantFounder: false,
-    zipCode: "60601",
-    consent: true,
-  },
-];
-
-// Mock bank transactions with fees
-const MOCK_BANK_TRANSACTIONS = [
-  { id: 1, date: "2025-01-15", description: "Monthly Maintenance Fee", amount: -15.0, category: "fee", feeType: "maintenance" },
-  { id: 2, date: "2025-01-14", description: "Overdraft Fee", amount: -35.0, category: "fee", feeType: "overdraft" },
-  { id: 3, date: "2025-01-13", description: "ATM Withdrawal Fee", amount: -3.5, category: "fee", feeType: "atm" },
-  { id: 4, date: "2025-01-12", description: "Wire Transfer Fee", amount: -25.0, category: "fee", feeType: "wire" },
-  { id: 5, date: "2025-01-10", description: "Paper Statement Fee", amount: -5.0, category: "fee", feeType: "statement" },
-  { id: 6, date: "2025-01-08", description: "Overdraft Fee", amount: -35.0, category: "fee", feeType: "overdraft" },
-  { id: 7, date: "2025-01-05", description: "Foreign Transaction Fee", amount: -12.5, category: "fee", feeType: "foreign" },
-  { id: 8, date: "2025-01-03", description: "ATM Withdrawal Fee", amount: -3.0, category: "fee", feeType: "atm" },
-  { id: 9, date: "2025-01-02", description: "Minimum Balance Fee", amount: -10.0, category: "fee", feeType: "minimum_balance" },
-  { id: 10, date: "2024-12-28", description: "Monthly Maintenance Fee", amount: -15.0, category: "fee", feeType: "maintenance" },
-  { id: 11, date: "2024-12-20", description: "Overdraft Fee", amount: -35.0, category: "fee", feeType: "overdraft" },
-  { id: 12, date: "2024-12-15", description: "ACH Return Fee", amount: -20.0, category: "fee", feeType: "ach_return" },
-];
-
-// Fee analysis rules
-const FEE_RULES = {
-  overdraft: {
-    name: "Overdraft Fees",
-    description: "Charged when account balance goes negative",
-    avoidable: true,
-    recommendation: "Set up low balance alerts and link a savings account for overdraft protection",
-    severity: "high",
-  },
-  maintenance: {
-    name: "Monthly Maintenance Fees",
-    description: "Regular account maintenance charges",
-    avoidable: true,
-    recommendation: "Switch to a no-fee business checking account like Novo or Bluevine",
-    severity: "medium",
-  },
-  atm: {
-    name: "ATM Fees",
-    description: "Out-of-network ATM withdrawal charges",
-    avoidable: true,
-    recommendation: "Use in-network ATMs or choose a bank with ATM fee rebates",
-    severity: "low",
-  },
-  wire: {
-    name: "Wire Transfer Fees",
-    description: "Domestic and international wire transfer charges",
-    avoidable: false,
-    recommendation: "Use ACH transfers when possible, or batch wire transfers",
-    severity: "medium",
-  },
-  foreign: {
-    name: "Foreign Transaction Fees",
-    description: "Charges for international purchases",
-    avoidable: true,
-    recommendation: "Use a card with no foreign transaction fees",
-    severity: "medium",
-  },
-  minimum_balance: {
-    name: "Minimum Balance Fees",
-    description: "Charged when balance falls below minimum requirement",
-    avoidable: true,
-    recommendation: "Maintain minimum balance or switch to an account without minimums",
-    severity: "medium",
-  },
-  statement: {
-    name: "Paper Statement Fees",
-    description: "Charges for paper statements",
-    avoidable: true,
-    recommendation: "Switch to electronic statements",
-    severity: "low",
-  },
-  ach_return: {
-    name: "ACH Return Fees",
-    description: "Charged when ACH payments are returned",
-    avoidable: true,
-    recommendation: "Verify account details before initiating transfers",
-    severity: "high",
-  },
-};
+const isBrowser = typeof window !== "undefined";
 
 // --------------------
 // Safety helpers
@@ -157,15 +34,15 @@ function calculateMismatchScore(response) {
   let score = 0;
   const reasons = [];
 
-  const revenue = Math.max(0, safeNumber(response.monthlyRevenue, 0));
-  const fees = Math.max(0, safeNumber(response.monthlyFees, 0));
+  const revenue = Math.max(0, safeNumber(response?.monthlyRevenue, 0));
+  const fees = Math.max(0, safeNumber(response?.monthlyFees, 0));
 
-  if (response.accountType === "personal") {
+  if (response?.accountType === "personal") {
     score += 30;
     reasons.push("Using personal account for business");
   }
 
-  if (response.cashDeposits) {
+  if (response?.cashDeposits) {
     score += 20;
     reasons.push("Frequent cash deposits (higher scrutiny)");
   }
@@ -178,12 +55,11 @@ function calculateMismatchScore(response) {
     reasons.push("Moderate revenue ($5k-$10k)");
   }
 
-  if (response.wantsGrants) {
+  if (response?.wantsGrants) {
     score += 10;
     reasons.push("Seeking grant guidance");
   }
 
-  // Avoid divide-by-zero
   const feePercentage = revenue > 0 ? (fees / revenue) * 100 : 0;
 
   if (feePercentage > 2) {
@@ -204,22 +80,29 @@ function getRiskLabel(score) {
   return "Low";
 }
 
-function getBankRecommendations(response) {
-  const revenue = safeNumber(response.monthlyRevenue, 0);
-  const recommendations = [];
+// Public helper used by pages (same naming your Report.jsx expects)
+function getScoring(response) {
+  const s = calculateMismatchScore(response);
+  const riskLabel = getRiskLabel(s.score);
 
-  if (revenue > 50000) {
-    recommendations.push({ bank: "Chase Business Complete", why: "Best for high-volume businesses" });
-    recommendations.push({ bank: "Bank of America Business Advantage", why: "Integrated cash management" });
-  } else if (revenue > 10000) {
-    recommendations.push({ bank: "Bluevine Business Checking", why: "No monthly fees, high APY" });
-    recommendations.push({ bank: "Mercury Bank", why: "Modern banking, no hidden fees" });
-  } else {
-    recommendations.push({ bank: "Novo Business Checking", why: "Fee-free for small businesses" });
-    recommendations.push({ bank: "Relay Financial", why: "Multiple free checking accounts" });
-  }
+  // Keep shape compatible with your Report.jsx usage
+  return {
+    mismatchScore: s.score,
+    riskLabel,
+    keyReasons: Array.isArray(s.reasons) ? s.reasons : [],
+    feeWastePercent: safeNumber(s.feeWastePercent, 0),
 
-  return recommendations.slice(0, 2);
+    // Optional fields used in Report.jsx (safe defaults)
+    bankMatch1: response?.bankMatch1 ?? response?.bank1 ?? "",
+    why1: response?.why1 ?? "",
+    bankMatch2: response?.bankMatch2 ?? response?.bank2 ?? "",
+    why2: response?.why2 ?? "",
+    grantsSuggested: Array.isArray(response?.grantsSuggested)
+      ? response.grantsSuggested
+      : [],
+    sbaLink: "",
+    ssbciLink: "",
+  };
 }
 
 function getStateFromZip(zip) {
@@ -235,28 +118,23 @@ function getStateFromZip(zip) {
   const match = zipRanges.find((r) => prefix >= r.start && prefix <= r.end);
 
   return match
-    ? { name: match.state, abbr: match.abbr, sbaLink: `https://www.sba.gov/${match.abbr}`, ssbciLink: `https://treasury.gov/ssbci/${match.abbr}` }
-    : { name: "United States", abbr: "US", sbaLink: "https://www.sba.gov", ssbciLink: "https://treasury.gov/ssbci" };
+    ? {
+        name: match.state,
+        abbr: match.abbr,
+        sbaLink: `https://www.sba.gov/${match.abbr}`,
+        ssbciLink: `https://treasury.gov/ssbci/${match.abbr}`,
+      }
+    : {
+        name: "United States",
+        abbr: "US",
+        sbaLink: "https://www.sba.gov",
+        ssbciLink: "https://treasury.gov/ssbci",
+      };
 }
 
-function getGrantRecommendations(response) {
-  const grants = [];
-  const state = getStateFromZip(response.zipCode);
-
-  if (response.veteranOwned) {
-    grants.push({ grant: "SBA Veterans Advantage Loan", why: "Reduced fees for veterans" });
-  }
-  if (response.immigrantFounder) {
-    grants.push({ grant: "Hello Alice Immigrant Founder Grant", why: "Up to $10,000" });
-  }
-  if (response.wantsGrants) {
-    grants.push({ grant: `${state.name} SSBCI Program`, why: "State small business credit initiative" });
-  }
-
-  return grants.slice(0, 2);
-}
-
-// Health Score computation
+// --------------------
+// Health Score
+// --------------------
 function computeHealthScore(inputs) {
   const revenue = Math.max(0, safeNumber(inputs?.revenue, 0));
   const expenses = Math.max(0, safeNumber(inputs?.expenses, 0));
@@ -274,6 +152,7 @@ function computeHealthScore(inputs) {
   const debtScore = 1 - Math.max(0, Math.min(1, debtLoad));
 
   const score = Math.round(marginScore * 45 + runwayScore * 30 + debtScore * 25);
+
   return { score, metrics: { margin, runway, debtLoad } };
 }
 
@@ -285,50 +164,101 @@ function healthLabel(score) {
 }
 
 // --------------------
+// Fee Rules (static)
+// --------------------
+const FEE_RULES = {
+  overdraft: { avoidable: true },
+  maintenance: { avoidable: true },
+  atm: { avoidable: true },
+  wire: { avoidable: false },
+  foreign: { avoidable: true },
+  minimum_balance: { avoidable: true },
+  statement: { avoidable: true },
+  ach_return: { avoidable: true },
+};
+
+// --------------------
 // Provider
 // --------------------
 export function DataProvider({ children }) {
-  const [responses, setResponses] = useState(() => safeJsonParse(localStorage.getItem("oliBranchResponses"), SAMPLE_RESPONSES));
+  const [responses, setResponses] = useState(() =>
+    safeJsonParse(isBrowser ? localStorage.getItem("oliBranchResponses") : null, [])
+  );
 
   const [settings, setSettings] = useState(() =>
-    safeJsonParse(localStorage.getItem("oliBranchSettings"), {
+    safeJsonParse(isBrowser ? localStorage.getItem("oliBranchSettings") : null, {
       gpsRadius: 3,
-      profile: { companyName: "Oli-Branch Demo", email: "demo@olibranch.com" },
+      profile: { companyName: "", email: "" },
     })
   );
 
-  const [healthInputs, setHealthInputs] = useState(() => safeJsonParse(localStorage.getItem("oliBranchFinancialInputs"), null));
-  const [healthHistory, setHealthHistory] = useState(() => safeJsonParse(localStorage.getItem("oliBranchHealthHistory"), []));
+  const [healthInputs, setHealthInputs] = useState(() =>
+    safeJsonParse(
+      isBrowser ? localStorage.getItem("oliBranchFinancialInputs") : null,
+      null
+    )
+  );
+
+  const [healthHistory, setHealthHistory] = useState(() =>
+    safeJsonParse(
+      isBrowser ? localStorage.getItem("oliBranchHealthHistory") : null,
+      []
+    )
+  );
 
   const [paymentLinks, setPaymentLinks] = useState(() =>
-    safeJsonParse(localStorage.getItem("oliBranchPaymentLinks"), { cashApp: "", zelle: "", venmo: "", bankLink: "" })
-  );
-
-  const [profileImage, setProfileImage] = useState(() => localStorage.getItem("userProfileImage") || null);
-
-  const [subscription, setSubscription] = useState(() =>
-    safeJsonParse(localStorage.getItem("oliBranchSubscription"), {
-      plan: "free",
-      analysisCount: 0,
-      lastAnalysisDate: null,
-      weekStartDate: new Date().toISOString(),
+    safeJsonParse(isBrowser ? localStorage.getItem("oliBranchPaymentLinks") : null, {
+      cashApp: "",
+      zelle: "",
+      venmo: "",
+      bankLink: "",
     })
   );
 
-  const [linkedBanks, setLinkedBanks] = useState(() => safeJsonParse(localStorage.getItem("oliBranchLinkedBanks"), []));
-  const [bankTransactions, setBankTransactions] = useState(() => safeJsonParse(localStorage.getItem("oliBranchBankTransactions"), []));
-  const [feeAnalysis, setFeeAnalysis] = useState(() => safeJsonParse(localStorage.getItem("oliBranchFeeAnalysis"), null));
+  const [profileImage, setProfileImage] = useState(() =>
+    isBrowser ? localStorage.getItem("userProfileImage") : null
+  );
 
-  // Persist state
+  const [subscription] = useState(() => ({
+    plan: "free",
+    analysisCount: 0,
+    lastAnalysisDate: null,
+    weekStartDate: new Date().toISOString(),
+  }));
+
+  const [linkedBanks, setLinkedBanks] = useState(() =>
+    safeJsonParse(
+      isBrowser ? localStorage.getItem("oliBranchLinkedBanks") : null,
+      []
+    )
+  );
+
+  const [bankTransactions] = useState(() =>
+    safeJsonParse(
+      isBrowser ? localStorage.getItem("oliBranchBankTransactions") : null,
+      []
+    )
+  );
+
+  const [feeAnalysis] = useState(() =>
+    safeJsonParse(isBrowser ? localStorage.getItem("oliBranchFeeAnalysis") : null, null)
+  );
+
+  // --------------------
+  // Persistence (browser-only)
+  // --------------------
   useEffect(() => {
+    if (!isBrowser) return;
     localStorage.setItem("oliBranchResponses", JSON.stringify(responses));
   }, [responses]);
 
   useEffect(() => {
+    if (!isBrowser) return;
     localStorage.setItem("oliBranchSettings", JSON.stringify(settings));
   }, [settings]);
 
   useEffect(() => {
+    if (!isBrowser) return;
     if (healthInputs) {
       localStorage.setItem("oliBranchFinancialInputs", JSON.stringify(healthInputs));
     } else {
@@ -337,132 +267,25 @@ export function DataProvider({ children }) {
   }, [healthInputs]);
 
   useEffect(() => {
+    if (!isBrowser) return;
     localStorage.setItem("oliBranchHealthHistory", JSON.stringify(healthHistory));
   }, [healthHistory]);
 
   useEffect(() => {
+    if (!isBrowser) return;
     localStorage.setItem("oliBranchPaymentLinks", JSON.stringify(paymentLinks));
   }, [paymentLinks]);
 
   useEffect(() => {
-    if (profileImage) {
-      localStorage.setItem("userProfileImage", profileImage);
-    } else {
-      localStorage.removeItem("userProfileImage");
-    }
+    if (!isBrowser) return;
+    profileImage
+      ? localStorage.setItem("userProfileImage", profileImage)
+      : localStorage.removeItem("userProfileImage");
   }, [profileImage]);
 
-  useEffect(() => {
-    localStorage.setItem("oliBranchSubscription", JSON.stringify(subscription));
-  }, [subscription]);
-
-  useEffect(() => {
-    localStorage.setItem("oliBranchLinkedBanks", JSON.stringify(linkedBanks));
-  }, [linkedBanks]);
-
-  useEffect(() => {
-    localStorage.setItem("oliBranchBankTransactions", JSON.stringify(bankTransactions));
-  }, [bankTransactions]);
-
-  useEffect(() => {
-    if (feeAnalysis) {
-      localStorage.setItem("oliBranchFeeAnalysis", JSON.stringify(feeAnalysis));
-    } else {
-      localStorage.removeItem("oliBranchFeeAnalysis");
-    }
-  }, [feeAnalysis]);
-
-  // Free tier check
-  const canPerformAnalysis = useCallback(() => {
-    if (subscription.plan === "premium") return { allowed: true };
-
-    const weekStart = new Date(subscription.weekStartDate);
-    const now = new Date();
-    const daysSinceWeekStart = (now - weekStart) / (1000 * 60 * 60 * 24);
-
-    if (daysSinceWeekStart >= 7) {
-      setSubscription((prev) => ({
-        ...prev,
-        analysisCount: 0,
-        weekStartDate: now.toISOString(),
-      }));
-      return { allowed: true };
-    }
-
-    if (subscription.analysisCount >= 2) {
-      return { allowed: false, reason: "Weekly limit reached (2 free analyses per week)" };
-    }
-
-    return { allowed: true };
-  }, [subscription.plan, subscription.weekStartDate, subscription.analysisCount]);
-
-  const incrementAnalysisCount = useCallback(() => {
-    setSubscription((prev) => ({
-      ...prev,
-      analysisCount: prev.analysisCount + 1,
-      lastAnalysisDate: new Date().toISOString(),
-    }));
-  }, []);
-
-  const upgradeToPremium = useCallback(() => {
-    setSubscription((prev) => ({ ...prev, plan: "premium" }));
-  }, []);
-
-  const cancelPremium = useCallback(() => {
-    setSubscription((prev) => ({ ...prev, plan: "free" }));
-  }, []);
-
-  // Fee analysis with memoization
-  const runFeeAnalysis = useCallback((transactions) => {
-    const fees = (transactions || []).filter((t) => t.category === "fee");
-
-    const feesByType = {};
-    let totalFees = 0;
-    let avoidableFees = 0;
-
-    fees.forEach((fee) => {
-      const type = fee.feeType;
-      const rule = FEE_RULES[type];
-
-      if (!feesByType[type]) {
-        feesByType[type] = {
-          ...(rule || { name: type, description: "", avoidable: false, recommendation: "", severity: "low" }),
-          count: 0,
-          total: 0,
-          transactions: [],
-        };
-      }
-
-      const amt = Math.abs(safeNumber(fee.amount, 0));
-      feesByType[type].count += 1;
-      feesByType[type].total += amt;
-      feesByType[type].transactions.push(fee);
-
-      totalFees += amt;
-      if (rule?.avoidable) avoidableFees += amt;
-    });
-
-    const sortedFees = Object.entries(feesByType)
-      .map(([type, data]) => ({ type, ...data }))
-      .sort((a, b) => b.total - a.total);
-
-    // Avoid NaN when totalFees = 0
-    const mismatchScore = totalFees > 0 ? Math.min(100, Math.round((avoidableFees / totalFees) * 100)) : 0;
-
-    const analysis = {
-      totalFees,
-      avoidableFees,
-      savingsPotential: avoidableFees,
-      feeCount: fees.length,
-      feesByType: sortedFees,
-      mismatchScore,
-      analyzedAt: new Date().toISOString(),
-    };
-
-    setFeeAnalysis(analysis);
-    return analysis;
-  }, []);
-
+  // --------------------
+  // Bank linking
+  // --------------------
   const linkBankAccount = useCallback((bankData) => {
     const newBank = {
       id: Date.now(),
@@ -470,179 +293,69 @@ export function DataProvider({ children }) {
       linkedAt: new Date().toISOString(),
       lastSync: new Date().toISOString(),
     };
-
     setLinkedBanks((prev) => [...prev, newBank]);
-
-    // Demo: add mock txns + analysis
-    setBankTransactions(MOCK_BANK_TRANSACTIONS);
-
-    // Run fee analysis on mock transactions
-    const fees = MOCK_BANK_TRANSACTIONS.filter((t) => t.category === "fee");
-    const feesByType = {};
-    let totalFees = 0;
-    let avoidableFees = 0;
-
-    fees.forEach((fee) => {
-      const type = fee.feeType;
-      const rule = FEE_RULES[type];
-
-      if (!feesByType[type]) {
-        feesByType[type] = {
-          ...(rule || { name: type, description: "", avoidable: false, recommendation: "", severity: "low" }),
-          count: 0,
-          total: 0,
-          transactions: [],
-        };
-      }
-
-      const amt = Math.abs(safeNumber(fee.amount, 0));
-      feesByType[type].count += 1;
-      feesByType[type].total += amt;
-      feesByType[type].transactions.push(fee);
-
-      totalFees += amt;
-      if (rule?.avoidable) avoidableFees += amt;
-    });
-
-    const sortedFees = Object.entries(feesByType)
-      .map(([type, data]) => ({ type, ...data }))
-      .sort((a, b) => b.total - a.total);
-
-    const mismatchScore = totalFees > 0 ? Math.min(100, Math.round((avoidableFees / totalFees) * 100)) : 0;
-
-    const analysis = {
-      totalFees,
-      avoidableFees,
-      savingsPotential: avoidableFees,
-      feeCount: fees.length,
-      feesByType: sortedFees,
-      mismatchScore,
-      analyzedAt: new Date().toISOString(),
-    };
-
-    setFeeAnalysis(analysis);
-
     return newBank;
   }, []);
 
   const unlinkBankAccount = useCallback((bankId) => {
-    setLinkedBanks((prev) => {
-      const next = prev.filter((b) => b.id !== bankId);
-
-      if (next.length === 0) {
-        setBankTransactions([]);
-        setFeeAnalysis(null);
-      }
-
-      return next;
-    });
+    setLinkedBanks((prev) => prev.filter((b) => b.id !== bankId));
   }, []);
 
-  const addResponse = useCallback((response) => {
-    const newResponse = { ...response, id: Date.now(), timestamp: new Date().toISOString() };
-    setResponses((prev) => [newResponse, ...prev]);
-    return newResponse;
-  }, []);
-
-  const getScoring = useCallback((response) => {
-    const { score, reasons, feeWastePercent } = calculateMismatchScore(response);
-    const riskLabel = getRiskLabel(score);
-    const bankRecommendations = getBankRecommendations(response);
-    const grantRecommendations = getGrantRecommendations(response);
-    const state = getStateFromZip(response.zipCode);
-
-    return {
-      email: response.email,
-      mismatchScore: score,
-      riskLabel,
-      feeWastePercent,
-      keyReasons: reasons,
-      bankMatch1: bankRecommendations[0]?.bank || "",
-      why1: bankRecommendations[0]?.why || "",
-      bankMatch2: bankRecommendations[1]?.bank || "",
-      why2: bankRecommendations[1]?.why || "",
-      grantsSuggested: grantRecommendations,
-      state: state.name,
-      abbr: state.abbr,
-      sbaLink: state.sbaLink,
-      ssbciLink: state.ssbciLink,
-    };
-  }, []);
-
+  // --------------------
+  // Chart data (what Report.jsx expects)
+  // --------------------
   const getChartData = useCallback(() => {
-    const riskCounts = { High: 0, Medium: 0, Low: 0 };
-    responses.forEach((response) => {
-      const { score } = calculateMismatchScore(response);
-      riskCounts[getRiskLabel(score)] += 1;
+    const counts = { High: 0, Medium: 0, Low: 0 };
+
+    (responses || []).forEach((r) => {
+      const s = getScoring(r);
+      if (s?.riskLabel === "High") counts.High += 1;
+      else if (s?.riskLabel === "Medium") counts.Medium += 1;
+      else counts.Low += 1;
     });
 
     return [
-      { name: "High Risk", value: riskCounts.High, fill: "hsl(var(--destructive))" },
-      { name: "Medium Risk", value: riskCounts.Medium, fill: "hsl(var(--warning))" },
-      { name: "Low Risk", value: riskCounts.Low, fill: "hsl(var(--success))" },
+      { name: "High Risk", value: counts.High },
+      { name: "Medium Risk", value: counts.Medium },
+      { name: "Low Risk", value: counts.Low },
     ];
   }, [responses]);
-
-  const updateSettings = useCallback((newSettings) => {
-    setSettings((prev) => ({ ...prev, ...newSettings }));
-  }, []);
-
-  const updateHealthInputs = useCallback((inputs) => {
-    setHealthInputs(inputs);
-  }, []);
-
-  const addHealthHistory = useCallback((score) => {
-    setHealthHistory((prev) => [...prev.slice(-11), { t: new Date().toISOString(), score }]);
-  }, []);
-
-  const clearHealthData = useCallback(() => {
-    setHealthInputs(null);
-  }, []);
-
-  const updatePaymentLinks = useCallback((links) => {
-    setPaymentLinks(links);
-  }, []);
-
-  const updateProfileImage = useCallback((image) => {
-    setProfileImage(image);
-  }, []);
 
   return (
     <DataContext.Provider
       value={{
+        // data
         responses,
-        addResponse,
+        setResponses,
+        settings,
+        setSettings,
+        healthInputs,
+        setHealthInputs,
+        healthHistory,
+        setHealthHistory,
+        paymentLinks,
+        setPaymentLinks,
+        profileImage,
+        setProfileImage,
+        subscription,
+        linkedBanks,
+        bankTransactions,
+        feeAnalysis,
+
+        // funcs expected by pages
         getScoring,
         getChartData,
-        settings,
-        updateSettings,
+
+        // existing exports you had (kept)
         calculateMismatchScore,
         getRiskLabel,
         getStateFromZip,
-        healthInputs,
-        updateHealthInputs,
-        healthHistory,
-        addHealthHistory,
-        clearHealthData,
         computeHealthScore,
         healthLabel,
-        paymentLinks,
-        updatePaymentLinks,
-        profileImage,
-        updateProfileImage,
-        // Subscription
-        subscription,
-        canPerformAnalysis,
-        incrementAnalysisCount,
-        upgradeToPremium,
-        cancelPremium,
-        // Bank Linking
-        linkedBanks,
         linkBankAccount,
         unlinkBankAccount,
-        bankTransactions,
-        feeAnalysis,
-        runFeeAnalysis,
+
+        // constants
         FEE_RULES,
       }}
     >
@@ -652,9 +365,10 @@ export function DataProvider({ children }) {
 }
 
 export function useData() {
-  const context = useContext(DataContext);
-  if (!context) throw new Error("useData must be used within DataProvider");
-  return context;
+  const ctx = useContext(DataContext);
+  if (!ctx) {
+    throw new Error("useData must be used within DataProvider");
+  }
+  return ctx;
 }
-
 

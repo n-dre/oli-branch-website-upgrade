@@ -1,6 +1,8 @@
-import React, { useState } from 'react';
-import { NavLink, useNavigate } from 'react-router-dom';
-import { AnimatePresence, motion } from 'framer-motion';
+import React, { useState } from "react";
+import { NavLink, useNavigate } from "react-router-dom";
+import { AnimatePresence, motion } from "framer-motion";
+import { Search } from "lucide-react";
+
 import {
   LayoutDashboard,
   FileText,
@@ -10,57 +12,119 @@ import {
   LogOut,
   Menu,
   X,
-  Leaf,
   Heart,
   Wrench,
   BookOpen,
   User,
   Link as LinkIcon,
   Crown,
-  BarChart3
-} from 'lucide-react';
-import { Button } from '../ui/button';
-import { Badge } from '../ui/badge';
-import { cn } from '../../lib/utils';
-import { useData } from '../../context/DataContext';
+  BarChart3,
+} from "lucide-react";
+import { Button } from "../ui/button";
+import { Badge } from "../ui/badge";
+import { cn } from "../../lib/utils";
+import { useData } from "../../context/DataContext";
 
-const navItems = [
-  { path: '/dashboard', label: 'Overview', icon: LayoutDashboard },
-  { path: '/financial-health', label: 'Financial Health', icon: Heart },
-  { path: '/tools', label: 'Tools', icon: Wrench },
-  { path: '/bank-linking', label: 'Link Bank', icon: LinkIcon, premium: true },
-  { path: '/fee-analysis', label: 'Fee Analysis', icon: BarChart3, premium: true },
-  { path: '/learning', label: 'Learning', icon: BookOpen },
-  { path: '/intake', label: 'Intake Form', icon: ClipboardList },
-  { path: '/report', label: 'Reports', icon: FileText },
-  { path: '/nearby-banks', label: 'Nearby Banks', icon: MapPin },
-  { path: '/pricing', label: 'Pricing', icon: Crown },
-  { path: '/profile', label: 'Profile', icon: User },
-  { path: '/settings', label: 'Settings', icon: Settings },
+/* put your logo in /public, for example:
+   public/oli-logo.png
+*/
+const LOGO_SRC ="/resources/oli-branch00.png";
+const navGroups = [
+  {
+    items: [
+      { path: "/dashboard", label: "Overview", icon: LayoutDashboard },
+      { path: "/health", label: "Financial Health", icon: Heart },
+      { path: "/tools", label: "Tools", icon: Wrench },
+      { path: "/intake", label: "Intake Form", icon: ClipboardList },
+      { path: "/help", label: "Help", icon: Search },
+    ],
+  },
+  {
+    title: "Banking",
+    items: [
+      { path: "/link", label: "Link Bank", icon: LinkIcon, premium: true },
+      { path: "/nearby-banks", label: "Nearby Banks", icon: MapPin },
+    ],
+  },
+  {
+    title: "Insights",
+    items: [
+      { path: "/leaks", label: "Financial Leaks", icon: BarChart3, premium: true },
+      { path: "/report", label: "Report", icon: FileText },
+      { path: "/finder", label: "Find Resources", icon: Search },
+    ],
+  },
+  {
+    title: "Learning",
+    items: [{ path: "/learning", label: "Learning", icon: BookOpen }],
+  },
+  {
+    title: "Account",
+    items: [
+      { path: "/profile", label: "Profile", icon: User },
+      { path: "/settings", label: "Settings", icon: Settings },
+      { path: "/pricing", label: "Pricing", icon: Crown },
+    ],
+  },
 ];
+
+function GroupHeader({ children }) {
+  return (
+    <div className="px-2 pt-4 pb-2 text-[11px] uppercase tracking-wider sidebar-foreground/50">
+      {children}
+    </div>
+  );
+}
 
 export default function Sidebar() {
   const [isOpen, setIsOpen] = useState(false);
   const navigate = useNavigate();
   const { subscription } = useData();
-  const isPremium = subscription?.plan === 'premium';
+  const isPremium = subscription?.plan === "premium";
 
   const handleLogout = () => {
-    localStorage.removeItem('oliBranchLogin');
-    navigate('/');
+    localStorage.removeItem("oliBranchLogin");
+    navigate("/");
   };
 
   return (
     <>
-      {/* Mobile Toggle */}
-      <Button
-        variant="ghost"
-        size="icon"
-        className="fixed top-4 left-4 z-50 lg:hidden bg-card shadow-soft"
-        onClick={() => setIsOpen(!isOpen)}
-      >
-        {isOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
-      </Button>
+      {/* Mobile Header */}
+      <div className="lg:hidden fixed top-0 left-0 right-0 z-40 mobile-header h-16 flex items-center justify-between px-4">
+        <div className="flex items-center gap-3">
+          <Button
+            variant="ghost"
+            size="icon"
+            className="lg:hidden"
+            onClick={() => setIsOpen(!isOpen)}
+          >
+            {isOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
+          </Button>
+
+          {/* Logo + Title (mobile) */}
+          <div className="flex items-center gap-2">
+            <img
+              src={LOGO_SRC}
+              alt="Oli-Branch logo"
+              className="h-7 w-7 object-contain"
+              draggable="false"
+            />
+            <div>
+              <h1 className="font-display text-base font-bold text-[#1B4332]">
+                Oli-Branch
+              </h1>
+              <p className="text-xs text-gray-600">Financial Dashboard</p>
+            </div>
+          </div>
+        </div>
+
+        {isPremium && (
+          <Badge className="bg-[#D4AF37] text-[#1B4332] gap-1">
+            <Crown className="h-3 w-3" />
+            Premium
+          </Badge>
+        )}
+      </div>
 
       {/* Mobile Overlay */}
       <AnimatePresence>
@@ -69,7 +133,7 @@ export default function Sidebar() {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 bg-foreground/20 backdrop-blur-sm z-40 lg:hidden"
+            className="fixed inset-0 bg-black/20 backdrop-blur-sm z-30 lg:hidden"
             onClick={() => setIsOpen(false)}
           />
         )}
@@ -78,29 +142,34 @@ export default function Sidebar() {
       {/* Sidebar */}
       <aside
         className={cn(
-          "fixed top-0 left-0 z-40 h-screen w-56 bg-sidebar transition-transform duration-300",
+          "fixed top-0 left-0 z-40 h-screen w-56 sidebar transition-transform duration-300",
+          "sidebar-scrollbar",
           isOpen ? "translate-x-0" : "-translate-x-full",
-          "lg:translate-x-0 lg:static"
+          "lg:translate-x-0 lg:static lg:top-0",
+          "mt-16 lg:mt-0"
         )}
       >
         <div className="flex flex-col h-full p-4">
-          {/* Logo */}
-          <div className="flex items-center gap-3 mb-6 px-2">
-            <div className="w-10 h-10 rounded-xl bg-sidebar-accent flex items-center justify-center shadow-glow">
-              <Leaf className="h-5 w-5 text-sidebar" />
-            </div>
+          {/* Desktop Logo */}
+          <div className="hidden lg:flex items-center gap-3 mb-5 px-2">
+            <img
+              src={LOGO_SRC}
+              alt="Oli-Branch logo"
+              className="h-8 w-8 object-contain"
+              draggable="false"
+            />
             <div>
-              <h1 className="font-display text-base font-bold text-sidebar-foreground">
+              <h1 className="font-display text-base font-bold sidebar-foreground">
                 Oli-Branch
               </h1>
-              <p className="text-xs text-sidebar-foreground/60">Financial Dashboard</p>
+              <p className="text-xs sidebar-foreground/60">Financial Dashboard</p>
             </div>
           </div>
 
-          {/* Subscription Badge */}
+          {/* Desktop Subscription Badge */}
           {isPremium && (
-            <div className="mb-4 px-2">
-              <Badge className="w-full justify-center bg-accent text-accent-foreground gap-1">
+            <div className="hidden lg:block mb-3 px-2">
+              <Badge className="w-full justify-center bg-[#D4AF37] text-[#1B4332] gap-1">
                 <Crown className="h-3 w-3" />
                 Premium
               </Badge>
@@ -108,40 +177,51 @@ export default function Sidebar() {
           )}
 
           {/* Navigation */}
-          <nav className="flex-1 space-y-1 overflow-y-auto scrollbar-thin">
-            {navItems.map((item) => (
-              <NavLink
-                key={item.path}
-                to={item.path}
-                onClick={() => setIsOpen(false)}
-                className={({ isActive }) =>
-                  cn(
-                    "flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all duration-200",
-                    isActive
-                      ? "bg-sidebar-accent text-sidebar shadow-glow"
-                      : "text-sidebar-foreground/80 hover:bg-sidebar-foreground/10 hover:text-sidebar-foreground"
-                  )
-                }
-              >
-                <item.icon className="h-4 w-4" />
-                <span className="flex-1">{item.label}</span>
-                {item.premium && !isPremium && (
-                  <Crown className="h-3 w-3 text-accent" />
-                )}
-              </NavLink>
+          <nav className="flex-1 overflow-y-auto sidebar-scrollbar">
+            {navGroups.map((group) => (
+              <div key={group.title || "main"} className="mb-1">
+                {group.title && <GroupHeader>{group.title}</GroupHeader>}
+
+                <div className="space-y-1">
+                  {group.items.map((item) => (
+                    <NavLink
+                      key={item.path}
+                      to={item.path}
+                      onClick={() => setIsOpen(false)}
+                      className={({ isActive }) =>
+                        cn(
+                          "flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all duration-200",
+                          isActive
+                            ? "sidebar-accent sidebar-shadow-glow"
+                            : "sidebar-foreground/80 sidebar-hover"
+                        )
+                      }
+                    >
+                      <item.icon className="h-4 w-4" />
+                      <span className="flex-1">{item.label}</span>
+                      {item.premium && !isPremium && (
+                        <Crown className="h-3 w-3 text-[#D4AF37]" />
+                      )}
+                    </NavLink>
+                  ))}
+                </div>
+              </div>
             ))}
           </nav>
 
-          {/* Upgrade CTA for free users */}
+          {/* Upgrade CTA */}
           {!isPremium && (
-            <div className="p-3 mb-2 rounded-lg bg-accent/10 border border-accent/20">
-              <p className="text-xs text-sidebar-foreground mb-2">
+            <div className="p-3 mb-2 rounded-lg bg-[#D4AF37]/20 border border-[#D4AF37]/30">
+              <p className="text-xs sidebar-foreground mb-2">
                 Unlock bank linking & fee analysis
               </p>
-              <Button 
-                size="sm" 
-                className="w-full gap-1 bg-accent hover:bg-accent/90 text-accent-foreground"
-                onClick={() => { navigate('/pricing'); setIsOpen(false); }}
+              <Button
+                size="sm"
+                className="w-full gap-1 bg-[#D4AF37] hover:bg-[#E6C158] text-[#1B4332]"
+                onClick={() => {
+                  navigate("/pricing");
+                  setIsOpen(false);
+                }}
               >
                 <Crown className="h-3 w-3" />
                 Upgrade $9.99/mo
@@ -152,7 +232,7 @@ export default function Sidebar() {
           {/* Logout */}
           <button
             onClick={handleLogout}
-            className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-destructive/80 hover:bg-destructive/10 hover:text-destructive transition-colors mt-2"
+            className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-red-300 hover:bg-red-900/20 hover:text-red-200 transition-colors mt-2 sidebar-hover"
           >
             <LogOut className="h-4 w-4" />
             Logout
@@ -162,3 +242,4 @@ export default function Sidebar() {
     </>
   );
 }
+

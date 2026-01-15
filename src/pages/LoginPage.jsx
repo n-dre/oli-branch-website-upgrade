@@ -147,7 +147,7 @@ const LoginPage = () => {
             </div>
 
             <div>
-              <h2 className="font-display text-2xl sm:text-3xl font-bold" style={{ color: colors.charcoal }}>Welcome Back</h2>
+              <h2 className="font-display text-2xl sm:text-3xl font-bold" style={{ color: colors.forest}}>Welcome Back</h2>
               <p className="mt-2 text-sm sm:text-base text-gray-500">Sign in to access your dashboard</p>
             </div>
 

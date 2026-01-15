@@ -69,19 +69,19 @@ class ErrorBoundary extends React.Component {
   }
 }
 
-    // --- Loading Spinner Component ---
-    const Loading = () => (
-      <div
-        style={{
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-          minHeight: "100vh",
-          fontFamily: "Inter, sans-serif",
-          color: "#1B4332",
-          backgroundColor: "#F8F5F0",
-        }}
-      >
+// --- Loading Spinner Component ---
+const Loading = () => (
+  <div
+    style={{
+      display: "flex",
+      alignItems: "center",
+      justifyContent: "center",
+      minHeight: "100vh",
+      fontFamily: "Inter, sans-serif",
+      color: "#1B4332",
+      backgroundColor: "#F8F5F0",
+    }}
+  >
     <div style={{ textAlign: "center" }}>
       <div
         style={{
@@ -156,13 +156,15 @@ const safeLazy = (importFn, pageName) => {
     })
   );
 
-  return (props) => (
-    <ErrorBoundary pageName={pageName}>
-      <Suspense fallback={<Loading />}>
-        <LazyComponent {...props} />
-      </Suspense>
-    </ErrorBoundary>
-  );
+  return function WrappedComponent(props) {
+    return (
+      <ErrorBoundary pageName={pageName}>
+        <Suspense fallback={<Loading />}>
+          <LazyComponent {...props} />
+        </Suspense>
+      </ErrorBoundary>
+    );
+  };
 };
 
 // --- Lazy Load Pages ---
@@ -173,17 +175,45 @@ const Services = safeLazy(() => import("./pages/Services"), "Services");
 const Resources = safeLazy(() => import("./pages/Resources"), "Resources");
 const About = safeLazy(() => import("./pages/About"), "About");
 const Pricing = safeLazy(() => import("./pages/Pricing"), "Pricing");
-const Terms = safeLazy(() => import("./pages/Terms"), "Terms");        // Note: singular "Term"
+const Terms = safeLazy(() => import("./pages/Terms"), "Terms");
 const Privacy = safeLazy(() => import("./pages/Privacy"), "Privacy");
 
-const AdminDashboard = safeLazy(() => import("./pages/AdminDashboard"), "AdminDashboard");
-const UserDashboard = safeLazy(() => import("./pages/UserDashboard"), "UserDashboard");
-const BankLinking = safeLazy(() => import("./pages/BankLinking"), "BankLinking");
+const AdminDashboard = safeLazy(
+  () => import("./pages/AdminDashboard"),
+  "AdminDashboard"
+);
+const UserDashboard = safeLazy(
+  () => import("./pages/UserDashboard"),
+  "UserDashboard"
+);
+const LinkBank = safeLazy(() => import("./pages/LinkBank"), "LinkBank");
 const Budget = safeLazy(() => import("./pages/Budget"), "Budget");
-const FinancialLeaks = safeLazy(() => import("./pages/FinancialLeaks"), "FinancialLeaks");
-const FinancialHealth = safeLazy(() => import("./pages/FinancialHealth"), "FinancialHealth");
+const FinancialLeaks = safeLazy(
+  () => import("./pages/FinancialLeaks"),
+  "FinancialLeaks"
+);
+const FinancialHealth = safeLazy(
+  () => import("./pages/FinancialHealth"),
+  "FinancialHealth"
+);
+
+// ✅ FIXED: NO SPACES IN PATHS OR NAMES
+const HowItWorks = safeLazy(() => import("./pages/HowItWorks"), "HowItWorks");
+const QuickStartGuide = safeLazy(
+  () => import("./pages/QuickStartGuide"),
+  "QuickStartGuide"
+);
+const ResourcesFinder = safeLazy(
+  () => import("./pages/ResourcesFinder"),
+  "ResourcesFinder"
+);
+
 const IntakeForm = safeLazy(() => import("./pages/IntakeForm"), "IntakeForm");
 const Learning = safeLazy(() => import("./pages/Learning"), "Learning");
+
+// ✅ FIXED: Payment path must be exactly "./pages/Payment"
+const Payment = safeLazy(() => import("./pages/Payment"), "Payment");
+
 const NearbyBanks = safeLazy(() => import("./pages/NearbyBanks"), "NearbyBanks");
 const Profile = safeLazy(() => import("./pages/Profile"), "Profile");
 const Report = safeLazy(() => import("./pages/Report"), "Report");
@@ -206,17 +236,24 @@ function App() {
               <Route path="/resources" element={<Resources />} />
               <Route path="/about" element={<About />} />
               <Route path="/pricing" element={<Pricing />} />
-              <Route path="/terms" element={<Terms />} />        
+              <Route path="/terms" element={<Terms />} />
               <Route path="/privacy" element={<Privacy />} />
 
               {/* Dashboard routes */}
               <Route path="/admin" element={<AdminDashboard />} />
               <Route path="/dashboard" element={<UserDashboard />} />
-              <Route path="/bank-linking" element={<BankLinking />} />
+              <Route path="/link" element={<LinkBank />} />
               <Route path="/budget" element={<Budget />} />
-              <Route path="/financial-leaks" element={<FinancialLeaks />} />
-              <Route path="/financial-health" element={<FinancialHealth />} />
-              <Route path="/intake-form" element={<IntakeForm />} />
+              <Route path="/payment" element={<Payment />} />
+              <Route path="/leaks" element={<FinancialLeaks />} />
+              <Route path="/health" element={<FinancialHealth />} />
+
+              {/* Other routes */}
+              <Route path="/HowItWorks" element={<HowItWorks />} />
+              <Route path="/QuickStartGuide" element={<QuickStartGuide />} />
+              <Route path="/finder" element={<ResourcesFinder />} />
+
+              <Route path="/intake" element={<IntakeForm />} />
               <Route path="/learning" element={<Learning />} />
               <Route path="/nearby-banks" element={<NearbyBanks />} />
               <Route path="/profile" element={<Profile />} />
@@ -239,8 +276,22 @@ function App() {
                       minHeight: "100vh",
                     }}
                   >
-                    <h1 style={{ fontSize: "72px", margin: "0 0 16px", color: "#1B4332" }}>404</h1>
-                    <p style={{ fontSize: "18px", color: "#666", marginBottom: "24px" }}>
+                    <h1
+                      style={{
+                        fontSize: "72px",
+                        margin: "0 0 16px",
+                        color: "#1B4332",
+                      }}
+                    >
+                      404
+                    </h1>
+                    <p
+                      style={{
+                        fontSize: "18px",
+                        color: "#666",
+                        marginBottom: "24px",
+                      }}
+                    >
                       Page Not Found
                     </p>
                     <a
@@ -271,3 +322,5 @@ function App() {
 }
 
 export default App;
+
+
