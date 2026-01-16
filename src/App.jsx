@@ -167,58 +167,59 @@ const safeLazy = (importFn, pageName) => {
   };
 };
 
+// ✅ Settings index is now pages/settings/index.jsx
+const Settings = safeLazy(() => import("./pages/settings"), "Settings");
+
+// ✅ Settings subpages must be used in Routes to avoid eslint no-unused-vars
+const Accessibility = safeLazy(() => import("./pages/settings/Accessibility"), "Accessibility");
+const PrivacySafety = safeLazy(() => import("./pages/settings/PrivacySafety"), "PrivacySafety");
+const Avatar = safeLazy(() => import("./pages/settings/Avatar"), "Avatar");
+const Businessname = safeLazy(() => import("./pages/settings/Businessname"), "Businessname");
+const PersonalDetails = safeLazy(() => import("./pages/settings/PersonalDetails"), "PersonalDetails");
+const PasswordSecurity = safeLazy(() => import("./pages/settings/PasswordSecurity"), "PasswordSecurity");
+const NotificationsSounds = safeLazy(() => import("./pages/settings/NotificationsSounds"), "NotificationsSounds");
+const PhotosMedia = safeLazy(() => import("./pages/settings/PhotosMedia"), "PhotosMedia");
+const Memories = safeLazy(() => import("./pages/settings/Memories"), "Memories");
+const LanguageIdentification = safeLazy(
+  () => import("./pages/settings/LanguageIdentification"),
+  "LanguageIdentification"
+);
+const UnderlinedWords = safeLazy(() => import("./pages/settings/UnderlinedWords"), "UnderlinedWords");
+const ReportAProblem = safeLazy(() => import("./pages/settings/ReportAProblem"), "ReportAProblem");
+const LegalPolicies = safeLazy(() => import("./pages/settings/LegalPolicies"), "LegalPolicies");
+
 // --- Lazy Load Pages ---
-const LandingPage = safeLazy(() => import("./pages/LandingPage"), "LandingPage");
-const LoginPage = safeLazy(() => import("./pages/LoginPage"), "LoginPage");
-const SignupPage = safeLazy(() => import("./pages/SignupPage"), "SignupPage");
-const Services = safeLazy(() => import("./pages/Services"), "Services");
-const Resources = safeLazy(() => import("./pages/Resources"), "Resources");
-const About = safeLazy(() => import("./pages/About"), "About");
-const Pricing = safeLazy(() => import("./pages/Pricing"), "Pricing");
-const Terms = safeLazy(() => import("./pages/Terms"), "Terms");
-const Privacy = safeLazy(() => import("./pages/Privacy"), "Privacy");
+const LandingPage = safeLazy(() => import("./pages/tools/LandingPage"), "LandingPage");
+const LoginPage = safeLazy(() => import("./pages/auth/LoginPage"), "LoginPage");
+const SignupPage = safeLazy(() => import("./pages/auth/SignupPage"), "SignupPage");
+const Services = safeLazy(() => import("./pages/tools/Services"), "Services");
+const Resources = safeLazy(() => import("./pages/tools/Resources"), "Resources");
+const About = safeLazy(() => import("./pages/public/About"), "About");
+const Pricing = safeLazy(() => import("./pages/public/Pricing"), "Pricing");
+const Terms = safeLazy(() => import("./pages/public/Terms"), "Terms");
+const Privacy = safeLazy(() => import("./pages/tools/Privacy"), "Privacy");
 
-const AdminDashboard = safeLazy(
-  () => import("./pages/AdminDashboard"),
-  "AdminDashboard"
-);
-const UserDashboard = safeLazy(
-  () => import("./pages/UserDashboard"),
-  "UserDashboard"
-);
-const LinkBank = safeLazy(() => import("./pages/LinkBank"), "LinkBank");
-const Budget = safeLazy(() => import("./pages/Budget"), "Budget");
-const FinancialLeaks = safeLazy(
-  () => import("./pages/FinancialLeaks"),
-  "FinancialLeaks"
-);
-const FinancialHealth = safeLazy(
-  () => import("./pages/FinancialHealth"),
-  "FinancialHealth"
-);
+const AdminDashboard = safeLazy(() => import("./pages/dashboard/AdminDashboard"), "AdminDashboard");
+const UserDashboard = safeLazy(() => import("./pages/dashboard/UserDashboard"), "UserDashboard");
+const LinkBank = safeLazy(() => import("./pages/tools/LinkBank"), "LinkBank");
+const Budget = safeLazy(() => import("./pages/tools/Budget"), "Budget");
+const FinancialLeaks = safeLazy(() => import("./pages/tools/FinancialLeaks"), "FinancialLeaks");
+const FinancialHealth = safeLazy(() => import("./pages/tools/FinancialHealth"), "FinancialHealth");
+const Help = safeLazy(() => import("./pages/tools/Help"), "Help");
 
-// ✅ FIXED: NO SPACES IN PATHS OR NAMES
-const HowItWorks = safeLazy(() => import("./pages/HowItWorks"), "HowItWorks");
-const QuickStartGuide = safeLazy(
-  () => import("./pages/QuickStartGuide"),
-  "QuickStartGuide"
-);
-const ResourcesFinder = safeLazy(
-  () => import("./pages/ResourcesFinder"),
-  "ResourcesFinder"
-);
+const HowItWorks = safeLazy(() => import("./pages/tools/HowItWorks"), "HowItWorks");
+const QuickStartGuide = safeLazy(() => import("./pages/public/QuickStartGuide"), "QuickStartGuide");
+const ResourcesFinder = safeLazy(() => import("./pages/tools/ResourcesFinder"), "ResourcesFinder");
 
-const IntakeForm = safeLazy(() => import("./pages/IntakeForm"), "IntakeForm");
-const Learning = safeLazy(() => import("./pages/Learning"), "Learning");
+const IntakeForm = safeLazy(() => import("./pages/assessments/IntakeForm"), "IntakeForm");
+const Learning = safeLazy(() => import("./pages/tools/Learning"), "Learning");
 
-// ✅ FIXED: Payment path must be exactly "./pages/Payment"
-const Payment = safeLazy(() => import("./pages/Payment"), "Payment");
+const Payment = safeLazy(() => import("./pages/tools/Payment"), "Payment");
 
-const NearbyBanks = safeLazy(() => import("./pages/NearbyBanks"), "NearbyBanks");
-const Profile = safeLazy(() => import("./pages/Profile"), "Profile");
-const Report = safeLazy(() => import("./pages/Report"), "Report");
-const Settings = safeLazy(() => import("./pages/Settings"), "Settings");
-const Tools = safeLazy(() => import("./pages/Tools"), "Tools");
+const NearbyBanks = safeLazy(() => import("./pages/tools/NearbyBanks"), "NearbyBanks");
+const Profile = safeLazy(() => import("./pages/tools/Profile"), "Profile");
+const Report = safeLazy(() => import("./pages/assessments/Report"), "Report");
+const Tools = safeLazy(() => import("./pages/tools/Tools"), "Tools");
 
 // --- Main App Component ---
 function App() {
@@ -247,6 +248,7 @@ function App() {
               <Route path="/payment" element={<Payment />} />
               <Route path="/leaks" element={<FinancialLeaks />} />
               <Route path="/health" element={<FinancialHealth />} />
+              <Route path="/help" element={<Help />} />
 
               {/* Other routes */}
               <Route path="/HowItWorks" element={<HowItWorks />} />
@@ -259,7 +261,25 @@ function App() {
               <Route path="/profile" element={<Profile />} />
               <Route path="/report" element={<Report />} />
               <Route path="/report/:email" element={<Report />} />
+
+              {/* ✅ Settings index */}
               <Route path="/settings" element={<Settings />} />
+
+              {/* ✅ Settings sub-routes (now USED; ESLint warnings disappear) */}
+              <Route path="/settings/accessibility" element={<Accessibility />} />
+              <Route path="/settings/privacy-safety" element={<PrivacySafety />} />
+              <Route path="/settings/avatar" element={<Avatar />} />
+              <Route path="/settings/businessname" element={<Businessname />} />
+              <Route path="/settings/personal-details" element={<PersonalDetails />} />
+              <Route path="/settings/password-security" element={<PasswordSecurity />} />
+              <Route path="/settings/notifications-sounds" element={<NotificationsSounds />} />
+              <Route path="/settings/photos-media" element={<PhotosMedia />} />
+              <Route path="/settings/memories" element={<Memories />} />
+              <Route path="/settings/language-identification" element={<LanguageIdentification />} />
+              <Route path="/settings/underlined-words" element={<UnderlinedWords />} />
+              <Route path="/settings/report-a-problem" element={<ReportAProblem />} />
+              <Route path="/settings/legal-policies" element={<LegalPolicies />} />
+
               <Route path="/tools" element={<Tools />} />
 
               {/* 404 fallback */}

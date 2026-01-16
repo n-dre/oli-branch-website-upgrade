@@ -80,19 +80,15 @@ function getRiskLabel(score) {
   return "Low";
 }
 
-// Public helper used by pages (same naming your Report.jsx expects)
 function getScoring(response) {
   const s = calculateMismatchScore(response);
   const riskLabel = getRiskLabel(s.score);
 
-  // Keep shape compatible with your Report.jsx usage
   return {
     mismatchScore: s.score,
     riskLabel,
     keyReasons: Array.isArray(s.reasons) ? s.reasons : [],
     feeWastePercent: safeNumber(s.feeWastePercent, 0),
-
-    // Optional fields used in Report.jsx (safe defaults)
     bankMatch1: response?.bankMatch1 ?? response?.bank1 ?? "",
     why1: response?.why1 ?? "",
     bankMatch2: response?.bankMatch2 ?? response?.bank2 ?? "",
@@ -133,7 +129,7 @@ function getStateFromZip(zip) {
 }
 
 // --------------------
-// Health Score
+// Health Score Logic
 // --------------------
 function computeHealthScore(inputs) {
   const revenue = Math.max(0, safeNumber(inputs?.revenue, 0));
@@ -163,9 +159,6 @@ function healthLabel(score) {
   return "At Risk";
 }
 
-// --------------------
-// Fee Rules (static)
-// --------------------
 const FEE_RULES = {
   overdraft: { avoidable: true },
   maintenance: { avoidable: true },
@@ -227,25 +220,33 @@ export function DataProvider({ children }) {
   }));
 
   const [linkedBanks, setLinkedBanks] = useState(() =>
-    safeJsonParse(
-      isBrowser ? localStorage.getItem("oliBranchLinkedBanks") : null,
-      []
-    )
-  );
-
-  const [bankTransactions] = useState(() =>
-    safeJsonParse(
-      isBrowser ? localStorage.getItem("oliBranchBankTransactions") : null,
-      []
-    )
-  );
-
-  const [feeAnalysis] = useState(() =>
-    safeJsonParse(isBrowser ? localStorage.getItem("oliBranchFeeAnalysis") : null, null)
+    safeJsonParse(isBrowser ? localStorage.getItem("oliBranchLinkedBanks") : null, [])
   );
 
   // --------------------
-  // Persistence (browser-only)
+  // ✅ NEW: Methods for FinancialHealth.jsx
+  // --------------------
+
+  // Fixes "updateHealthInputs is not a function"
+  const updateHealthInputs = useCallback((inputs) => {
+    setHealthInputs(inputs);
+  }, []);
+
+  const addHealthHistory = useCallback((score) => {
+    const newEntry = { score, t: new Date().getTime() };
+    setHealthHistory((prev) => {
+      const updated = [newEntry, ...prev].slice(0, 10);
+      return updated;
+    });
+  }, []);
+
+  const clearHealthData = useCallback(() => {
+    setHealthInputs(null);
+    setHealthHistory([]);
+  }, []);
+
+  // --------------------
+  // Persistence Effects
   // --------------------
   useEffect(() => {
     if (!isBrowser) return;
@@ -283,9 +284,6 @@ export function DataProvider({ children }) {
       : localStorage.removeItem("userProfileImage");
   }, [profileImage]);
 
-  // --------------------
-  // Bank linking
-  // --------------------
   const linkBankAccount = useCallback((bankData) => {
     const newBank = {
       id: Date.now(),
@@ -301,19 +299,14 @@ export function DataProvider({ children }) {
     setLinkedBanks((prev) => prev.filter((b) => b.id !== bankId));
   }, []);
 
-  // --------------------
-  // Chart data (what Report.jsx expects)
-  // --------------------
   const getChartData = useCallback(() => {
     const counts = { High: 0, Medium: 0, Low: 0 };
-
     (responses || []).forEach((r) => {
       const s = getScoring(r);
       if (s?.riskLabel === "High") counts.High += 1;
       else if (s?.riskLabel === "Medium") counts.Medium += 1;
       else counts.Low += 1;
     });
-
     return [
       { name: "High Risk", value: counts.High },
       { name: "Medium Risk", value: counts.Medium },
@@ -324,29 +317,26 @@ export function DataProvider({ children }) {
   return (
     <DataContext.Provider
       value={{
-        // data
         responses,
         setResponses,
         settings,
         setSettings,
         healthInputs,
         setHealthInputs,
+        updateHealthInputs, // ✅ Now provided to FinancialHealth.jsx
         healthHistory,
         setHealthHistory,
+        addHealthHistory,    // ✅ Now provided
+        clearHealthData,     // ✅ Now provided
         paymentLinks,
         setPaymentLinks,
         profileImage,
         setProfileImage,
         subscription,
         linkedBanks,
-        bankTransactions,
-        feeAnalysis,
-
-        // funcs expected by pages
+        
         getScoring,
         getChartData,
-
-        // existing exports you had (kept)
         calculateMismatchScore,
         getRiskLabel,
         getStateFromZip,
@@ -354,8 +344,6 @@ export function DataProvider({ children }) {
         healthLabel,
         linkBankAccount,
         unlinkBankAccount,
-
-        // constants
         FEE_RULES,
       }}
     >
@@ -371,4 +359,3 @@ export function useData() {
   }
   return ctx;
 }
-

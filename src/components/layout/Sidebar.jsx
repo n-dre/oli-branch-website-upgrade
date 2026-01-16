@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { NavLink, useNavigate } from "react-router-dom";
 import { AnimatePresence, motion } from "framer-motion";
 import { Search } from "lucide-react";
@@ -20,6 +20,7 @@ import {
   Crown,
   BarChart3,
 } from "lucide-react";
+
 import { Button } from "../ui/button";
 import { Badge } from "../ui/badge";
 import { cn } from "../../lib/utils";
@@ -28,7 +29,8 @@ import { useData } from "../../context/DataContext";
 /* put your logo in /public, for example:
    public/oli-logo.png
 */
-const LOGO_SRC ="/resources/oli-branch00.png";
+const LOGO_SRC = "/resources/oli-branch00.png";
+
 const navGroups = [
   {
     items: [
@@ -78,19 +80,89 @@ function GroupHeader({ children }) {
 
 export default function Sidebar() {
   const [isOpen, setIsOpen] = useState(false);
+  const [mobileHeaderVisible, setMobileHeaderVisible] = useState(true);
+
   const navigate = useNavigate();
   const { subscription } = useData();
   const isPremium = subscription?.plan === "premium";
+
+  // Scroll tracking
+  const lastYRef = useRef(0);
+  const lastScrollAtRef = useRef(Date.now());
+  const rafRef = useRef(null);
+
+  useEffect(() => {
+    // Guard for SSR
+    if (typeof window === "undefined") return;
+
+    lastYRef.current = window.scrollY || 0;
+
+    const onScroll = () => {
+      lastScrollAtRef.current = Date.now();
+
+      if (rafRef.current) return;
+      rafRef.current = window.requestAnimationFrame(() => {
+        rafRef.current = null;
+
+        const y = window.scrollY || 0;
+        const lastY = lastYRef.current;
+        const delta = y - lastY;
+
+        // thresholds avoid jitter
+        const goingDown = delta > 6;
+        const goingUp = delta < -6;
+
+        // Rule:
+        // - scrolling down -> hide (slide UP)
+        // - scrolling up -> show (slide DOWN)
+        // - near top -> always show
+        if (y < 10) {
+          setMobileHeaderVisible(true);
+        } else if (goingDown) {
+          setMobileHeaderVisible(false);
+        } else if (goingUp) {
+          setMobileHeaderVisible(true);
+        }
+
+        lastYRef.current = y;
+      });
+    };
+
+    window.addEventListener("scroll", onScroll, { passive: true });
+
+    // "No scroll = show" behavior:
+    // if user stops scrolling for 350ms, show header again.
+    const idle = setInterval(() => {
+      if (Date.now() - lastScrollAtRef.current > 350) {
+        setMobileHeaderVisible(true);
+      }
+    }, 250);
+
+    return () => {
+      window.removeEventListener("scroll", onScroll);
+      clearInterval(idle);
+      if (rafRef.current) window.cancelAnimationFrame(rafRef.current);
+    };
+  }, []);
 
   const handleLogout = () => {
     localStorage.removeItem("oliBranchLogin");
     navigate("/");
   };
 
+  // Sidebar top offset follows header height on mobile
+  const mobileHeaderHeight = mobileHeaderVisible ? "64px" : "0px";
+
   return (
-    <>
+    <div style={{ ["--mobile-header-h"]: mobileHeaderHeight }}>
       {/* Mobile Header */}
-      <div className="lg:hidden fixed top-0 left-0 right-0 z-40 mobile-header h-16 flex items-center justify-between px-4">
+      <div
+        className={cn(
+          "lg:hidden fixed top-0 left-0 right-0 z-70 mobile-header h-16 flex items-center justify-between px-4",
+          "transition-transform duration-200 will-change-transform",
+          mobileHeaderVisible ? "translate-y-0" : "-translate-y-full"
+        )}
+      >
         <div className="flex items-center gap-3">
           <Button
             variant="ghost"
@@ -146,7 +218,8 @@ export default function Sidebar() {
           "sidebar-scrollbar",
           isOpen ? "translate-x-0" : "-translate-x-full",
           "lg:translate-x-0 lg:static lg:top-0",
-          "mt-16 lg:mt-0"
+          // ✅ replaces mt-16 with dynamic offset
+          "mt-[var(--mobile-header-h)] lg:mt-0"
         )}
       >
         <div className="flex flex-col h-full p-4">
@@ -213,7 +286,7 @@ export default function Sidebar() {
           {!isPremium && (
             <div className="p-3 mb-2 rounded-lg bg-[#D4AF37]/20 border border-[#D4AF37]/30">
               <p className="text-xs sidebar-foreground mb-2">
-                Unlock bank linking & fee analysis
+                Unlock bank linking & leaks
               </p>
               <Button
                 size="sm"
@@ -239,7 +312,7 @@ export default function Sidebar() {
           </button>
         </div>
       </aside>
-    </>
+    </div>
   );
 }
 
