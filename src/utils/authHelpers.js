@@ -1,6 +1,6 @@
 // src/utils/authHelpers.js
 
-import { STORAGE_KEYS, VALIDATION, SESSION_CONFIG, AUTH_ERRORS } from './authConstants';
+import { STORAGE_KEYS, VALIDATION, SESSION_CONFIG, AUTH_ERRORS } from './constants';
 
 /**
  * Validate email format
