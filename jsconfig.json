@@ -5,5 +5,5 @@
       "@/*": ["src/*"]
     }
   },
-  "include": ["src"]
+  "include": ["src", "frontend/src/components/layout", "frontend/src/components/ui", "frontend/src/context", "frontend/src/components/admin", "frontend/src/pages/assessments", "frontend/src/hooks", "frontend/src/pages/auth", "frontend/src/pages/dashboard", "frontend/src/pages/tools", "frontend/src/pages/public", "frontend/src/pages/settings", "frontend/src/lib", "frontend/src/utils", "frontend/src/services/aws", "frontend/src/services/api", "frontend/src/services/ai", "frontend/src/main.jsx"]
 }
