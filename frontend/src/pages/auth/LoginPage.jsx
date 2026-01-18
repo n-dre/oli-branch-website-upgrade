@@ -118,7 +118,7 @@ const LoginPage = () => {
         <div className="hidden lg:flex lg:w-2/5 hero-gradient flex-col justify-between p-8 xl:p-12 text-white relative">
           <div className="flex items-center">
             <Link to="/">
-              <img src="/resources/oli-branch00.png" alt="Oli-Branch Logo" className="h-12 w-auto rounded-lg" />
+              <img src="/images/oli-branch00.png" alt="Oli-Branch Logo" className="h-12 w-auto rounded-lg" />
             </Link>
           </div>
 
@@ -142,7 +142,7 @@ const LoginPage = () => {
             {/* Mobile Logo */}
             <div className="lg:hidden flex items-center justify-center mb-6">
               <Link to="/" className="inline-block">
-                <img src="/resources/oli-branch00.png" alt="Oli-Branch" className="h-12 rounded-lg" />
+                <img src="/images/oli-branch00.png" alt="Oli-Branch" className="h-12 rounded-lg" />
               </Link>
             </div>
 

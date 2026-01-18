@@ -3,10 +3,10 @@ import React, { Suspense, lazy } from "react";
 import { Routes, Route } from "react-router-dom";
 import { Toaster } from "sonner";
 
-// Context Providers
-import { ThemeProvider } from "../frontend/src/context/ThemeContext";
-import { DataProvider } from "../frontend/src/context/DataContext";
-import { StripeProvider } from "../frontend/src/context/StripeContext";
+// Context Providers (FIXED)
+import { ThemeProvider } from "./context/ThemeContext";
+import { DataProvider } from "./context/DataContext";
+import { StripeProvider } from "./context/StripeContext";
 
 // --- Error Boundary Component ---
 class ErrorBoundary extends React.Component {
@@ -168,58 +168,54 @@ const safeLazy = (importFn, pageName) => {
 };
 
 // ✅ Settings index is now pages/settings/index.jsx
-const Settings = safeLazy(() => import("../frontend/src/pages/settings"), "Settings");
+const Settings = safeLazy(() => import("./pages/settings"), "Settings");
 
-// ✅ Settings subpages must be used in Routes to avoid eslint no-unused-vars
-const Accessibility = safeLazy(() => import("../frontend/src/pages/settings/Accessibility"), "Accessibility");
-const PrivacySafety = safeLazy(() => import("../frontend/src/pages/settings/PrivacySafety"), "PrivacySafety");
-const Avatar = safeLazy(() => import("../frontend/src/pages/settings/Avatar"), "Avatar");
-const Businessname = safeLazy(() => import("../frontend/src/pages/settings/Businessname"), "Businessname");
-const PersonalDetails = safeLazy(() => import("../frontend/src/pages/settings/PersonalDetails"), "PersonalDetails");
-const PasswordSecurity = safeLazy(() => import("../frontend/src/pages/settings/PasswordSecurity"), "PasswordSecurity");
-const NotificationsSounds = safeLazy(() => import("../frontend/src/pages/settings/NotificationsSounds"), "NotificationsSounds");
-const PhotosMedia = safeLazy(() => import("../frontend/src/pages/settings/PhotosMedia"), "PhotosMedia");
-const Memories = safeLazy(() => import("../frontend/src/pages/settings/Memories"), "Memories");
-const LanguageIdentification = safeLazy(
-  () => import("../frontend/src/pages/settings/LanguageIdentification"),
-  "LanguageIdentification"
-);
-const UnderlinedWords = safeLazy(() => import("../frontend/src/pages/settings/UnderlinedWords"), "UnderlinedWords");
-const ReportAProblem = safeLazy(() => import("../frontend/src/pages/settings/ReportAProblem"), "ReportAProblem");
-const LegalPolicies = safeLazy(() => import("../frontend/src/pages/settings/LegalPolicies"), "LegalPolicies");
+// ✅ Settings subpages
+const Accessibility = safeLazy(() => import("./pages/settings/Accessibility"), "Accessibility");
+const PrivacySafety = safeLazy(() => import("./pages/settings/PrivacySafety"), "PrivacySafety");
+const Avatar = safeLazy(() => import("./pages/settings/Avatar"), "Avatar");
+const Businessname = safeLazy(() => import("./pages/settings/Businessname"), "Businessname");
+const PersonalDetails = safeLazy(() => import("./pages/settings/PersonalDetails"), "PersonalDetails");
+const PasswordSecurity = safeLazy(() => import("./pages/settings/PasswordSecurity"), "PasswordSecurity");
+const NotificationsSounds = safeLazy(() => import("./pages/settings/NotificationsSounds"), "NotificationsSounds");
+const PhotosMedia = safeLazy(() => import("./pages/settings/PhotosMedia"), "PhotosMedia");
+const Memories = safeLazy(() => import("./pages/settings/Memories"), "Memories");
+const LanguageIdentification = safeLazy(() => import("./pages/settings/LanguageIdentification"), "LanguageIdentification");
+const UnderlinedWords = safeLazy(() => import("./pages/settings/UnderlinedWords"), "UnderlinedWords");
+const ReportAProblem = safeLazy(() => import("./pages/settings/ReportAProblem"), "ReportAProblem");
+const LegalPolicies = safeLazy(() => import("./pages/settings/LegalPolicies"), "LegalPolicies");
 
 // --- Lazy Load Pages ---
-const LandingPage = safeLazy(() => import("../frontend/src/pages/tools/LandingPage"), "LandingPage");
-const LoginPage = safeLazy(() => import("../frontend/src/pages/auth/LoginPage"), "LoginPage");
-const SignupPage = safeLazy(() => import("../frontend/src/pages/auth/SignupPage"), "SignupPage");
-const Services = safeLazy(() => import("../frontend/src/pages/tools/Services"), "Services");
-const Resources = safeLazy(() => import("../frontend/src/pages/tools/Resources"), "Resources");
-const About = safeLazy(() => import("../frontend/src/pages/public/About"), "About");
-const Pricing = safeLazy(() => import("../frontend/src/pages/public/Pricing"), "Pricing");
-const Terms = safeLazy(() => import("../frontend/src/pages/public/Terms"), "Terms");
-const Privacy = safeLazy(() => import("../frontend/src/pages/tools/Privacy"), "Privacy");
+const LandingPage = safeLazy(() => import("./pages/tools/LandingPage"), "LandingPage");
+const LoginPage = safeLazy(() => import("./pages/auth/LoginPage"), "LoginPage");
+const SignupPage = safeLazy(() => import("./pages/auth/SignupPage"), "SignupPage");
+const Services = safeLazy(() => import("./pages/tools/Services"), "Services");
+const Resources = safeLazy(() => import("./pages/tools/Resources"), "Resources");
+const About = safeLazy(() => import("./pages/public/About"), "About");
+const Pricing = safeLazy(() => import("./pages/public/Pricing"), "Pricing");
+const Terms = safeLazy(() => import("./pages/public/Terms"), "Terms");
+const Privacy = safeLazy(() => import("./pages/tools/Privacy"), "Privacy");
 
-const AdminDashboard = safeLazy(() => import("../frontend/src/pages/dashboard/AdminDashboard"), "AdminDashboard");
-const UserDashboard = safeLazy(() => import("../frontend/src/pages/dashboard/UserDashboard"), "UserDashboard");
-const LinkBank = safeLazy(() => import("../frontend/src/pages/tools/LinkBank"), "LinkBank");
-const Budget = safeLazy(() => import("../frontend/src/pages/tools/Budget"), "Budget");
-const FinancialLeaks = safeLazy(() => import("../frontend/src/pages/tools/FinancialLeaks"), "FinancialLeaks");
-const FinancialHealth = safeLazy(() => import("../frontend/src/pages/tools/FinancialHealth"), "FinancialHealth");
-const Help = safeLazy(() => import("../frontend/src/pages/tools/Help"), "Help");
+const AdminDashboard = safeLazy(() => import("./pages/dashboard/AdminDashboard"), "AdminDashboard");
+const UserDashboard = safeLazy(() => import("./pages/dashboard/UserDashboard"), "UserDashboard");
+const LinkBank = safeLazy(() => import("./pages/tools/LinkBank"), "LinkBank");
+const Budget = safeLazy(() => import("./pages/tools/Budget"), "Budget");
+const FinancialLeaks = safeLazy(() => import("./pages/tools/FinancialLeaks"), "FinancialLeaks");
+const FinancialHealth = safeLazy(() => import("./pages/tools/FinancialHealth"), "FinancialHealth");
+const Help = safeLazy(() => import("./pages/tools/Help"), "Help");
 
-const HowItWorks = safeLazy(() => import("../frontend/src/pages/tools/HowItWorks"), "HowItWorks");
-const QuickStartGuide = safeLazy(() => import("../frontend/src/pages/public/QuickStartGuide"), "QuickStartGuide");
-const ResourcesFinder = safeLazy(() => import("../frontend/src/pages/tools/ResourcesFinder"), "ResourcesFinder");
+const HowItWorks = safeLazy(() => import("./pages/tools/HowItWorks"), "HowItWorks");
+const QuickStartGuide = safeLazy(() => import("./pages/public/QuickStartGuide"), "QuickStartGuide");
+const ResourcesFinder = safeLazy(() => import("./pages/tools/ResourcesFinder"), "ResourcesFinder");
 
-const IntakeForm = safeLazy(() => import("../frontend/src/pages/assessments/IntakeForm"), "IntakeForm");
-const Learning = safeLazy(() => import("../frontend/src/pages/tools/Learning"), "Learning");
+const IntakeForm = safeLazy(() => import("./pages/assessments/IntakeForm"), "IntakeForm");
+const Learning = safeLazy(() => import("./pages/tools/Learning"), "Learning");
+const Payment = safeLazy(() => import("./pages/tools/Payment"), "Payment");
 
-const Payment = safeLazy(() => import("../frontend/src/pages/tools/Payment"), "Payment");
-
-const NearbyBanks = safeLazy(() => import("../frontend/src/pages/tools/NearbyBanks"), "NearbyBanks");
-const Profile = safeLazy(() => import("../frontend/src/pages/tools/Profile"), "Profile");
-const Report = safeLazy(() => import("../frontend/src/pages/assessments/Report"), "Report");
-const Tools = safeLazy(() => import("../frontend/src/pages/tools/Tools"), "Tools");
+const NearbyBanks = safeLazy(() => import("./pages/tools/NearbyBanks"), "NearbyBanks");
+const Profile = safeLazy(() => import("./pages/tools/Profile"), "Profile");
+const Report = safeLazy(() => import("./pages/assessments/Report"), "Report");
+const Tools = safeLazy(() => import("./pages/tools/Tools"), "Tools");
 
 // --- Main App Component ---
 function App() {
@@ -262,10 +258,8 @@ function App() {
               <Route path="/report" element={<Report />} />
               <Route path="/report/:email" element={<Report />} />
 
-              {/* ✅ Settings index */}
+              {/* Settings */}
               <Route path="/settings" element={<Settings />} />
-
-              {/* ✅ Settings sub-routes (now USED; ESLint warnings disappear) */}
               <Route path="/settings/accessibility" element={<Accessibility />} />
               <Route path="/settings/privacy-safety" element={<PrivacySafety />} />
               <Route path="/settings/avatar" element={<Avatar />} />
@@ -282,7 +276,7 @@ function App() {
 
               <Route path="/tools" element={<Tools />} />
 
-              {/* 404 fallback */}
+              {/* 404 */}
               <Route
                 path="*"
                 element={
@@ -296,22 +290,10 @@ function App() {
                       minHeight: "100vh",
                     }}
                   >
-                    <h1
-                      style={{
-                        fontSize: "72px",
-                        margin: "0 0 16px",
-                        color: "#1B4332",
-                      }}
-                    >
+                    <h1 style={{ fontSize: "72px", margin: "0 0 16px", color: "#1B4332" }}>
                       404
                     </h1>
-                    <p
-                      style={{
-                        fontSize: "18px",
-                        color: "#666",
-                        marginBottom: "24px",
-                      }}
-                    >
+                    <p style={{ fontSize: "18px", color: "#666", marginBottom: "24px" }}>
                       Page Not Found
                     </p>
                     <a
@@ -342,5 +324,6 @@ function App() {
 }
 
 export default App;
+
 
 
