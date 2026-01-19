@@ -167,7 +167,7 @@ const safeLazy = (importFn, pageName) => {
   };
 };
 
-// ✅ Settings index is now pages/settings/index.jsx
+// ========== SETTINGS PAGES ==========
 const Settings = safeLazy(() => import("./pages/settings"), "Settings");
 
 // ✅ Settings subpages
@@ -185,37 +185,50 @@ const UnderlinedWords = safeLazy(() => import("./pages/settings/UnderlinedWords"
 const ReportAProblem = safeLazy(() => import("./pages/settings/ReportAProblem"), "ReportAProblem");
 const LegalPolicies = safeLazy(() => import("./pages/settings/LegalPolicies"), "LegalPolicies");
 
-// --- Lazy Load Pages ---
+// ✅ Settings legal pages
+const CookiePolicy = safeLazy(() => import("./pages/settings/CookiePolicy"), "CookiePolicy");
+const SecurityDisclosure = safeLazy(() => import("./pages/settings/SecurityDisclosure"), "SecurityDisclosure");
+
+// ========== PUBLIC PAGES ==========
 const LandingPage = safeLazy(() => import("./pages/tools/LandingPage"), "LandingPage");
 const LoginPage = safeLazy(() => import("./pages/auth/LoginPage"), "LoginPage");
 const SignupPage = safeLazy(() => import("./pages/auth/SignupPage"), "SignupPage");
+const ForgotPassword = safeLazy(() => import("./pages/auth/ForgotPassword"), "ForgotPassword");
 const Services = safeLazy(() => import("./pages/tools/Services"), "Services");
 const Resources = safeLazy(() => import("./pages/tools/Resources"), "Resources");
 const About = safeLazy(() => import("./pages/public/About"), "About");
 const Pricing = safeLazy(() => import("./pages/public/Pricing"), "Pricing");
 const Terms = safeLazy(() => import("./pages/public/Terms"), "Terms");
-const Privacy = safeLazy(() => import("./pages/tools/Privacy"), "Privacy");
+const Privacy = safeLazy(() => import("./pages/public/Privacy"), "Privacy");
 
+/**
+ * ✅ IMPORTANT FIX:
+ * Vite import must match the exact filename.
+ */
+
+const QuickStartGuide = safeLazy(() => import("./pages/public/QuickStartGuide"), "QuickStartGuide");
+
+// ========== DASHBOARD PAGES ==========
 const AdminDashboard = safeLazy(() => import("./pages/dashboard/AdminDashboard"), "AdminDashboard");
 const UserDashboard = safeLazy(() => import("./pages/dashboard/UserDashboard"), "UserDashboard");
+
+// ========== TOOLS PAGES ==========
 const LinkBank = safeLazy(() => import("./pages/tools/LinkBank"), "LinkBank");
 const Budget = safeLazy(() => import("./pages/tools/Budget"), "Budget");
 const FinancialLeaks = safeLazy(() => import("./pages/tools/FinancialLeaks"), "FinancialLeaks");
 const FinancialHealth = safeLazy(() => import("./pages/tools/FinancialHealth"), "FinancialHealth");
 const Help = safeLazy(() => import("./pages/tools/Help"), "Help");
-
 const HowItWorks = safeLazy(() => import("./pages/tools/HowItWorks"), "HowItWorks");
-const QuickStartGuide = safeLazy(() => import("./pages/public/QuickStartGuide"), "QuickStartGuide");
 const ResourcesFinder = safeLazy(() => import("./pages/tools/ResourcesFinder"), "ResourcesFinder");
-
-const IntakeForm = safeLazy(() => import("./pages/assessments/IntakeForm"), "IntakeForm");
 const Learning = safeLazy(() => import("./pages/tools/Learning"), "Learning");
 const Payment = safeLazy(() => import("./pages/tools/Payment"), "Payment");
-
 const NearbyBanks = safeLazy(() => import("./pages/tools/NearbyBanks"), "NearbyBanks");
 const Profile = safeLazy(() => import("./pages/tools/Profile"), "Profile");
-const Report = safeLazy(() => import("./pages/assessments/Report"), "Report");
 const Tools = safeLazy(() => import("./pages/tools/Tools"), "Tools");
+
+// ========== ASSESSMENT PAGES ==========
+const IntakeForm = safeLazy(() => import("./pages/assessments/IntakeForm"), "IntakeForm");
+const Report = safeLazy(() => import("./pages/assessments/Report"), "Report");
 
 // --- Main App Component ---
 function App() {
@@ -225,7 +238,7 @@ function App() {
         <StripeProvider>
           <div className="min-h-screen bg-background transition-colors duration-300">
             <Routes>
-              {/* Public routes */}
+              {/* ========== PUBLIC ROUTES ========== */}
               <Route path="/" element={<LandingPage />} />
               <Route path="/login" element={<LoginPage />} />
               <Route path="/signup" element={<SignupPage />} />
@@ -235,30 +248,35 @@ function App() {
               <Route path="/pricing" element={<Pricing />} />
               <Route path="/terms" element={<Terms />} />
               <Route path="/privacy" element={<Privacy />} />
+              <Route path="/password" element={<ForgotPassword />} />
 
-              {/* Dashboard routes */}
+              {/* Public "settings legal" pages (files exist in pages/public/) */}
+              <Route path="/QuickStartGuide" element={<QuickStartGuide />} />
+
+              {/* ========== DASHBOARD ROUTES ========== */}
               <Route path="/admin" element={<AdminDashboard />} />
               <Route path="/dashboard" element={<UserDashboard />} />
+
+              {/* ========== TOOLS ROUTES ========== */}
               <Route path="/link" element={<LinkBank />} />
               <Route path="/budget" element={<Budget />} />
               <Route path="/payment" element={<Payment />} />
               <Route path="/leaks" element={<FinancialLeaks />} />
               <Route path="/health" element={<FinancialHealth />} />
               <Route path="/help" element={<Help />} />
-
-              {/* Other routes */}
               <Route path="/HowItWorks" element={<HowItWorks />} />
-              <Route path="/QuickStartGuide" element={<QuickStartGuide />} />
               <Route path="/finder" element={<ResourcesFinder />} />
-
-              <Route path="/intake" element={<IntakeForm />} />
               <Route path="/learning" element={<Learning />} />
               <Route path="/nearby-banks" element={<NearbyBanks />} />
               <Route path="/profile" element={<Profile />} />
+              <Route path="/tools" element={<Tools />} />
+
+              {/* ========== ASSESSMENT ROUTES ========== */}
+              <Route path="/intake" element={<IntakeForm />} />
               <Route path="/report" element={<Report />} />
               <Route path="/report/:email" element={<Report />} />
 
-              {/* Settings */}
+              {/* ========== SETTINGS ROUTES ========== */}
               <Route path="/settings" element={<Settings />} />
               <Route path="/settings/accessibility" element={<Accessibility />} />
               <Route path="/settings/privacy-safety" element={<PrivacySafety />} />
@@ -274,9 +292,11 @@ function App() {
               <Route path="/settings/report-a-problem" element={<ReportAProblem />} />
               <Route path="/settings/legal-policies" element={<LegalPolicies />} />
 
-              <Route path="/tools" element={<Tools />} />
+              {/* LegalPolicies DocRow targets */}
+              <Route path="/cookie-policy" element={<CookiePolicy />} />
+              <Route path="/security-disclosure" element={<SecurityDisclosure />} />
 
-              {/* 404 */}
+              {/* ========== 404 PAGE ========== */}
               <Route
                 path="*"
                 element={
@@ -290,12 +310,8 @@ function App() {
                       minHeight: "100vh",
                     }}
                   >
-                    <h1 style={{ fontSize: "72px", margin: "0 0 16px", color: "#1B4332" }}>
-                      404
-                    </h1>
-                    <p style={{ fontSize: "18px", color: "#666", marginBottom: "24px" }}>
-                      Page Not Found
-                    </p>
+                    <h1 style={{ fontSize: "72px", margin: "0 0 16px", color: "#1B4332" }}>404</h1>
+                    <p style={{ fontSize: "18px", color: "#666", marginBottom: "24px" }}>Page Not Found</p>
                     <a
                       href="/"
                       style={{
@@ -324,6 +340,8 @@ function App() {
 }
 
 export default App;
+
+
 
 
 

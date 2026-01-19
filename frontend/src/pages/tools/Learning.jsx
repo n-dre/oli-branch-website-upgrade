@@ -1,5 +1,6 @@
-import React, { useEffect, useState } from 'react';
-import { motion } from 'framer-motion';
+// src/pages/tools/Learning.jsx
+import React, { useEffect, useMemo, useState } from "react";
+import { motion } from "framer-motion";
 import {
   BookOpen,
   PlayCircle,
@@ -7,27 +8,26 @@ import {
   Search,
   AlertCircle,
   ExternalLink,
-  FileText
-} from 'lucide-react';
+  FileText,
+} from "lucide-react";
 
-import DashboardLayout from '../../../frontend/src/components/layout/DashboardLayout';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '../../../frontend/src/components/ui/card';
-import { Badge } from '../../../frontend/src/components/ui/badge';
-import { Button } from '../../../frontend/src/components/ui/button';
+import DashboardLayout from "../../components/layout/DashboardLayout";
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "../../components/ui/card";
+import { Badge } from "../../components/ui/badge";
+import { Button } from "../../components/ui/button";
 
-/* ======================================================
-   LIVE DATA HOOK — S3 / CLOUDFRONT
-====================================================== */
+/* ============================
+   DATA LOADER
+============================ */
 const useEducationContent = () => {
-  const [data, setData] = useState({ articles: [], videos: null });
+  const [data, setData] = useState({ articles: [], videos: {} });
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
   useEffect(() => {
-    fetch('/education/index.json')
-
-      .then(res => {
-        if (!res.ok) throw new Error('Failed to load education index');
+    fetch("/education/index.json")
+      .then((res) => {
+        if (!res.ok) throw new Error("Failed to load education index");
         return res.json();
       })
       .then(setData)
@@ -38,17 +38,24 @@ const useEducationContent = () => {
   return { data, loading, error };
 };
 
-/* ======================================================
+/* ============================
    PAGE
-====================================================== */
+============================ */
 export default function Learning() {
   const { data, loading, error } = useEducationContent();
-  const [search, setSearch] = useState('');
+  const [searchText, setSearchText] = useState("");
 
-  const filteredArticles = data.articles.filter(a =>
-    a.title.toLowerCase().includes(search.toLowerCase()) ||
-    a.category.toLowerCase().includes(search.toLowerCase())
-  );
+  const filteredArticles = useMemo(() => {
+    const q = searchText.trim().toLowerCase();
+    if (!q) return data.articles || [];
+
+    return (data.articles || []).filter((a) => {
+      const title = (a?.title || "").toLowerCase();
+      const category = (a?.category || "").toLowerCase();
+      const summary = (a?.summary || "").toLowerCase();
+      return title.includes(q) || category.includes(q) || summary.includes(q);
+    });
+  }, [data.articles, searchText]);
 
   if (error) {
     return (
@@ -83,12 +90,15 @@ export default function Learning() {
             </CardDescription>
           </CardHeader>
           <CardContent>
-            <Button
-              className="btn-primary gap-2"
-              onClick={() => window.open(data.videos?.youtubeChannelUrl, '_blank')}
-            >
-              Visit YouTube Channel
-              <ExternalLink className="h-4 w-4" />
+            <Button asChild className="btn-primary gap-2">
+              <a
+                href="https://www.youtube.com/@AdminContact-xd1xk"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                Visit YouTube Channel
+                <ExternalLink className="h-4 w-4" />
+              </a>
             </Button>
           </CardContent>
         </Card>
@@ -97,8 +107,8 @@ export default function Learning() {
         <div className="relative max-w-md">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
           <input
-            value={search}
-            onChange={e => setSearch(e.target.value)}
+            value={searchText}
+            onChange={(e) => setSearchText(e.target.value)}
             placeholder="Search articles..."
             className="w-full pl-10 py-2 border rounded-lg focus:ring-2 focus:ring-[#1B4332]/30"
           />
@@ -123,7 +133,7 @@ export default function Learning() {
               <p className="text-gray-500">No articles found.</p>
             )}
 
-            {filteredArticles.map(article => (
+            {filteredArticles.map((article) => (
               <motion.div
                 key={article.id}
                 whileHover={{ scale: 1.01 }}
@@ -145,7 +155,7 @@ export default function Learning() {
 
                 <Button
                   className="btn-secondary gap-2"
-                  onClick={() => window.open(article.url, '_blank')}
+                  onClick={() => window.open(article.url, "_blank")}
                 >
                   <FileText className="h-4 w-4" />
                   Read

@@ -1,8 +1,8 @@
 // src/pages/HowItWorks.jsx
 import React from "react";
-import DashboardLayout from "../../../frontend/src/components/layout/DashboardLayout";
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "../../../frontend/src/components/ui/card";
-import { Badge } from "../../../frontend/src/components/ui/badge";
+import DashboardLayout from "../components/layout/DashboardLayout";
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "../components/ui/card";
+import { Badge } from "../components/ui/badge";
 import { CheckCircle, FileText, Shield, BarChart3, Zap } from "lucide-react";
 
 export default function HowItWorks() {
@@ -22,6 +22,7 @@ export default function HowItWorks() {
               The platform walks you through an audit, scores risk, and generates actionable outputs.
             </CardDescription>
           </CardHeader>
+
           <CardContent className="space-y-4">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="p-4 rounded-lg border border-[#52796F]/10 bg-white">

@@ -1,5 +1,5 @@
-// src/pages/FinancialHealth.jsx
-import React, { useRef, useEffect, useState } from 'react';
+// frontend/src/pages/tools/FinancialHealth.jsx
+import React, { useRef, useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import {
   PieChart,
@@ -13,9 +13,9 @@ import {
   YAxis,
   CartesianGrid,
   BarChart,
-  Bar
-} from 'recharts';
-import { toast } from 'sonner';
+  Bar,
+} from "recharts";
+import { toast } from "sonner";
 import {
   Heart,
   DollarSign,
@@ -36,24 +36,26 @@ import {
   Users,
   Zap,
   ArrowRight,
-  Calendar
-} from 'lucide-react';
-import DashboardLayout from '../../../frontend/src/components/layout/DashboardLayout';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '../../../frontend/src/components/ui/card';
-import { Button } from '../../../frontend/src/components/ui/button';
-import { Input } from '../../../frontend/src/components/ui/input';
-import { Label } from '../../../frontend/src/components/ui/label';
-import { Badge } from '../../../frontend/src/components/ui/badge';
-import { useData } from '../../../frontend/src/context/DataContext';
+  Calendar,
+} from "lucide-react";
+
+// ✅ FIXED IMPORTS (your Vite root is /frontend)
+import DashboardLayout from "../../components/layout/DashboardLayout";
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "../../components/ui/card";
+import { Button } from "../../components/ui/button";
+import { Input } from "../../components/ui/input";
+import { Label } from "../../components/ui/label";
+import { Badge } from "../../components/ui/badge";
+import { useData } from "../../context/DataContext";
 
 // Updated colors to match your theme
-const DONUT_COLORS = ['#1B4332', '#52796F', '#84A98C'];
+const DONUT_COLORS = ["#1B4332", "#52796F", "#84A98C"];
 
-// ✅ FIXED: Yellow Gold = Revenue, Forest = Expenses, Light Green = Net
+// ✅ Yellow Gold = Revenue, Forest = Expenses, Light Green = Net
 const BAR_COLORS = {
-  revenue: '#D4AF37',  // yellow gold
-  expenses: '#1B4332', // forest green
-  net: '#10B981'       // light green
+  revenue: "#D4AF37", // yellow gold
+  expenses: "#1B4332", // forest green
+  net: "#10B981", // light green
 };
 
 export default function FinancialHealth() {
@@ -64,17 +66,17 @@ export default function FinancialHealth() {
     addHealthHistory,
     clearHealthData,
     computeHealthScore,
-    healthLabel
+    healthLabel,
   } = useData();
 
   const [formData, setFormData] = useState({
-    revenue: healthInputs?.revenue || '',
-    expenses: healthInputs?.expenses || '',
-    debt: healthInputs?.debt || '',
-    cash: healthInputs?.cash || ''
+    revenue: healthInputs?.revenue || "",
+    expenses: healthInputs?.expenses || "",
+    debt: healthInputs?.debt || "",
+    cash: healthInputs?.cash || "",
   });
 
-  const [activeTab, setActiveTab] = useState('input');
+  const [activeTab, setActiveTab] = useState("input");
   const [isCalculating, setIsCalculating] = useState(false);
 
   // ✅ Prevent “stuck calculating” + prevent stacked timers
@@ -87,7 +89,7 @@ export default function FinancialHealth() {
   }, []);
 
   const updateField = (field, value) => {
-    setFormData(prev => ({ ...prev, [field]: value }));
+    setFormData((prev) => ({ ...prev, [field]: value }));
   };
 
   const handleCalculate = () => {
@@ -98,12 +100,12 @@ export default function FinancialHealth() {
       revenue: Number(formData.revenue || 0),
       expenses: Number(formData.expenses || 0),
       debt: Number(formData.debt || 0),
-      cash: Number(formData.cash || 0)
+      cash: Number(formData.cash || 0),
     };
 
-    const hasAny = Object.values(inputs).some(v => v > 0);
+    const hasAny = Object.values(inputs).some((v) => v > 0);
     if (!hasAny) {
-      toast.error('Please enter at least one value');
+      toast.error("Please enter at least one value");
       return;
     }
 
@@ -115,29 +117,29 @@ export default function FinancialHealth() {
     // Simulate calculation delay
     calcTimerRef.current = setTimeout(() => {
       try {
-        if (typeof computeHealthScore !== 'function') {
-          throw new Error('computeHealthScore is not available from DataContext.');
+        if (typeof computeHealthScore !== "function") {
+          throw new Error("computeHealthScore is not available from DataContext.");
         }
 
         updateHealthInputs(inputs);
 
         const result = computeHealthScore(inputs);
 
-        if (!result || typeof result.score !== 'number') {
-          throw new Error('computeHealthScore returned an invalid result.');
+        if (!result || typeof result.score !== "number") {
+          throw new Error("computeHealthScore returned an invalid result.");
         }
 
         addHealthHistory(result.score);
 
         toast.success(`Score calculated: ${result.score}`, {
-          description: `Your financial health is ${healthLabel(result.score).toLowerCase()}.`
+          description: `Your financial health is ${healthLabel(result.score).toLowerCase()}.`,
         });
 
-        setActiveTab('results');
+        setActiveTab("results");
       } catch (err) {
         console.error(err);
-        toast.error('Calculation failed', {
-          description: err?.message || 'Please try again.'
+        toast.error("Calculation failed", {
+          description: err?.message || "Please try again.",
         });
       } finally {
         setIsCalculating(false);
@@ -147,7 +149,7 @@ export default function FinancialHealth() {
   };
 
   const handleClear = () => {
-    setFormData({ revenue: '', expenses: '', debt: '', cash: '' });
+    setFormData({ revenue: "", expenses: "", debt: "", cash: "" });
 
     // stop spinner if it was running
     if (calcTimerRef.current) {
@@ -157,138 +159,140 @@ export default function FinancialHealth() {
     setIsCalculating(false);
 
     clearHealthData();
-    toast.info('All data has been cleared', {
-      description: 'Enter new values to calculate your score.'
+    toast.info("All data has been cleared", {
+      description: "Enter new values to calculate your score.",
     });
   };
 
   const handleQuickExample = () => {
     setFormData({
-      revenue: '25000',
-      expenses: '18000',
-      debt: '40000',
-      cash: '12000'
+      revenue: "25000",
+      expenses: "18000",
+      debt: "40000",
+      cash: "12000",
     });
-    toast.info('Example values loaded', {
-      description: 'Click Calculate Score to see results.'
+    toast.info("Example values loaded", {
+      description: "Click Calculate Score to see results.",
     });
   };
 
   const handleExport = () => {
-    toast.success('Report exported', {
-      description: 'Your financial health report has been downloaded.'
+    toast.success("Report exported", {
+      description: "Your financial health report has been downloaded.",
     });
   };
 
-  // Get current score and metrics
-  const currentResult = healthInputs ? computeHealthScore(healthInputs) : null;
+  // ✅ Guard: don't call computeHealthScore during render if it's missing
+  const currentResult =
+    typeof computeHealthScore === "function" && healthInputs ? computeHealthScore(healthInputs) : null;
+
   const metrics = currentResult?.metrics || { margin: 0, runway: 0, debtLoad: 0 };
 
   // Donut chart data for breakdown
-  const breakdownData = currentResult ? [
-    {
-      name: 'Cash Flow',
-      value: Math.round(Math.max(0, Math.min(100, (metrics.margin + 0.25) / 0.75 * 100)) * 0.45),
-      color: DONUT_COLORS[0]
-    },
-    {
-      name: 'Runway',
-      value: Math.round(Math.max(0, Math.min(100, (metrics.runway / 6) * 100)) * 0.30),
-      color: DONUT_COLORS[1]
-    },
-    {
-      name: 'Debt Health',
-      value: Math.round(Math.max(0, Math.min(100, (1 - metrics.debtLoad) * 100)) * 0.25),
-      color: DONUT_COLORS[2]
-    }
-  ] : [];
+  const breakdownData = currentResult
+    ? [
+        {
+          name: "Cash Flow",
+          value: Math.round(Math.max(0, Math.min(100, ((metrics.margin + 0.25) / 0.75) * 100)) * 0.45),
+          color: DONUT_COLORS[0],
+        },
+        {
+          name: "Runway",
+          value: Math.round(Math.max(0, Math.min(100, (metrics.runway / 6) * 100)) * 0.3),
+          color: DONUT_COLORS[1],
+        },
+        {
+          name: "Debt Health",
+          value: Math.round(Math.max(0, Math.min(100, (1 - metrics.debtLoad) * 100)) * 0.25),
+          color: DONUT_COLORS[2],
+        },
+      ]
+    : [];
 
   // Fee Impact Analysis data
   const revenue = Number(healthInputs?.revenue || 0);
   const expenses = Number(healthInputs?.expenses || 0);
 
   // ✅ FIXED COLORS: Gold=Revenue, Forest=Expenses, LightGreen=Net
-  const feeImpactData = currentResult ? [
-    { name: 'Revenue', value: revenue, fill: BAR_COLORS.revenue },
-    { name: 'Expenses', value: expenses, fill: BAR_COLORS.expenses },
-    { name: 'Net', value: Math.max(0, revenue - expenses), fill: BAR_COLORS.net }
-  ] : [];
+  const feeImpactData = currentResult
+    ? [
+        { name: "Revenue", value: revenue, fill: BAR_COLORS.revenue },
+        { name: "Expenses", value: expenses, fill: BAR_COLORS.expenses },
+        { name: "Net", value: Math.max(0, revenue - expenses), fill: BAR_COLORS.net },
+      ]
+    : [];
 
   // Key Mismatch Areas
   const mismatchAreas = [];
   if (currentResult) {
     if (metrics.margin < 0.1) {
       mismatchAreas.push({
-        area: 'Low Profit Margin',
-        severity: metrics.margin < 0 ? 'critical' : 'warning',
+        area: "Low Profit Margin",
+        severity: metrics.margin < 0 ? "critical" : "warning",
         description: `Your margin is ${(metrics.margin * 100).toFixed(1)}%. Aim for at least 10-15%.`,
-        action: 'Increase prices or reduce variable costs'
+        action: "Increase prices or reduce variable costs",
       });
     }
     if (metrics.runway < 3) {
       mismatchAreas.push({
-        area: 'Short Runway',
-        severity: metrics.runway < 1 ? 'critical' : 'warning',
+        area: "Short Runway",
+        severity: metrics.runway < 1 ? "critical" : "warning",
         description: `Only ${metrics.runway.toFixed(1)} months of runway. Need 3-6 months minimum.`,
-        action: 'Build cash reserves or reduce burn rate'
+        action: "Build cash reserves or reduce burn rate",
       });
     }
     if (metrics.debtLoad > 0.5) {
       mismatchAreas.push({
-        area: 'High Debt Load',
-        severity: metrics.debtLoad > 0.8 ? 'critical' : 'warning',
+        area: "High Debt Load",
+        severity: metrics.debtLoad > 0.8 ? "critical" : "warning",
         description: `Debt is ${(metrics.debtLoad * 100).toFixed(0)}% of 6-month revenue.`,
-        action: 'Prioritize debt repayment or refinance'
+        action: "Prioritize debt repayment or refinance",
       });
     }
     if (revenue > 0 && expenses > revenue * 0.9) {
       mismatchAreas.push({
-        area: 'Expense Ratio',
-        severity: expenses > revenue ? 'critical' : 'warning',
+        area: "Expense Ratio",
+        severity: expenses > revenue ? "critical" : "warning",
         description: `Expenses are ${((expenses / revenue) * 100).toFixed(0)}% of revenue.`,
-        action: 'Review and cut non-essential expenses'
+        action: "Review and cut non-essential expenses",
       });
     }
   }
 
   // Chart data from history
-  const chartData = (healthHistory || []).map(h => {
+  const chartData = (healthHistory || []).map((h) => {
     const d = new Date(h.t);
     return {
       date: `${d.getMonth() + 1}/${d.getDate()}`,
-      score: h.score
+      score: h.score,
     };
   });
 
   // Recommendations
   const recommendations = [];
   if (currentResult) {
-    if (metrics.margin < 0.05) recommendations.push('Improve margin: reduce variable costs or adjust pricing.');
-    if (metrics.runway < 3) recommendations.push('Increase runway: reduce burn or build reserves.');
-    if (metrics.debtLoad > 0.65) recommendations.push('Reduce debt load: refinance or prioritize high APR balances.');
-    if (recommendations.length === 0) recommendations.push('Maintain discipline: track margin, runway, and debt monthly.');
+    if (metrics.margin < 0.05) recommendations.push("Improve margin: reduce variable costs or adjust pricing.");
+    if (metrics.runway < 3) recommendations.push("Increase runway: reduce burn or build reserves.");
+    if (metrics.debtLoad > 0.65) recommendations.push("Reduce debt load: refinance or prioritize high APR balances.");
+    if (recommendations.length === 0) recommendations.push("Maintain discipline: track margin, runway, and debt monthly.");
   } else {
-    recommendations.push('Add inputs to generate recommendations.');
+    recommendations.push("Add inputs to generate recommendations.");
   }
 
   const getHealthBadgeColor = (score) => {
-    if (score >= 80) return 'bg-green-100 text-green-800 border-green-200';
-    if (score >= 60) return 'bg-yellow-100 text-yellow-800 border-yellow-200';
-    return 'bg-red-100 text-red-800 border-red-200';
+    if (score >= 80) return "bg-green-100 text-green-800 border-green-200";
+    if (score >= 60) return "bg-yellow-100 text-yellow-800 border-yellow-200";
+    return "bg-red-100 text-red-800 border-red-200";
   };
 
   const tabs = [
-    { id: 'input', label: 'Input & Analysis', icon: Calculator, description: 'Enter financial data for analysis' },
-    { id: 'results', label: 'Results', icon: TrendingUp, description: 'View your health score and metrics', badge: currentResult ? undefined : undefined },
-    { id: 'history', label: 'History', icon: Eye, description: 'Track your score over time' }
+    { id: "input", label: "Input & Analysis", icon: Calculator, description: "Enter financial data for analysis" },
+    { id: "results", label: "Results", icon: TrendingUp, description: "View your health score and metrics", badge: undefined },
+    { id: "history", label: "History", icon: Eye, description: "Track your score over time" },
   ];
 
   return (
-    <DashboardLayout
-      title="Financial Health"
-      subtitle="Assess your business financial health"
-      className="bg-[#F8F5F0]"
-    >
+    <DashboardLayout title="Financial Health" subtitle="Assess your business financial health" className="bg-[#F8F5F0]">
       <style>{`
         .hero-gradient {
           background: linear-gradient(135deg, #1B4332 0%, #52796F 100%);
@@ -472,9 +476,10 @@ export default function FinancialHealth() {
                   flex items-center justify-center md:justify-start gap-2 px-6 py-4 md:py-5
                   text-sm md:text-base font-medium whitespace-nowrap
                   transition-all duration-200 relative
-                  ${activeTab === tab.id
-                    ? 'text-[#1B4332] bg-white font-semibold'
-                    : 'text-[#52796F] hover:text-[#1B4332] hover:bg-white/80'
+                  ${
+                    activeTab === tab.id
+                      ? "text-[#1B4332] bg-white font-semibold"
+                      : "text-[#52796F] hover:text-[#1B4332] hover:bg-white/80"
                   }
                   border-b-2 md:border-b-0 md:border-r border-[#52796F]/20 last:border-r-0
                   min-w-[120px] md:flex-1
@@ -482,11 +487,7 @@ export default function FinancialHealth() {
               >
                 <Icon className="w-4 h-4 md:w-5 md:h-5" />
                 <span>{tab.label}</span>
-                {tab.badge && (
-                  <span className="bg-[#DC2626] text-white text-xs px-2 py-0.5 rounded-full ml-2">
-                    {tab.badge}
-                  </span>
-                )}
+
                 {activeTab === tab.id && (
                   <>
                     {/* Desktop active indicator */}
@@ -503,12 +504,8 @@ export default function FinancialHealth() {
         {/* Tab Content Area */}
         <div className="p-0">
           {/* Input & Analysis Tab */}
-          {activeTab === 'input' && (
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              className="p-6"
-            >
+          {activeTab === "input" && (
+            <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="p-6">
               {/* Quick Stats Bar */}
               <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
                 <div className="stats-card p-4 rounded-lg">
@@ -516,7 +513,7 @@ export default function FinancialHealth() {
                     <div>
                       <p className="text-xs md:text-sm text-[#52796F]">Revenue</p>
                       <p className="text-xl md:text-2xl font-bold text-[#1B4332]">
-                        {formData.revenue ? `$${parseInt(formData.revenue, 10).toLocaleString()}` : '--'}
+                        {formData.revenue ? `$${parseInt(formData.revenue, 10).toLocaleString()}` : "--"}
                       </p>
                     </div>
                     <DollarSign className="w-6 h-6 md:w-8 md:h-8 text-[#10B981]" />
@@ -528,7 +525,7 @@ export default function FinancialHealth() {
                     <div>
                       <p className="text-xs md:text-sm text-[#52796F]">Expenses</p>
                       <p className="text-xl md:text-2xl font-bold text-[#1B4332]">
-                        {formData.expenses ? `$${parseInt(formData.expenses, 10).toLocaleString()}` : '--'}
+                        {formData.expenses ? `$${parseInt(formData.expenses, 10).toLocaleString()}` : "--"}
                       </p>
                     </div>
                     <TrendingDown className="w-6 h-6 md:w-8 md:h-8 text-[#DC2626]" />
@@ -540,7 +537,7 @@ export default function FinancialHealth() {
                     <div>
                       <p className="text-xs md:text-sm text-[#52796F]">Debt</p>
                       <p className="text-xl md:text-2xl font-bold text-[#1B4332]">
-                        {formData.debt ? `$${parseInt(formData.debt, 10).toLocaleString()}` : '--'}
+                        {formData.debt ? `$${parseInt(formData.debt, 10).toLocaleString()}` : "--"}
                       </p>
                     </div>
                     <Shield className="w-6 h-6 md:w-8 md:h-8 text-[#F59E0B]" />
@@ -552,7 +549,7 @@ export default function FinancialHealth() {
                     <div>
                       <p className="text-xs md:text-sm text-[#52796F]">Cash</p>
                       <p className="text-xl md:text-2xl font-bold text-[#1B4332]">
-                        {formData.cash ? `$${parseInt(formData.cash, 10).toLocaleString()}` : '--'}
+                        {formData.cash ? `$${parseInt(formData.cash, 10).toLocaleString()}` : "--"}
                       </p>
                     </div>
                     <Users className="w-6 h-6 md:w-8 md:h-8 text-[#3B82F6]" />
@@ -574,12 +571,7 @@ export default function FinancialHealth() {
                       </CardDescription>
                     </div>
                     <div className="flex gap-2">
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={handleQuickExample}
-                        className="text-xs md:text-sm btn-secondary"
-                      >
+                      <Button variant="outline" size="sm" onClick={handleQuickExample} className="text-xs md:text-sm btn-secondary">
                         Load Example
                       </Button>
                       <Button
@@ -612,7 +604,7 @@ export default function FinancialHealth() {
                             min="0"
                             placeholder="e.g., 25,000"
                             value={formData.revenue}
-                            onChange={(e) => updateField('revenue', e.target.value)}
+                            onChange={(e) => updateField("revenue", e.target.value)}
                             className="pl-10 text-lg h-12 border-[#52796F]/20 focus:border-[#1B4332]"
                           />
                         </div>
@@ -632,7 +624,7 @@ export default function FinancialHealth() {
                             min="0"
                             placeholder="e.g., 18,000"
                             value={formData.expenses}
-                            onChange={(e) => updateField('expenses', e.target.value)}
+                            onChange={(e) => updateField("expenses", e.target.value)}
                             className="pl-10 text-lg h-12 border-[#52796F]/20 focus:border-[#1B4332]"
                           />
                         </div>
@@ -651,7 +643,7 @@ export default function FinancialHealth() {
                           min="0"
                           placeholder="e.g., 40,000"
                           value={formData.debt}
-                          onChange={(e) => updateField('debt', e.target.value)}
+                          onChange={(e) => updateField("debt", e.target.value)}
                           className="text-lg h-12 border-[#52796F]/20 focus:border-[#1B4332]"
                         />
                       </div>
@@ -666,7 +658,7 @@ export default function FinancialHealth() {
                           min="0"
                           placeholder="e.g., 12,000"
                           value={formData.cash}
-                          onChange={(e) => updateField('cash', e.target.value)}
+                          onChange={(e) => updateField("cash", e.target.value)}
                           className="text-lg h-12 border-[#52796F]/20 focus:border-[#1B4332]"
                         />
                       </div>
@@ -695,18 +687,10 @@ export default function FinancialHealth() {
                     </Button>
 
                     <div className="flex gap-3">
-                      <Button
-                        variant="outline"
-                        onClick={handleClear}
-                        className="h-12 flex-1 sm:flex-none btn-secondary"
-                      >
+                      <Button variant="outline" onClick={handleClear} className="h-12 flex-1 sm:flex-none btn-secondary">
                         Clear All
                       </Button>
-                      <Button
-                        variant="outline"
-                        onClick={handleQuickExample}
-                        className="h-12 flex-1 sm:flex-none btn-secondary"
-                      >
+                      <Button variant="outline" onClick={handleQuickExample} className="h-12 flex-1 sm:flex-none btn-secondary">
                         Load Example
                       </Button>
                     </div>
@@ -717,8 +701,8 @@ export default function FinancialHealth() {
                     <div className="flex items-start gap-2">
                       <Info className="w-4 h-4 text-[#1B4332] mt-0.5 flex-shrink-0" />
                       <p className="text-sm text-[#1B4332]">
-                        <span className="font-semibold">Tip:</span> All calculations are done locally in your browser.
-                        Your data is stored only on your device for privacy.
+                        <span className="font-semibold">Tip:</span> All calculations are done locally in your browser. Your data is
+                        stored only on your device for privacy.
                       </p>
                     </div>
                   </div>
@@ -728,7 +712,7 @@ export default function FinancialHealth() {
           )}
 
           {/* Results Tab */}
-          {activeTab === 'results' && (
+          {activeTab === "results" && (
             <div className="p-6 space-y-6">
               {/* Score Header */}
               <div className="health-score-card rounded-2xl p-6">
@@ -740,7 +724,7 @@ export default function FinancialHealth() {
                     </div>
                     <div className="flex flex-col md:flex-row items-center gap-4">
                       <div className="relative">
-                        <div className="text-5xl md:text-6xl font-bold text-[#1B4332]">{currentResult?.score || '--'}</div>
+                        <div className="text-5xl md:text-6xl font-bold text-[#1B4332]">{currentResult?.score || "--"}</div>
                         <div className="text-sm text-[#52796F] text-center">/100</div>
                       </div>
                       {currentResult && (
@@ -750,9 +734,7 @@ export default function FinancialHealth() {
                           </Badge>
                           <p className="text-[#52796F] mt-2 max-w-md">
                             Your business financial health is {healthLabel(currentResult.score).toLowerCase()}.
-                            {currentResult.score >= 80
-                              ? ' Keep up the great work!'
-                              : ' Review the recommendations below to improve.'}
+                            {currentResult.score >= 80 ? " Keep up the great work!" : " Review the recommendations below to improve."}
                           </p>
                         </div>
                       )}
@@ -760,11 +742,7 @@ export default function FinancialHealth() {
                   </div>
 
                   {currentResult && (
-                    <Button
-                      onClick={() => setActiveTab('input')}
-                      variant="outline"
-                      className="whitespace-nowrap btn-secondary"
-                    >
+                    <Button onClick={() => setActiveTab("input")} variant="outline" className="whitespace-nowrap btn-secondary">
                       <RefreshCw className="w-4 h-4 mr-2" />
                       Recalculate
                     </Button>
@@ -806,10 +784,10 @@ export default function FinancialHealth() {
                                 <Tooltip
                                   formatter={(value, name) => [`${value} pts`, name]}
                                   contentStyle={{
-                                    backgroundColor: 'white',
-                                    border: '1px solid rgba(27, 67, 50, 0.1)',
-                                    borderRadius: '8px',
-                                    color: '#1B4332'
+                                    backgroundColor: "white",
+                                    border: "1px solid rgba(27, 67, 50, 0.1)",
+                                    borderRadius: "8px",
+                                    color: "#1B4332",
                                   }}
                                 />
                               </PieChart>
@@ -823,10 +801,7 @@ export default function FinancialHealth() {
                             {breakdownData.map((entry, idx) => (
                               <div key={idx} className="flex items-center justify-between">
                                 <div className="flex items-center gap-2">
-                                  <div
-                                    className="w-3 h-3 rounded-full"
-                                    style={{ backgroundColor: entry.color }}
-                                  />
+                                  <div className="w-3 h-3 rounded-full" style={{ backgroundColor: entry.color }} />
                                   <span className="text-sm font-medium text-[#1B4332]">{entry.name}</span>
                                 </div>
                                 <span className="text-sm font-semibold text-[#52796F]">{entry.value} pts</span>
@@ -853,10 +828,7 @@ export default function FinancialHealth() {
                           </div>
                           <div className="text-2xl font-bold text-[#1B4332]">{(metrics.margin * 100).toFixed(1)}%</div>
                           <div className="mt-2 h-2 bg-[#10B981]/20 rounded-full overflow-hidden">
-                            <div
-                              className="h-full bg-[#10B981] rounded-full progress-gradient"
-                              style={{ width: `${Math.min(100, metrics.margin * 200)}%` }}
-                            />
+                            <div className="h-full rounded-full progress-gradient" style={{ width: `${Math.min(100, metrics.margin * 200)}%` }} />
                           </div>
                         </div>
 
@@ -866,10 +838,10 @@ export default function FinancialHealth() {
                             <Calendar className="h-4 w-4 text-[#3B82F6]" />
                           </div>
                           <div className="text-2xl font-bold text-[#1B4332]">
-                            {Number.isFinite(metrics.runway) ? metrics.runway.toFixed(1) : '12.0'} months
+                            {Number.isFinite(metrics.runway) ? metrics.runway.toFixed(1) : "12.0"} months
                           </div>
                           <div className="text-sm text-[#3B82F6] mt-1">
-                            {metrics.runway >= 6 ? 'Excellent' : metrics.runway >= 3 ? 'Good' : 'Critical'}
+                            {metrics.runway >= 6 ? "Excellent" : metrics.runway >= 3 ? "Good" : "Critical"}
                           </div>
                         </div>
 
@@ -880,7 +852,7 @@ export default function FinancialHealth() {
                           </div>
                           <div className="text-2xl font-bold text-[#1B4332]">{(metrics.debtLoad * 100).toFixed(0)}%</div>
                           <div className="text-sm text-[#F59E0B] mt-1">
-                            {metrics.debtLoad < 0.3 ? 'Low' : metrics.debtLoad < 0.6 ? 'Moderate' : 'High'}
+                            {metrics.debtLoad < 0.3 ? "Low" : metrics.debtLoad < 0.6 ? "Moderate" : "High"}
                           </div>
                         </div>
                       </CardContent>
@@ -899,13 +871,14 @@ export default function FinancialHealth() {
                           mismatchAreas.slice(0, 3).map((item, idx) => (
                             <div
                               key={idx}
-                              className={`insight-card p-3 rounded-lg ${item.severity === 'critical'
-                                ? 'leak-card-high'
-                                : 'leak-card-medium'
+                              className={`insight-card p-3 rounded-lg ${
+                                item.severity === "critical" ? "leak-card-high" : "leak-card-medium"
                               }`}
                             >
                               <div className="flex items-center gap-2">
-                                <AlertTriangle className={`h-4 w-4 ${item.severity === 'critical' ? 'text-[#DC2626]' : 'text-[#F59E0B]'}`} />
+                                <AlertTriangle
+                                  className={`h-4 w-4 ${item.severity === "critical" ? "text-[#DC2626]" : "text-[#F59E0B]"}`}
+                                />
                                 <span className="font-semibold text-sm text-[#1B4332]">{item.area}</span>
                               </div>
                               <p className="text-xs text-[#52796F] mt-1">{item.description}</p>
@@ -919,11 +892,7 @@ export default function FinancialHealth() {
                           </div>
                         )}
 
-                        <Button
-                          variant="outline"
-                          className="w-full mt-4 btn-secondary"
-                          onClick={() => setActiveTab('results')}
-                        >
+                        <Button variant="outline" className="w-full mt-4 btn-secondary" onClick={() => setActiveTab("results")}>
                           View Full Analysis
                           <ArrowRight className="w-4 h-4 ml-2" />
                         </Button>
@@ -951,12 +920,12 @@ export default function FinancialHealth() {
                                 <XAxis dataKey="name" stroke="#52796F" />
                                 <YAxis stroke="#52796F" />
                                 <Tooltip
-                                  formatter={(value) => [`$${Number(value).toLocaleString()}`, '']}
+                                  formatter={(value) => [`$${Number(value).toLocaleString()}`, ""]}
                                   contentStyle={{
-                                    backgroundColor: 'white',
-                                    border: '1px solid rgba(27, 67, 50, 0.1)',
-                                    borderRadius: '8px',
-                                    color: '#1B4332'
+                                    backgroundColor: "white",
+                                    border: "1px solid rgba(27, 67, 50, 0.1)",
+                                    borderRadius: "8px",
+                                    color: "#1B4332",
                                   }}
                                 />
                                 <Bar dataKey="value" radius={[8, 8, 0, 0]}>
@@ -968,7 +937,7 @@ export default function FinancialHealth() {
                             </ResponsiveContainer>
                           </div>
 
-                          {/* ✅ FIXED RIGHT SIDE COLORS (Gold / Forest / Light Green) */}
+                          {/* Right side metrics */}
                           <div className="space-y-4">
                             {/* Monthly Revenue (GOLD) */}
                             <div className="metric-card-green p-4 rounded-lg">
@@ -987,7 +956,7 @@ export default function FinancialHealth() {
                               </div>
                               <p className="text-2xl font-bold text-[#1B4332]">${expenses.toLocaleString()}</p>
                               <p className="text-sm mt-1" style={{ color: BAR_COLORS.expenses }}>
-                                {revenue > 0 ? `${((expenses / revenue) * 100).toFixed(1)}% of revenue` : '0% of revenue'}
+                                {revenue > 0 ? `${((expenses / revenue) * 100).toFixed(1)}% of revenue` : "0% of revenue"}
                               </p>
                             </div>
 
@@ -1016,7 +985,9 @@ export default function FinancialHealth() {
                             <AlertTriangle className="h-5 w-5 text-[#F59E0B]" />
                             Key Mismatch Areas
                           </CardTitle>
-                          <CardDescription className="text-[#52796F]">Areas requiring attention based on your financial data</CardDescription>
+                          <CardDescription className="text-[#52796F]">
+                            Areas requiring attention based on your financial data
+                          </CardDescription>
                         </CardHeader>
                         <CardContent>
                           {mismatchAreas.length > 0 ? (
@@ -1024,18 +995,20 @@ export default function FinancialHealth() {
                               {mismatchAreas.map((item, idx) => (
                                 <div
                                   key={idx}
-                                  className={`p-4 rounded-lg ${item.severity === 'critical'
-                                    ? 'leak-card-high'
-                                    : 'leak-card-medium'
-                                  }`}
+                                  className={`p-4 rounded-lg ${item.severity === "critical" ? "leak-card-high" : "leak-card-medium"}`}
                                 >
                                   <div className="flex items-center gap-2 mb-2">
-                                    <AlertTriangle className={`h-5 w-5 ${item.severity === 'critical' ? 'text-[#DC2626]' : 'text-[#F59E0B]'}`} />
+                                    <AlertTriangle
+                                      className={`h-5 w-5 ${item.severity === "critical" ? "text-[#DC2626]" : "text-[#F59E0B]"}`}
+                                    />
                                     <span className="font-semibold text-[#1B4332]">{item.area}</span>
-                                    <Badge className={`ml-auto ${item.severity === 'critical'
-                                      ? 'bg-[#DC2626]/10 text-[#DC2626] border-[#DC2626]/20'
-                                      : 'bg-[#F59E0B]/10 text-[#F59E0B] border-[#F59E0B]/20'
-                                    }`}>
+                                    <Badge
+                                      className={`ml-auto ${
+                                        item.severity === "critical"
+                                          ? "bg-[#DC2626]/10 text-[#DC2626] border-[#DC2626]/20"
+                                          : "bg-[#F59E0B]/10 text-[#F59E0B] border-[#F59E0B]/20"
+                                      }`}
+                                    >
                                       {item.severity}
                                     </Badge>
                                   </div>
@@ -1079,19 +1052,11 @@ export default function FinancialHealth() {
                                 <div className="w-full">
                                   <span className="text-sm font-medium text-[#1B4332]">{rec}</span>
 
-                                  {/* ✅ RESPONSIVE BUTTONS */}
                                   <div className="mt-3 flex flex-col sm:flex-row gap-2 w-full">
-                                    <Button
-                                      size="sm"
-                                      variant="outline"
-                                      className="h-9 text-xs sm:text-sm btn-secondary w-full sm:w-auto"
-                                    >
+                                    <Button size="sm" variant="outline" className="h-9 text-xs sm:text-sm btn-secondary w-full sm:w-auto">
                                       Learn More
                                     </Button>
-                                    <Button
-                                      size="sm"
-                                      className="h-9 text-xs sm:text-sm btn-primary w-full sm:w-auto"
-                                    >
+                                    <Button size="sm" className="h-9 text-xs sm:text-sm btn-primary w-full sm:w-auto">
                                       Take Action
                                     </Button>
                                   </div>
@@ -1112,7 +1077,7 @@ export default function FinancialHealth() {
                     <p className="text-[#52796F] mb-4">
                       Calculate your financial health score to see detailed results and insights
                     </p>
-                    <Button onClick={() => setActiveTab('input')} className="btn-primary">
+                    <Button onClick={() => setActiveTab("input")} className="btn-primary">
                       Go to Input
                     </Button>
                   </CardContent>
@@ -1122,7 +1087,7 @@ export default function FinancialHealth() {
           )}
 
           {/* History Tab */}
-          {activeTab === 'history' && (
+          {activeTab === "history" && (
             <div className="p-6">
               <Card className="achievement-card">
                 <CardHeader>
@@ -1142,10 +1107,10 @@ export default function FinancialHealth() {
                           <YAxis domain={[0, 100]} stroke="#52796F" />
                           <Tooltip
                             contentStyle={{
-                              backgroundColor: 'white',
-                              border: '1px solid rgba(27, 67, 50, 0.1)',
-                              borderRadius: '8px',
-                              color: '#1B4332'
+                              backgroundColor: "white",
+                              border: "1px solid rgba(27, 67, 50, 0.1)",
+                              borderRadius: "8px",
+                              color: "#1B4332",
                             }}
                           />
                           <Line
@@ -1153,7 +1118,7 @@ export default function FinancialHealth() {
                             dataKey="score"
                             stroke="#1B4332"
                             strokeWidth={3}
-                            dot={{ fill: '#1B4332', strokeWidth: 2 }}
+                            dot={{ fill: "#1B4332", strokeWidth: 2 }}
                           />
                         </LineChart>
                       </ResponsiveContainer>
@@ -1162,7 +1127,7 @@ export default function FinancialHealth() {
                         <TrendingUp className="h-16 w-16 text-[#52796F]/30 mb-4" />
                         <p className="text-[#1B4332] text-lg font-medium mb-2">No history yet</p>
                         <p className="text-[#52796F] text-sm mb-4">Calculate your first score to start tracking</p>
-                        <Button onClick={() => setActiveTab('input')} className="btn-primary">
+                        <Button onClick={() => setActiveTab("input")} className="btn-primary">
                           <Calculator className="w-4 h-4 mr-2" />
                           Calculate Score
                         </Button>
@@ -1178,3 +1143,4 @@ export default function FinancialHealth() {
     </DashboardLayout>
   );
 }
+

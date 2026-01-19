@@ -1,11 +1,14 @@
 import React, { useState } from "react";
 import { toast } from "sonner";
-import DashboardLayout from "../../../frontend/src/components/layout/DashboardLayout";
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "../../../frontend/src/components/ui/card";
-import { Button } from "../../../frontend/src/components/ui/button";
-import { Input } from "../../../frontend/src/components/ui/input";
+import { useNavigate } from "react-router-dom";
+import DashboardLayout from "../../components/layout/DashboardLayout";
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "../../components/ui/card";
+import { Button } from "../../components/ui/button";
+import { Input } from "../../components/ui/input";
 
 export default function LanguageIdentification() {
+  const navigate = useNavigate();
+
   const [state, setState] = useState({
     autoDetect: true,
     preferredLanguage: "English",
@@ -15,6 +18,7 @@ export default function LanguageIdentification() {
   const onSave = () => {
     // PUT /api/settings/language
     toast.success("Language settings saved.");
+    navigate("/settings");
   };
 
   return (
@@ -40,11 +44,17 @@ export default function LanguageIdentification() {
             </div>
 
             <Field label="Preferred language">
-              <Input value={state.preferredLanguage} onChange={(e) => setState((s) => ({ ...s, preferredLanguage: e.target.value }))} />
+              <Input
+                value={state.preferredLanguage}
+                onChange={(e) => setState((s) => ({ ...s, preferredLanguage: e.target.value }))}
+              />
             </Field>
 
             <Field label="Secondary language (optional)">
-              <Input value={state.secondaryLanguage} onChange={(e) => setState((s) => ({ ...s, secondaryLanguage: e.target.value }))} />
+              <Input
+                value={state.secondaryLanguage}
+                onChange={(e) => setState((s) => ({ ...s, secondaryLanguage: e.target.value }))}
+              />
             </Field>
 
             <div className="pt-2 flex justify-end">

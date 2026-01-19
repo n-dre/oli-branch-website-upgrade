@@ -25,9 +25,9 @@ import {
   IdCard,
 } from "lucide-react";
 
-import DashboardLayout from "../../../frontend/src/components/layout/DashboardLayout";
-import { Card, CardContent } from "../../../frontend/src/components/ui/card";
-import { useTheme } from "../../../frontend/src/context/ThemeContext";
+import DashboardLayout from "../../components/layout/DashboardLayout";
+import { Card, CardContent } from "../../components/ui/card";
+import { useTheme } from "../../context/ThemeContext";
 
 // Inline switch
 function InlineSwitch({ checked, onChange, disabled }) {

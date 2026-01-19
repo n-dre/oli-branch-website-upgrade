@@ -197,7 +197,7 @@ const About = () => {
                 <div className="flex items-center justify-between">
                 <Link to="/" className="flex items-center space-x-2">
                     <img
-                    src="/resources/oli-branch00.png"
+                    src="/images/oli-branch00.png"
                     alt="Oli Logo"
                     className="w-12 h-12 rounded-lg"
                     />
@@ -611,7 +611,7 @@ const About = () => {
             <div className="md:col-span-2">
               <div className="flex items-center space-x-2 mb-4">
                 <div className="w-10 h-10 rounded-lg flex items-center justify-center overflow-hidden">
-                  <img src="/resources/oli-branch00.png" alt="Oli Logo" className="w-full h-full object-cover" />
+                  <img src="/images/oli-branch00.png" alt="Oli Logo" className="w-full h-full object-cover" />
                 </div>
                 <span className="font-display font-bold text-xl">Oli-Branch</span>
               </div>
@@ -732,7 +732,7 @@ const About = () => {
 
       {/* Floating AI Button */}
       <div id="oli-chat-trigger" onClick={talkToOli} title="Talk to Oli AI">
-        <img src="/resources/Gemini_Generated_Image_qt3fakqt3fakqt3f.png" alt="Oli AI Avatar" className="oli-avatar-img shadow-2xl" />
+        <img src="/images/Gemini_Generated_Image_qt3fakqt3fakqt3f.png" alt="Oli Avatar" className="oli-avatar-img shadow-2xl" />
       </div>
     </div>
   );

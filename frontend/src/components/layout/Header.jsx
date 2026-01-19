@@ -1,7 +1,16 @@
+// frontend/src/components/Header.jsx
 import React from "react";
 import { useData } from "../../context/DataContext";
 import { useTheme } from "../../context/ThemeContext";
-import { Moon, Sun, Bell } from "lucide-react";
+import {
+  Moon,
+  Sun,
+  Bell,
+  HelpCircle,
+  GraduationCap,
+  Settings,
+  Grid
+} from "lucide-react";
 import { Button } from "../ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 
@@ -20,24 +29,32 @@ export default function Header({ title, subtitle }) {
       .slice(0, 2) || "OB";
 
   return (
-    <header className="sticky top-0 z-30 bg-card/80 backdrop-blur-md border-b border-border px-4 sm:px-6 lg:px-8 py-4">
-      {/* ✅ min-w-0 + gap prevents right icons from being pushed off */}
+    <header className="bg-card/80 backdrop-blur-md border-b border-border px-4 sm:px-6 lg:px-8 py-4">
       <div className="flex items-center justify-between gap-3 min-w-0">
-        {/* ✅ allow title block to shrink instead of pushing icons */}
-        <div className="lg:ml-0 ml-12 min-w-0 flex-1">
-          <h1 className="font-display text-xl lg:text-2xl font-bold text-foreground truncate">
-            {title}
-          </h1>
-          {subtitle ? (
-            <p className="text-sm text-muted-foreground mt-0.5 truncate">
-              {subtitle}
-            </p>
-          ) : null}
+
+        {/* LEFT — Title */}
+        <div className="flex items-center gap-3 min-w-0 flex-1">
+          <div className="min-w-0">
+            <h1 className="font-display text-xl lg:text-2xl font-bold text-foreground truncate">
+              {title}
+            </h1>
+            {subtitle && (
+              <p className="text-sm text-muted-foreground mt-0.5 truncate">
+                {subtitle}
+              </p>
+            )}
+          </div>
         </div>
 
-        {/* ✅ shrink-0 stops bell/theme from collapsing */}
+        {/* RIGHT — Global Utilities */}
         <div className="flex items-center gap-2 sm:gap-3 shrink-0">
-          {/* ✅ fixed tap target for mobile */}
+
+          {/* Help */}
+          <Button variant="ghost" size="icon" type="button">
+            <HelpCircle className="h-5 w-5" />
+          </Button>
+
+          {/* Notifications */}
           <Button
             variant="ghost"
             size="icon"
@@ -48,7 +65,12 @@ export default function Header({ title, subtitle }) {
             <span className="absolute -top-0.5 -right-0.5 w-2 h-2 bg-accent rounded-full" />
           </Button>
 
-          {/* ✅ fixed tap target for mobile */}
+          {/* Learning Center */}
+          <Button variant="ghost" size="icon" type="button">
+            <GraduationCap className="h-5 w-5" />
+          </Button>
+
+          {/* Theme Toggle */}
           <Button
             variant="ghost"
             size="icon"
@@ -63,6 +85,17 @@ export default function Header({ title, subtitle }) {
             )}
           </Button>
 
+          {/* Settings */}
+          <Button variant="ghost" size="icon" type="button">
+            <Settings className="h-5 w-5" />
+          </Button>
+
+          {/* App Switcher */}
+          <Button variant="ghost" size="icon" type="button">
+            <Grid className="h-5 w-5" />
+          </Button>
+
+          {/* User */}
           <div className="flex items-center gap-3 pl-3 border-l border-border">
             <div className="text-right hidden sm:block">
               <p className="text-sm font-medium text-foreground">
@@ -74,9 +107,9 @@ export default function Header({ title, subtitle }) {
             </div>
 
             <Avatar className="h-10 w-10 ring-2 ring-transparent shrink-0">
-              {profileImage ? (
+              {profileImage && (
                 <AvatarImage src={profileImage} alt="Profile" />
-              ) : null}
+              )}
               <AvatarFallback className="bg-primary text-primary-foreground font-semibold">
                 {initials}
               </AvatarFallback>

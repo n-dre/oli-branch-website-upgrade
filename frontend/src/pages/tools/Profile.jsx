@@ -3,13 +3,14 @@ import { motion } from "framer-motion";
 import { toast } from "sonner";
 import { User, Building2, Upload, Lock } from "lucide-react";
 
-import DashboardLayout from "../../../frontend/src/components/layout/DashboardLayout";
-import { Card, CardContent, CardHeader, CardTitle } from "../../../frontend/src/components/ui/card";
-import { Button } from "../../../frontend/src/components/ui/button";
-import { Input } from "../../../frontend/src/components/ui/input";
-import { Label } from "../../../frontend/src/components/ui/label";
-import { Avatar, AvatarFallback, AvatarImage } from "../../../frontend/src/components/ui/avatar";
-import { useData } from "../../../frontend/src/context/DataContext";
+// CORRECTED - Remove "../../frontend/src/" from all paths
+import DashboardLayout from "../../components/layout/DashboardLayout";
+import { Card, CardContent, CardHeader, CardTitle } from "../../components/ui/card";
+import { Button } from "../../components/ui/button";
+import { Input } from "../../components/ui/input";
+import { Label } from "../../components/ui/label";
+import { Avatar, AvatarFallback, AvatarImage } from "../../components/ui/avatar";
+import { useData } from "../../context/DataContext";
 
 export default function Profile() {
   const { settings, updateSettings, profileImage, updateProfileImage } = useData();

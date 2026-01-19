@@ -5,6 +5,33 @@
         background: linear-gradient(155deg, #1B4332 0%, #52796F 108%);
     }
 
+    @layer components {
+    /* ... your existing styles ... */
+    
+    /* Mobile header - FORCE visibility on mobile */
+    .mobile-header {
+        display: flex !important;
+        background-color: white;
+        box-shadow: 0 2px 10px rgba(27, 67, 50, 0.1);
+    }
+    
+    @media (min-width: 1024px) {
+        .mobile-header {
+            display: none !important;
+        }
+    }
+    
+    /* Desktop header - hide on mobile, show on desktop */
+    .desktop-header {
+        display: none !important;
+    }
+    
+    @media (min-width: 1024px) {
+        .desktop-header {
+            display: block !important;
+        }
+    }
+}
     .glass-effect {
         -webkit-backdrop-filter: blur(10px); /* Vendor prefix first */
         backdrop-filter: blur(10px); /* Standard property after */

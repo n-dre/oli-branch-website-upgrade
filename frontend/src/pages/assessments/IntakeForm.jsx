@@ -1,7 +1,8 @@
-import React, { useState } from 'react';
+// frontend/src/pages/assessments/IntakeForm.jsx
+import React, { useState } from "react";
 import { motion } from "framer-motion";
-import { useNavigate } from 'react-router-dom';
-import { toast } from 'sonner';
+import { useNavigate } from "react-router-dom";
+import { toast } from "sonner";
 import {
   Mail,
   Building2,
@@ -14,133 +15,122 @@ import {
   CheckCircle,
   ArrowRight,
   ArrowLeft,
-  Sparkles
-} from 'lucide-react';
-import DashboardLayout from '../../../frontend/src/components/layout/DashboardLayout';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '../../../frontend/src/components/ui/card';
-import { Button } from '../../../frontend/src/components/ui/button';
-import { Input } from '../../../frontend/src/components/ui/input';
-import { Label } from '../../../frontend/src/components/ui/label';
-import { Checkbox } from '../../../frontend/src/components/ui/checkbox';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../../../frontend/src/components/ui/select';
-import { Progress } from '../../../frontend/src/components/ui/progress';
-import { useData } from '../../../frontend/src/context/DataContext';
-import { cn } from '../../lib/utils';
+  Sparkles,
+} from "lucide-react";
+
+// ✅ FIXED IMPORTS (relative to frontend/src/pages/assessments)
+import DashboardLayout from "../../components/layout/DashboardLayout";
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "../../components/ui/card";
+import { Button } from "../../components/ui/button";
+import { Input } from "../../components/ui/input";
+import { Label } from "../../components/ui/label";
+import { Checkbox } from "../../components/ui/checkbox";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../../components/ui/select";
+import { Progress } from "../../components/ui/progress";
+import { useData } from "../../context/DataContext";
+import { cn } from "../../lib/utils";
 
 const STEPS = [
-  { id: 1, title: 'Contact Info', icon: Mail },
-  { id: 2, title: 'Business Details', icon: Building2 },
-  { id: 3, title: 'Banking Info', icon: CreditCard },
-  { id: 4, title: 'Additional Info', icon: Award },
+  { id: 1, title: "Contact Info", icon: Mail },
+  { id: 2, title: "Business Details", icon: Building2 },
+  { id: 3, title: "Banking Info", icon: CreditCard },
+  { id: 4, title: "Additional Info", icon: Award },
 ];
 
-const ENTITY_TYPES = [
-  'Sole Proprietor',
-  'LLC',
-  'S-Corp',
-  'C-Corp',
-  'Partnership',
-  'Non-Profit'
-];
+const ENTITY_TYPES = ["Sole Proprietor", "LLC", "S-Corp", "C-Corp", "Partnership", "Non-Profit"];
 
 export default function IntakeForm() {
   const navigate = useNavigate();
   const { addResponse, getScoring } = useData();
+
   const [currentStep, setCurrentStep] = useState(1);
   const [formData, setFormData] = useState({
-    email: '',
-    businessName: '',
-    entityType: '',
-    monthlyRevenue: '',
-    accountType: '',
+    email: "",
+    businessName: "",
+    entityType: "",
+    monthlyRevenue: "",
+    accountType: "",
     cashDeposits: false,
-    monthlyFees: '',
+    monthlyFees: "",
     wantsGrants: false,
     veteranOwned: false,
     immigrantFounder: false,
-    zipCode: '',
-    consent: false
+    zipCode: "",
+    consent: false,
   });
   const [errors, setErrors] = useState({});
 
   const updateField = (field, value) => {
-    setFormData(prev => ({ ...prev, [field]: value }));
-    if (errors[field]) {
-      setErrors(prev => ({ ...prev, [field]: null }));
-    }
+    setFormData((prev) => ({ ...prev, [field]: value }));
+    if (errors[field]) setErrors((prev) => ({ ...prev, [field]: null }));
   };
 
   const validateStep = (step) => {
     const newErrors = {};
-    
+
     if (step === 1) {
-      if (!formData.email) newErrors.email = 'Email is required';
+      if (!formData.email) newErrors.email = "Email is required";
       else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
-        newErrors.email = 'Invalid email format';
+        newErrors.email = "Invalid email format";
       }
-      if (!formData.businessName) newErrors.businessName = 'Business name is required';
+      if (!formData.businessName) newErrors.businessName = "Business name is required";
     }
-    
+
     if (step === 2) {
-      if (!formData.entityType) newErrors.entityType = 'Entity type is required';
-      if (!formData.monthlyRevenue) newErrors.monthlyRevenue = 'Monthly revenue is required';
+      if (!formData.entityType) newErrors.entityType = "Entity type is required";
+      if (!formData.monthlyRevenue) newErrors.monthlyRevenue = "Monthly revenue is required";
       else if (isNaN(formData.monthlyRevenue) || Number(formData.monthlyRevenue) < 0) {
-        newErrors.monthlyRevenue = 'Enter a valid amount';
+        newErrors.monthlyRevenue = "Enter a valid amount";
       }
     }
-    
+
     if (step === 3) {
-      if (!formData.accountType) newErrors.accountType = 'Account type is required';
-      if (!formData.monthlyFees) newErrors.monthlyFees = 'Monthly fees is required';
+      if (!formData.accountType) newErrors.accountType = "Account type is required";
+      if (!formData.monthlyFees) newErrors.monthlyFees = "Monthly fees is required";
       else if (isNaN(formData.monthlyFees) || Number(formData.monthlyFees) < 0) {
-        newErrors.monthlyFees = 'Enter a valid amount';
+        newErrors.monthlyFees = "Enter a valid amount";
       }
     }
-    
+
     if (step === 4) {
-      if (!formData.zipCode) newErrors.zipCode = 'ZIP code is required';
+      if (!formData.zipCode) newErrors.zipCode = "ZIP code is required";
       else if (!/^\d{5}(-\d{4})?$/.test(formData.zipCode)) {
-        newErrors.zipCode = 'Enter a valid ZIP code';
+        newErrors.zipCode = "Enter a valid ZIP code";
       }
-      if (!formData.consent) newErrors.consent = 'Consent is required to proceed';
+      if (!formData.consent) newErrors.consent = "Consent is required to proceed";
     }
-    
+
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
-  };
-
-  const handleNext = () => {
-    if (validateStep(currentStep)) {
-      if (currentStep < 4) {
-        setCurrentStep(prev => prev + 1);
-      } else {
-        handleSubmit();
-      }
-    }
-  };
-
-  const handlePrev = () => {
-    if (currentStep > 1) {
-      setCurrentStep(prev => prev - 1);
-    }
   };
 
   const handleSubmit = () => {
     const submission = {
       ...formData,
       monthlyRevenue: Number(formData.monthlyRevenue),
-      monthlyFees: Number(formData.monthlyFees)
+      monthlyFees: Number(formData.monthlyFees),
     };
-    
+
     const newResponse = addResponse(submission);
     const scoring = getScoring(newResponse);
-    
-    toast.success('Form submitted successfully!', {
+
+    toast.success("Form submitted successfully!", {
       description: `Mismatch Score: ${scoring.mismatchScore} (${scoring.riskLabel} Risk)`,
-      duration: 5000
+      duration: 5000,
     });
-    
+
     navigate(`/report/${encodeURIComponent(formData.email)}`);
+  };
+
+  const handleNext = () => {
+    if (!validateStep(currentStep)) return;
+
+    if (currentStep < 4) setCurrentStep((prev) => prev + 1);
+    else handleSubmit();
+  };
+
+  const handlePrev = () => {
+    if (currentStep > 1) setCurrentStep((prev) => prev - 1);
   };
 
   const progress = (currentStep / 4) * 100;
@@ -148,78 +138,63 @@ export default function IntakeForm() {
   return (
     <DashboardLayout title="Business Intake Form" subtitle="Complete this form to analyze your financial mismatch">
       <style>{`
-        .hero-gradient {
-          background: linear-gradient(135deg, #1B4332 0%, #52796F 100%);
-        }
+        .hero-gradient { background: linear-gradient(135deg, #1B4332 0%, #52796F 100%); }
 
         .btn-primary {
           background: #1B4332 !important;
           color: #F8F5F0 !important;
           transition: all 0.3s ease;
         }
-
         .btn-primary:hover {
           background: #52796F !important;
           transform: translateY(-2px);
           box-shadow: 0 10px 20px rgba(27, 67, 50, 0.3);
         }
-
         .btn-secondary {
           border: 2px solid #1B4332 !important;
           color: #1B4332 !important;
           background: transparent !important;
           transition: all 0.3s ease;
         }
-
         .btn-secondary:hover {
           background: #1B4332 !important;
           color: #F8F5F0 !important;
         }
-
         .course-card {
           transition: all 0.3s ease;
           border: 1px solid rgba(82, 121, 111, 0.1);
           background: linear-gradient(135deg, rgba(27, 67, 50, 0.02) 0%, rgba(82, 121, 111, 0.02) 100%);
         }
-
         .course-card:hover {
           transform: translateY(-8px);
           box-shadow: 0 20px 40px rgba(27, 67, 50, 0.15);
           border-color: #52796F;
         }
-
         .achievement-card {
           border-left: 4px solid #1B4332 !important;
           transition: all 0.3s ease;
           background: linear-gradient(135deg, rgba(27, 67, 50, 0.05) 0%, rgba(82, 121, 111, 0.05) 100%);
         }
-
         .achievement-card:hover {
           transform: translateY(-4px);
           box-shadow: 0 12px 24px rgba(27, 67, 50, 0.15);
           border-color: #52796F !important;
         }
-
         .stats-card {
           background: linear-gradient(135deg, rgba(27, 67, 50, 0.05) 0%, rgba(82, 121, 111, 0.05) 100%);
           border: 1px solid rgba(82, 121, 111, 0.1);
         }
-
         .stats-card:hover {
           transform: translateY(-2px);
           box-shadow: 0 8px 16px rgba(27, 67, 50, 0.1);
         }
-
-        .progress-gradient {
-          background: linear-gradient(90deg, #1B4332 0%, #52796F 100%);
-        }
+        .progress-gradient { background: linear-gradient(90deg, #1B4332 0%, #52796F 100%); }
 
         .tag-badge {
           background: rgba(27, 67, 50, 0.1) !important;
           color: #1B4332 !important;
           border: 1px solid rgba(27, 67, 50, 0.2) !important;
         }
-
         .category-badge {
           background: rgba(82, 121, 111, 0.1) !important;
           color: #52796F !important;
@@ -227,42 +202,19 @@ export default function IntakeForm() {
         }
 
         @media (max-width: 640px) {
-          .mobile-stack {
-            flex-direction: column !important;
-          }
-          
-          .mobile-full {
-            width: 100% !important;
-          }
-          
-          .mobile-text-center {
-            text-align: center !important;
-          }
-          
-          .mobile-p-4 {
-            padding: 1rem !important;
-          }
-          
-          .mobile-gap-4 {
-            gap: 1rem !important;
-          }
+          .mobile-stack { flex-direction: column !important; }
+          .mobile-full { width: 100% !important; }
+          .mobile-text-center { text-align: center !important; }
+          .mobile-p-4 { padding: 1rem !important; }
+          .mobile-gap-4 { gap: 1rem !important; }
         }
-
         @media (max-width: 768px) {
-          .tablet-flex-col {
-            flex-direction: column !important;
-          }
-          
-          .tablet-w-full {
-            width: 100% !important;
-          }
-          
-          .tablet-mb-4 {
-            margin-bottom: 1rem !important;
-          }
+          .tablet-flex-col { flex-direction: column !important; }
+          .tablet-w-full { width: 100% !important; }
+          .tablet-mb-4 { margin-bottom: 1rem !important; }
         }
       `}</style>
-      
+
       <div className="max-w-3xl mx-auto">
         {/* Progress Steps */}
         <div className="mb-8">
@@ -321,8 +273,9 @@ export default function IntakeForm() {
                 {currentStep === 4 && "Additional details for better recommendations"}
               </CardDescription>
             </CardHeader>
+
             <CardContent className="space-y-6">
-              {/* Step 1: Contact Info */}
+              {/* Step 1 */}
               {currentStep === 1 && (
                 <>
                   <div className="space-y-2">
@@ -334,7 +287,7 @@ export default function IntakeForm() {
                         type="email"
                         placeholder="you@business.com"
                         value={formData.email}
-                        onChange={(e) => updateField('email', e.target.value)}
+                        onChange={(e) => updateField("email", e.target.value)}
                         className={cn("pl-10", errors.email && "border-destructive")}
                       />
                     </div>
@@ -349,7 +302,7 @@ export default function IntakeForm() {
                         id="businessName"
                         placeholder="Your Business LLC"
                         value={formData.businessName}
-                        onChange={(e) => updateField('businessName', e.target.value)}
+                        onChange={(e) => updateField("businessName", e.target.value)}
                         className={cn("pl-10", errors.businessName && "border-destructive")}
                       />
                     </div>
@@ -358,21 +311,20 @@ export default function IntakeForm() {
                 </>
               )}
 
-              {/* Step 2: Business Details */}
+              {/* Step 2 */}
               {currentStep === 2 && (
                 <>
                   <div className="space-y-2">
                     <Label htmlFor="entityType">Entity Type *</Label>
-                    <Select
-                      value={formData.entityType}
-                      onValueChange={(value) => updateField('entityType', value)}
-                    >
+                    <Select value={formData.entityType} onValueChange={(v) => updateField("entityType", v)}>
                       <SelectTrigger className={errors.entityType && "border-destructive"}>
                         <SelectValue placeholder="Select entity type" />
                       </SelectTrigger>
                       <SelectContent>
                         {ENTITY_TYPES.map((type) => (
-                          <SelectItem key={type} value={type}>{type}</SelectItem>
+                          <SelectItem key={type} value={type}>
+                            {type}
+                          </SelectItem>
                         ))}
                       </SelectContent>
                     </Select>
@@ -389,7 +341,7 @@ export default function IntakeForm() {
                         min="0"
                         placeholder="10000"
                         value={formData.monthlyRevenue}
-                        onChange={(e) => updateField('monthlyRevenue', e.target.value)}
+                        onChange={(e) => updateField("monthlyRevenue", e.target.value)}
                         className={cn("pl-10", errors.monthlyRevenue && "border-destructive")}
                       />
                     </div>
@@ -398,7 +350,7 @@ export default function IntakeForm() {
                 </>
               )}
 
-              {/* Step 3: Banking Info */}
+              {/* Step 3 */}
               {currentStep === 3 && (
                 <>
                   <div className="space-y-2">
@@ -406,10 +358,10 @@ export default function IntakeForm() {
                     <div className="grid grid-cols-2 gap-4">
                       <button
                         type="button"
-                        onClick={() => updateField('accountType', 'business')}
+                        onClick={() => updateField("accountType", "business")}
                         className={cn(
                           "p-4 rounded-lg border-2 transition-all duration-200 text-left",
-                          formData.accountType === 'business'
+                          formData.accountType === "business"
                             ? "border-primary bg-primary/5"
                             : "border-border hover:border-primary/50",
                           errors.accountType && "border-destructive"
@@ -419,12 +371,13 @@ export default function IntakeForm() {
                         <p className="font-medium">Business Account</p>
                         <p className="text-xs text-muted-foreground">Dedicated business banking</p>
                       </button>
+
                       <button
                         type="button"
-                        onClick={() => updateField('accountType', 'personal')}
+                        onClick={() => updateField("accountType", "personal")}
                         className={cn(
                           "p-4 rounded-lg border-2 transition-all duration-200 text-left",
-                          formData.accountType === 'personal'
+                          formData.accountType === "personal"
                             ? "border-primary bg-primary/5"
                             : "border-border hover:border-primary/50",
                           errors.accountType && "border-destructive"
@@ -442,7 +395,7 @@ export default function IntakeForm() {
                     <Checkbox
                       id="cashDeposits"
                       checked={formData.cashDeposits}
-                      onCheckedChange={(checked) => updateField('cashDeposits', checked)}
+                      onCheckedChange={(checked) => updateField("cashDeposits", checked)}
                     />
                     <div>
                       <Label htmlFor="cashDeposits" className="cursor-pointer">
@@ -465,7 +418,7 @@ export default function IntakeForm() {
                         min="0"
                         placeholder="25"
                         value={formData.monthlyFees}
-                        onChange={(e) => updateField('monthlyFees', e.target.value)}
+                        onChange={(e) => updateField("monthlyFees", e.target.value)}
                         className={cn("pl-10", errors.monthlyFees && "border-destructive")}
                       />
                     </div>
@@ -474,7 +427,7 @@ export default function IntakeForm() {
                 </>
               )}
 
-              {/* Step 4: Additional Info */}
+              {/* Step 4 */}
               {currentStep === 4 && (
                 <>
                   <div className="space-y-4">
@@ -482,13 +435,15 @@ export default function IntakeForm() {
                       <Checkbox
                         id="wantsGrants"
                         checked={formData.wantsGrants}
-                        onCheckedChange={(checked) => updateField('wantsGrants', checked)}
+                        onCheckedChange={(checked) => updateField("wantsGrants", checked)}
                       />
                       <div>
                         <Label htmlFor="wantsGrants" className="cursor-pointer font-medium">
                           Interested in Grants
                         </Label>
-                        <p className="text-xs text-muted-foreground">Would you like grant recommendations?</p>
+                        <p className="text-xs text-muted-foreground">
+                          Would you like grant recommendations?
+                        </p>
                       </div>
                     </div>
 
@@ -496,7 +451,7 @@ export default function IntakeForm() {
                       <Checkbox
                         id="veteranOwned"
                         checked={formData.veteranOwned}
-                        onCheckedChange={(checked) => updateField('veteranOwned', checked)}
+                        onCheckedChange={(checked) => updateField("veteranOwned", checked)}
                       />
                       <div>
                         <Label htmlFor="veteranOwned" className="cursor-pointer font-medium">
@@ -513,7 +468,7 @@ export default function IntakeForm() {
                       <Checkbox
                         id="immigrantFounder"
                         checked={formData.immigrantFounder}
-                        onCheckedChange={(checked) => updateField('immigrantFounder', checked)}
+                        onCheckedChange={(checked) => updateField("immigrantFounder", checked)}
                       />
                       <div>
                         <Label htmlFor="immigrantFounder" className="cursor-pointer font-medium">
@@ -532,7 +487,7 @@ export default function IntakeForm() {
                         id="zipCode"
                         placeholder="12345"
                         value={formData.zipCode}
-                        onChange={(e) => updateField('zipCode', e.target.value)}
+                        onChange={(e) => updateField("zipCode", e.target.value)}
                         className={cn("pl-10", errors.zipCode && "border-destructive")}
                       />
                     </div>
@@ -544,7 +499,7 @@ export default function IntakeForm() {
                       <Checkbox
                         id="consent"
                         checked={formData.consent}
-                        onCheckedChange={(checked) => updateField('consent', checked)}
+                        onCheckedChange={(checked) => updateField("consent", checked)}
                         className={errors.consent && "border-destructive"}
                       />
                       <div>
@@ -552,7 +507,7 @@ export default function IntakeForm() {
                           I consent to data processing *
                         </Label>
                         <p className="text-xs text-muted-foreground mt-1">
-                          By checking this box, you agree that we may process your information to provide 
+                          By checking this box, you agree that we may process your information to provide
                           financial mismatch analysis and recommendations. Your data will be stored locally.
                         </p>
                       </div>
@@ -564,17 +519,12 @@ export default function IntakeForm() {
 
               {/* Navigation Buttons */}
               <div className="flex justify-between pt-4 border-t border-border">
-                <Button
-                  variant="outline"
-                  onClick={handlePrev}
-                  disabled={currentStep === 1}
-                  className="gap-2"
-                >
+                <Button variant="outline" onClick={handlePrev} disabled={currentStep === 1} className="gap-2">
                   <ArrowLeft className="h-4 w-4" />
                   Previous
                 </Button>
                 <Button onClick={handleNext} className="gap-2 btn-primary">
-                  {currentStep === 4 ? 'Submit' : 'Next'}
+                  {currentStep === 4 ? "Submit" : "Next"}
                   <ArrowRight className="h-4 w-4" />
                 </Button>
               </div>

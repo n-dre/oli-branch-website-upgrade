@@ -1,32 +1,27 @@
-import React, { useMemo, useState } from 'react';
-import { Link } from 'react-router-dom';
-import {
-  ArrowLeft,
-  Plus,
-  TrendingUp,
-  PiggyBank,
-  Receipt,
-  PieChart,
-  BarChart3
-} from 'lucide-react';
-import DashboardLayout from '../../../frontend/src/components/layout/DashboardLayout';
-import { Card, CardContent, CardHeader, CardTitle } from '../../../frontend/src/components/ui/card';
-import { Button } from '../../../frontend/src/components/ui/button';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../../../frontend/src/components/ui/select';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '../../../frontend/src/components/ui/tabs';
+// frontend/src/pages/tools/Budget.jsx
+import React, { useMemo, useState } from "react";
+import { Link } from "react-router-dom";
+import { ArrowLeft, Plus, TrendingUp, PiggyBank, Receipt, PieChart, BarChart3 } from "lucide-react";
+
+// ✅ FIXED IMPORTS (relative to frontend/src/pages/tools)
+import DashboardLayout from "../../components/layout/DashboardLayout";
+import { Card, CardContent, CardHeader, CardTitle } from "../../components/ui/card";
+import { Button } from "../../components/ui/button";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../../components/ui/select";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "../../components/ui/tabs";
 
 export default function Budget() {
   const stats = [
-    { label: 'Total Budget', value: '$0', icon: '✅', bgColor: 'bg-[#1B4332]/10' },
-    { label: 'Total Spent', value: '$0', icon: '🧾', bgColor: 'bg-[#DC2626]/10' },
-    { label: 'Budget Utilization', value: '0.0%', icon: '📈', bgColor: 'bg-[#10B981]/10' },
-    { label: 'Potential Savings', value: '$0', icon: '💰', bgColor: 'bg-[#52796F]/10', valueColor: 'text-[#10B981]' }
+    { label: "Total Budget", value: "$0", icon: "✅", bgColor: "bg-[#1B4332]/10" },
+    { label: "Total Spent", value: "$0", icon: "🧾", bgColor: "bg-[#DC2626]/10" },
+    { label: "Budget Utilization", value: "0.0%", icon: "📈", bgColor: "bg-[#10B981]/10" },
+    { label: "Potential Savings", value: "$0", icon: "💰", bgColor: "bg-[#52796F]/10", valueColor: "text-[#10B981]" },
   ];
 
   // -----------------------------
   // Production wiring (no demo)
   // -----------------------------
-  const [periodDays, setPeriodDays] = useState('30');
+  const [periodDays, setPeriodDays] = useState("30");
 
   const [addBudgetOpen, setAddBudgetOpen] = useState(false);
   const [recordFeeOpen, setRecordFeeOpen] = useState(false);
@@ -35,33 +30,30 @@ export default function Budget() {
   const [savingFee, setSavingFee] = useState(false);
 
   const [budgetForm, setBudgetForm] = useState({
-    name: '',
-    amount: '',
-    startDate: '',
-    cadence: 'monthly' // monthly | weekly | yearly (you can keep monthly only if you want)
+    name: "",
+    amount: "",
+    startDate: "",
+    cadence: "monthly", // monthly | weekly | yearly
   });
 
   const [feeForm, setFeeForm] = useState({
-    amount: '',
-    date: '',
-    category: 'Bank Fees',
-    vendor: '',
-    note: ''
+    amount: "",
+    date: "",
+    category: "Bank Fees",
+    vendor: "",
+    note: "",
   });
 
   const apiBase =
-    (typeof import.meta !== 'undefined' &&
-      import.meta.env &&
-      import.meta.env.VITE_API_BASE_URL) ||
-    '';
+    (typeof import.meta !== "undefined" && import.meta.env && import.meta.env.VITE_API_BASE_URL) || "";
 
   const budgetAmountNumber = useMemo(() => {
-    const n = Number(String(budgetForm.amount).replace(/[^0-9.]/g, ''));
+    const n = Number(String(budgetForm.amount).replace(/[^0-9.]/g, ""));
     return Number.isFinite(n) ? n : 0;
   }, [budgetForm.amount]);
 
   const feeAmountNumber = useMemo(() => {
-    const n = Number(String(feeForm.amount).replace(/[^0-9.]/g, ''));
+    const n = Number(String(feeForm.amount).replace(/[^0-9.]/g, ""));
     return Number.isFinite(n) ? n : 0;
   }, [feeForm.amount]);
 
@@ -69,7 +61,6 @@ export default function Budget() {
     e.preventDefault();
     if (savingBudget) return;
 
-    // minimal validation (no UI redesign)
     if (!budgetForm.name.trim()) return;
     if (!budgetAmountNumber || budgetAmountNumber <= 0) return;
     if (!budgetForm.startDate) return;
@@ -78,26 +69,22 @@ export default function Budget() {
       setSavingBudget(true);
 
       const res = await fetch(`${apiBase}/api/budgets`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        credentials: 'include',
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
         body: JSON.stringify({
           name: budgetForm.name.trim(),
           amount: budgetAmountNumber,
           startDate: budgetForm.startDate,
-          cadence: budgetForm.cadence
-        })
+          cadence: budgetForm.cadence,
+        }),
       });
 
       if (!res.ok) throw new Error(`Budget create failed (${res.status})`);
 
-      // reset + close (structure unchanged)
-      setBudgetForm({ name: '', amount: '', startDate: '', cadence: 'monthly' });
+      setBudgetForm({ name: "", amount: "", startDate: "", cadence: "monthly" });
       setAddBudgetOpen(false);
-
-      // OPTIONAL: you can trigger a refresh here if you later wire stats/charts to live data
     } catch (err) {
-      // keep design: no new toast system injected here
       console.error(err);
     } finally {
       setSavingBudget(false);
@@ -115,25 +102,23 @@ export default function Budget() {
       setSavingFee(true);
 
       const res = await fetch(`${apiBase}/api/fees`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        credentials: 'include',
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
         body: JSON.stringify({
           amount: feeAmountNumber,
           date: feeForm.date,
           category: feeForm.category,
           vendor: feeForm.vendor.trim() || null,
           note: feeForm.note.trim() || null,
-          periodDays: Number(periodDays) // if your backend uses it for aggregation; safe to ignore otherwise
-        })
+          periodDays: Number(periodDays),
+        }),
       });
 
       if (!res.ok) throw new Error(`Fee create failed (${res.status})`);
 
-      setFeeForm({ amount: '', date: '', category: 'Bank Fees', vendor: '', note: '' });
+      setFeeForm({ amount: "", date: "", category: "Bank Fees", vendor: "", note: "" });
       setRecordFeeOpen(false);
-
-      // OPTIONAL: refresh later if you wire stats/charts to live data
     } catch (err) {
       console.error(err);
     } finally {
@@ -142,22 +127,15 @@ export default function Budget() {
   }
 
   return (
-    <DashboardLayout
-      title="Budget Dashboard"
-      subtitle="Oli-Branch"
-      className="bg-[#F8F5F0]"
-    >
+    <DashboardLayout title="Budget Dashboard" subtitle="Oli-Branch" className="bg-[#F8F5F0]">
       <style>{`
-        .hero-gradient {
-          background: linear-gradient(135deg, #1B4332 0%, #52796F 100%);
-        }
+        .hero-gradient { background: linear-gradient(135deg, #1B4332 0%, #52796F 100%); }
 
         .btn-primary {
           background: #1B4332 !important;
           color: #F8F5F0 !important;
           transition: all 0.3s ease;
         }
-
         .btn-primary:hover {
           background: #52796F !important;
           transform: translateY(-2px);
@@ -170,7 +148,6 @@ export default function Budget() {
           background: transparent !important;
           transition: all 0.3s ease;
         }
-
         .btn-secondary:hover {
           background: #1B4332 !important;
           color: #F8F5F0 !important;
@@ -181,7 +158,6 @@ export default function Budget() {
           border: 1px solid rgba(82, 121, 111, 0.1);
           background: linear-gradient(135deg, rgba(27, 67, 50, 0.02) 0%, rgba(82, 121, 111, 0.02) 100%);
         }
-
         .budget-card:hover {
           transform: translateY(-8px);
           box-shadow: 0 20px 40px rgba(27, 67, 50, 0.15);
@@ -193,7 +169,6 @@ export default function Budget() {
           transition: all 0.3s ease;
           background: linear-gradient(135deg, rgba(27, 67, 50, 0.05) 0%, rgba(82, 121, 111, 0.05) 100%);
         }
-
         .achievement-card:hover {
           transform: translateY(-4px);
           box-shadow: 0 12px 24px rgba(27, 67, 50, 0.15);
@@ -204,15 +179,12 @@ export default function Budget() {
           background: linear-gradient(135deg, rgba(27, 67, 50, 0.05) 0%, rgba(82, 121, 111, 0.05) 100%);
           border: 1px solid rgba(82, 121, 111, 0.1);
         }
-
         .stats-card:hover {
           transform: translateY(-2px);
           box-shadow: 0 8px 16px rgba(27, 67, 50, 0.1);
         }
 
-        .progress-gradient {
-          background: linear-gradient(90deg, #1B4332 0%, #52796F 100%);
-        }
+        .progress-gradient { background: linear-gradient(90deg, #1B4332 0%, #52796F 100%); }
 
         .tag-badge {
           background: rgba(27, 67, 50, 0.1) !important;
@@ -240,13 +212,11 @@ export default function Budget() {
           border: 1px solid rgba(82, 121, 111, 0.1);
           transition: all 0.3s ease;
         }
-
         .tab-card:hover {
           transform: translateY(-4px);
           box-shadow: 0 12px 24px rgba(27, 67, 50, 0.15);
         }
 
-        /* Modal (minimal, no design overhaul) */
         .ob-modal-backdrop {
           position: fixed;
           inset: 0;
@@ -274,20 +244,9 @@ export default function Budget() {
           justify-content: space-between;
           background: linear-gradient(135deg, rgba(27, 67, 50, 0.04) 0%, rgba(82, 121, 111, 0.04) 100%);
         }
-        .ob-modal-body {
-          padding: 16px 18px;
-        }
-        .ob-field {
-          display: flex;
-          flex-direction: column;
-          gap: 6px;
-          margin-bottom: 12px;
-        }
-        .ob-label {
-          font-size: 12px;
-          color: #52796F;
-          font-weight: 600;
-        }
+        .ob-modal-body { padding: 16px 18px; }
+        .ob-field { display: flex; flex-direction: column; gap: 6px; margin-bottom: 12px; }
+        .ob-label { font-size: 12px; color: #52796F; font-weight: 600; }
         .ob-input, .ob-select {
           border: 1px solid rgba(82, 121, 111, 0.25);
           border-radius: 10px;
@@ -309,39 +268,16 @@ export default function Budget() {
         }
 
         @media (max-width: 640px) {
-          .mobile-stack {
-            flex-direction: column !important;
-          }
-
-          .mobile-full {
-            width: 100% !important;
-          }
-
-          .mobile-text-center {
-            text-align: center !important;
-          }
-
-          .mobile-p-4 {
-            padding: 1rem !important;
-          }
-
-          .mobile-gap-4 {
-            gap: 1rem !important;
-          }
+          .mobile-stack { flex-direction: column !important; }
+          .mobile-full { width: 100% !important; }
+          .mobile-text-center { text-align: center !important; }
+          .mobile-p-4 { padding: 1rem !important; }
+          .mobile-gap-4 { gap: 1rem !important; }
         }
-
         @media (max-width: 768px) {
-          .tablet-flex-col {
-            flex-direction: column !important;
-          }
-
-          .tablet-w-full {
-            width: 100% !important;
-          }
-
-          .tablet-mb-4 {
-            margin-bottom: 1rem !important;
-          }
+          .tablet-flex-col { flex-direction: column !important; }
+          .tablet-w-full { width: 100% !important; }
+          .tablet-mb-4 { margin-bottom: 1rem !important; }
         }
       `}</style>
 
@@ -354,10 +290,7 @@ export default function Budget() {
           </Link>
 
           <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3 w-full sm:w-auto">
-            <Select
-              defaultValue="30"
-              onValueChange={(v) => setPeriodDays(v)}
-            >
+            <Select defaultValue="30" onValueChange={(v) => setPeriodDays(v)}>
               <SelectTrigger className="w-full sm:w-[150px] border-[#52796F]/20">
                 <SelectValue placeholder="Select period" />
               </SelectTrigger>
@@ -368,18 +301,11 @@ export default function Budget() {
               </SelectContent>
             </Select>
 
-            <Button
-              className="btn-primary w-full sm:w-auto"
-              onClick={() => setAddBudgetOpen(true)}
-            >
+            <Button className="btn-primary w-full sm:w-auto" onClick={() => setAddBudgetOpen(true)}>
               <Plus className="h-4 w-4 mr-2" /> Add Budget
             </Button>
 
-            <Button
-              variant="outline"
-              className="btn-secondary w-full sm:w-auto"
-              onClick={() => setRecordFeeOpen(true)}
-            >
+            <Button variant="outline" className="btn-secondary w-full sm:w-auto" onClick={() => setRecordFeeOpen(true)}>
               <Plus className="h-4 w-4 mr-2" /> Record Fee
             </Button>
           </div>
@@ -392,9 +318,7 @@ export default function Budget() {
               <CardContent className="p-4">
                 <p className="text-xs text-[#52796F] mb-1">{stat.label}</p>
                 <div className="flex items-center justify-between">
-                  <span className={`text-2xl font-bold ${stat.valueColor || 'text-[#1B4332]'}`}>
-                    {stat.value}
-                  </span>
+                  <span className={`text-2xl font-bold ${stat.valueColor || "text-[#1B4332]"}`}>{stat.value}</span>
                   <div className={`w-8 h-8 rounded-full flex items-center justify-center ${stat.bgColor}`}>
                     <span className="text-lg">{stat.icon}</span>
                   </div>
@@ -492,9 +416,7 @@ export default function Budget() {
         </Tabs>
       </div>
 
-      {/* -----------------------------
-          Add Budget Modal (structure preserved)
-         ----------------------------- */}
+      {/* Add Budget Modal */}
       {addBudgetOpen && (
         <div
           className="ob-modal-backdrop"
@@ -510,12 +432,7 @@ export default function Budget() {
                 <p className="text-sm font-bold text-[#1B4332]">Add Budget</p>
                 <p className="text-xs text-[#52796F]">Create a budget to track spending</p>
               </div>
-              <Button
-                variant="outline"
-                className="btn-secondary"
-                onClick={() => setAddBudgetOpen(false)}
-                type="button"
-              >
+              <Button variant="outline" className="btn-secondary" onClick={() => setAddBudgetOpen(false)} type="button">
                 Close
               </Button>
             </div>
@@ -580,7 +497,7 @@ export default function Budget() {
                   Cancel
                 </Button>
                 <Button className="btn-primary" type="submit" disabled={savingBudget}>
-                  {savingBudget ? 'Saving...' : 'Save Budget'}
+                  {savingBudget ? "Saving..." : "Save Budget"}
                 </Button>
               </div>
             </form>
@@ -588,9 +505,7 @@ export default function Budget() {
         </div>
       )}
 
-      {/* -----------------------------
-          Record Fee Modal (structure preserved)
-         ----------------------------- */}
+      {/* Record Fee Modal */}
       {recordFeeOpen && (
         <div
           className="ob-modal-backdrop"
@@ -606,12 +521,7 @@ export default function Budget() {
                 <p className="text-sm font-bold text-[#1B4332]">Record Fee</p>
                 <p className="text-xs text-[#52796F]">Log a fee so your dashboard can track it</p>
               </div>
-              <Button
-                variant="outline"
-                className="btn-secondary"
-                onClick={() => setRecordFeeOpen(false)}
-                type="button"
-              >
+              <Button variant="outline" className="btn-secondary" onClick={() => setRecordFeeOpen(false)} type="button">
                 Close
               </Button>
             </div>
@@ -680,17 +590,11 @@ export default function Budget() {
               </div>
 
               <div className="ob-modal-footer">
-                <Button
-                  variant="outline"
-                  className="btn-secondary"
-                  type="button"
-                  onClick={() => setRecordFeeOpen(false)}
-                  disabled={savingFee}
-                >
+                <Button variant="outline" className="btn-secondary" type="button" onClick={() => setRecordFeeOpen(false)} disabled={savingFee}>
                   Cancel
                 </Button>
                 <Button className="btn-primary" type="submit" disabled={savingFee}>
-                  {savingFee ? 'Saving...' : 'Save Fee'}
+                  {savingFee ? "Saving..." : "Save Fee"}
                 </Button>
               </div>
             </form>

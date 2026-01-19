@@ -1,7 +1,10 @@
+// frontend/src/pages/tools/Help.jsx
 import React, { useState } from "react";
 import DashboardLayout from "../../components/layout/DashboardLayout";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "../../components/ui/card";
-import HelpMiniChatModal from "../../components/Help/HelpMiniChatModal";
+
+// ✅ FIX: correct folder casing to match src/components/help/HelpMiniChatModal.jsx
+import HelpMiniChatModal from "../../components/help/HelpMiniChatModal";
 
 export default function Help() {
   const [open, setOpen] = useState(false);
@@ -16,7 +19,6 @@ export default function Help() {
           </CardHeader>
 
           <CardContent className="space-y-3">
-            {/* Clicking Help triggers the mini window */}
             <button
               type="button"
               onClick={() => setOpen(true)}
@@ -27,8 +29,6 @@ export default function Help() {
                 Ask a general question. “Hi, I’m Ollie. How can I help you today?”
               </div>
             </button>
-
-            {/* Keep your other Help actions here if you want */}
           </CardContent>
         </Card>
       </div>
@@ -37,3 +37,4 @@ export default function Help() {
     </DashboardLayout>
   );
 }
+

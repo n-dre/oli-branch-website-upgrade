@@ -1,10 +1,13 @@
 import React, { useState } from "react";
 import { toast } from "sonner";
+import { useNavigate } from "react-router-dom";
 import DashboardLayout from "../../components/layout/DashboardLayout";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "../../components/ui/card";
 import { Button } from "../../components/ui/button";
 
 export default function Accessibility() {
+  const navigate = useNavigate();
+
   const [state, setState] = useState({
     reduceMotion: false,
     highContrast: false,
@@ -17,6 +20,7 @@ export default function Accessibility() {
   const onSave = () => {
     // Hook this to API later (PUT /api/settings/accessibility)
     toast.success("Accessibility settings saved.");
+    navigate("/settings");
   };
 
   return (
@@ -82,3 +86,4 @@ function ToggleRow({ title, desc, checked, onChange }) {
     </div>
   );
 }
+

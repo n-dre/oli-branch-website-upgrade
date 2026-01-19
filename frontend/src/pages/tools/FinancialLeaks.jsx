@@ -1,7 +1,19 @@
-import React from 'react';
+// frontend/src/pages/tools/FinancialLeaks.jsx
+import React from "react";
 import { motion } from "framer-motion";
-import { useNavigate } from 'react-router-dom';
-import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip, BarChart, Bar, XAxis, YAxis, CartesianGrid } from 'recharts';
+import { useNavigate } from "react-router-dom";
+import {
+  PieChart,
+  Pie,
+  Cell,
+  ResponsiveContainer,
+  Tooltip,
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+} from "recharts";
 import {
   AlertTriangle,
   DollarSign,
@@ -11,58 +23,61 @@ import {
   ArrowLeft,
   Crown,
   CheckCircle,
-  ExternalLink
-} from 'lucide-react';
-import DashboardLayout from '../../../frontend/src/components/layout/DashboardLayout';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '../../../frontend/src/components/ui/card';
-import { Button } from '../../../frontend/src/components/ui/button';
-import { Badge } from '../../../frontend/src/components/ui/badge';
-import { Progress } from '../../../frontend/src/components/ui/progress';
-import { useData } from '../../../frontend/src/context/DataContext';
-import { toast } from 'sonner';
+  ExternalLink,
+} from "lucide-react";
+import { toast } from "sonner";
+
+import DashboardLayout from "../../components/layout/DashboardLayout";
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "../../components/ui/card";
+import { Button } from "../../components/ui/button";
+import { Badge } from "../../components/ui/badge";
+import { Progress } from "../../components/ui/progress";
+import { useData } from "../../context/DataContext";
 
 const SEVERITY_COLORS = {
-  high: '#DC2626',
-  medium: '#F59E0B',
-  low: '#10B981'
+  high: "#DC2626",
+  medium: "#F59E0B",
+  low: "#10B981",
 };
 
 // Fee Rules Definitions
 const FEE_RULES = [
   {
-    type: 'atm_fees',
-    name: 'ATM Fees',
-    description: 'Charges for using out-of-network ATMs',
+    type: "atm_fees",
+    name: "ATM Fees",
+    description: "Charges for using out-of-network ATMs",
     threshold: 10,
-    severity: 'high'
+    severity: "high",
   },
   {
-    type: 'maintenance_fees',
-    name: 'Monthly Maintenance',
-    description: 'Account maintenance charges',
+    type: "maintenance_fees",
+    name: "Monthly Maintenance",
+    description: "Account maintenance charges",
     threshold: 25,
-    severity: 'medium'
+    severity: "medium",
   },
   {
-    type: 'overdraft_fees',
-    name: 'Overdraft Fees',
-    description: 'Charges for overdrawing your account',
+    type: "overdraft_fees",
+    name: "Overdraft Fees",
+    description: "Charges for overdrawing your account",
     threshold: 35,
-    severity: 'high'
+    severity: "high",
   },
   {
-    type: 'transfer_fees',
-    name: 'Transfer Fees',
-    description: 'Charges for transferring money',
+    type: "transfer_fees",
+    name: "Transfer Fees",
+    description: "Charges for transferring money",
     threshold: 5,
-    severity: 'low'
-  }
+    severity: "low",
+  },
 ];
 
 export default function FinancialLeaks() {
   const { feeAnalysis, linkedBanks, subscription } = useData();
   const navigate = useNavigate();
-  const isPremium = subscription.plan === 'premium';
+
+  // NOTE: your app seems to use subscription.plan === 'premium'
+  const isPremium = subscription?.plan === "premium";
 
   if (!isPremium) {
     return (
@@ -72,22 +87,21 @@ export default function FinancialLeaks() {
             <Crown className="h-16 w-16 mx-auto mb-4 text-[#1B4332]" />
             <h2 className="text-2xl font-bold mb-2 text-[#1B4332]">Premium Feature</h2>
             <p className="text-[#52796F] mb-6">
-              Financial leaks is available for Premium subscribers. Upgrade to unlock detailed fee breakdowns and savings recommendations.
+              Financial leaks is available for Premium subscribers. Upgrade to unlock detailed fee breakdowns
+              and savings recommendations.
             </p>
-          <Button 
-            onClick={() => navigate('/pricing')} 
-            className="gap-2 btn-primary text-[#D4AF37]"
-          >
-            <Crown className="h-4 w-4 text-[#D4AF37]" />
-            Upgrade to Oli Oversight - $49.99/month
-          </Button>
-         </CardContent>
+
+            <Button onClick={() => navigate("/pricing")} className="gap-2 btn-primary text-[#D4AF37]">
+              <Crown className="h-4 w-4 text-[#D4AF37]" />
+              Upgrade to Oli Oversight - $49.99/month
+            </Button>
+          </CardContent>
         </Card>
       </DashboardLayout>
     );
   }
 
-  if (!feeAnalysis || linkedBanks.length === 0) {
+  if (!feeAnalysis || !Array.isArray(linkedBanks) || linkedBanks.length === 0) {
     return (
       <DashboardLayout title="Financial Leaks" subtitle="Detailed breakdown of your banking fees">
         <Card className="max-w-lg mx-auto stats-card">
@@ -97,10 +111,7 @@ export default function FinancialLeaks() {
             <p className="text-[#52796F] mb-6">
               Link your bank account to analyze your transactions and detect fee mismatches.
             </p>
-            <Button 
-              onClick={() => navigate('/bank-linking')}
-              className="btn-primary"
-            >
+            <Button onClick={() => navigate("/link")} className="btn-primary">
               Link Bank Account
             </Button>
           </CardContent>
@@ -109,18 +120,20 @@ export default function FinancialLeaks() {
     );
   }
 
-  // Prepare chart data
-  const pieData = feeAnalysis.feesByType.map(fee => ({
+  // Prepare chart data (guard against missing feesByType)
+  const feesByType = Array.isArray(feeAnalysis.feesByType) ? feeAnalysis.feesByType : [];
+
+  const pieData = feesByType.map((fee) => ({
     name: fee.name,
-    value: fee.total,
-    fill: SEVERITY_COLORS[fee.severity]
+    value: Number(fee.total) || 0,
+    fill: SEVERITY_COLORS[fee.severity] || SEVERITY_COLORS.low,
   }));
 
-  const barData = feeAnalysis.feesByType.map(fee => ({
-    name: fee.name.split(' ')[0],
-    amount: fee.total,
-    count: fee.count,
-    fill: fee.avoidable ? SEVERITY_COLORS.medium : SEVERITY_COLORS.low
+  const barData = feesByType.map((fee) => ({
+    name: (fee.name || "").split(" ")[0] || "Fee",
+    amount: Number(fee.total) || 0,
+    count: Number(fee.count) || 0,
+    fill: fee.avoidable ? SEVERITY_COLORS.medium : SEVERITY_COLORS.low,
   }));
 
   const handleDownloadPDF = () => {
@@ -131,190 +144,104 @@ Generated: ${new Date().toLocaleDateString()}
 
 SUMMARY
 -------
-Total Fees Found: $${feeAnalysis.totalFees.toFixed(2)}
-Avoidable Fees: $${feeAnalysis.avoidableFees.toFixed(2)}
-Potential Monthly Savings: $${feeAnalysis.savingsPotential.toFixed(2)}
-Fee Mismatch Score: ${feeAnalysis.mismatchScore}/100
+Total Fees Found: $${Number(feeAnalysis.totalFees || 0).toFixed(2)}
+Avoidable Fees: $${Number(feeAnalysis.avoidableFees || 0).toFixed(2)}
+Potential Monthly Savings: $${Number(feeAnalysis.savingsPotential || 0).toFixed(2)}
+Fee Mismatch Score: ${feeAnalysis.mismatchScore ?? 0}/100
 
 FEE BREAKDOWN
 -------------
-${feeAnalysis.feesByType.map(fee => `
+${feesByType
+  .map(
+    (fee) => `
 ${fee.name}
-  Total: $${fee.total.toFixed(2)} (${fee.count} occurrences)
-  Severity: ${fee.severity.toUpperCase()}
-  Avoidable: ${fee.avoidable ? 'Yes' : 'No'}
-  Recommendation: ${fee.recommendation}
-`).join('')}
+  Total: $${Number(fee.total || 0).toFixed(2)} (${Number(fee.count || 0)} occurrences)
+  Severity: ${(fee.severity || "").toUpperCase()}
+  Avoidable: ${fee.avoidable ? "Yes" : "No"}
+  Recommendation: ${fee.recommendation || ""}
+`
+  )
+  .join("")}
 
 RECOMMENDATIONS
 ---------------
-${feeAnalysis.feesByType.filter(f => f.avoidable).map((fee, i) => `${i + 1}. ${fee.recommendation}`).join('\n')}
+${feesByType
+  .filter((f) => f.avoidable)
+  .map((fee, i) => `${i + 1}. ${fee.recommendation}`)
+  .join("\n")}
 
 ---
 Report generated by Oli-Branch Financial Dashboard
     `.trim();
 
-    const blob = new Blob([reportText], { type: 'text/plain' });
+    const blob = new Blob([reportText], { type: "text/plain" });
     const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
+    const a = document.createElement("a");
     a.href = url;
-    a.download = `oli-branch-financial-leaks-${new Date().toISOString().split('T')[0]}.txt`;
+    a.download = `oli-branch-financial-leaks-${new Date().toISOString().split("T")[0]}.txt`;
     a.click();
     URL.revokeObjectURL(url);
-    toast.success('Report downloaded!');
+    toast.success("Report downloaded!");
   };
 
   return (
-    <DashboardLayout 
-      title="Financial Leaks" 
-      subtitle="Detailed breakdown of your banking fees"
-      className="bg-[#F8F5F0]"
-    >
+    <DashboardLayout title="Financial Leaks" subtitle="Detailed breakdown of your banking fees" className="bg-[#F8F5F0]">
       <style>{`
-        .hero-gradient {
-          background: linear-gradient(135deg, #1B4332 0%, #52796F 100%);
-        }
-
         .btn-primary {
           background: #1B4332 !important;
           color: #F8F5F0 !important;
           transition: all 0.3s ease;
         }
-
         .btn-primary:hover {
           background: #52796F !important;
           transform: translateY(-2px);
           box-shadow: 0 10px 20px rgba(27, 67, 50, 0.3);
         }
-
         .btn-secondary {
           border: 2px solid #1B4332 !important;
           color: #1B4332 !important;
           background: transparent !important;
           transition: all 0.3s ease;
         }
-
         .btn-secondary:hover {
           background: #1B4332 !important;
           color: #F8F5F0 !important;
         }
-
-        .course-card {
-          transition: all 0.3s ease;
-          border: 1px solid rgba(82, 121, 111, 0.1);
-          background: linear-gradient(135deg, rgba(27, 67, 50, 0.02) 0%, rgba(82, 121, 111, 0.02) 100%);
-        }
-
-        .course-card:hover {
-          transform: translateY(-8px);
-          box-shadow: 0 20px 40px rgba(27, 67, 50, 0.15);
-          border-color: #52796F;
-        }
-
         .achievement-card {
           border-left: 4px solid #1B4332 !important;
           transition: all 0.3s ease;
           background: linear-gradient(135deg, rgba(27, 67, 50, 0.05) 0%, rgba(82, 121, 111, 0.05) 100%);
         }
-
-        .achievement-card:hover {
-          transform: translateY(-4px);
-          box-shadow: 0 12px 24px rgba(27, 67, 50, 0.15);
-          border-color: #52796F !important;
-        }
-
         .stats-card {
           background: linear-gradient(135deg, rgba(27, 67, 50, 0.05) 0%, rgba(82, 121, 111, 0.05) 100%);
           border: 1px solid rgba(82, 121, 111, 0.1);
         }
-
-        .stats-card:hover {
-          transform: translateY(-2px);
-          box-shadow: 0 8px 16px rgba(27, 67, 50, 0.1);
-        }
-
         .progress-gradient {
           background: linear-gradient(90deg, #1B4332 0%, #52796F 100%);
         }
-
-        .tag-badge {
-          background: rgba(27, 67, 50, 0.1) !important;
-          color: #1B4332 !important;
-          border: 1px solid rgba(27, 67, 50, 0.2) !important;
-        }
-
-        .category-badge {
-          background: rgba(82, 121, 111, 0.1) !important;
-          color: #52796F !important;
-          border: 1px solid rgba(82, 121, 111, 0.2) !important;
-        }
-
         .leak-card-high {
           background: linear-gradient(135deg, rgba(220, 38, 38, 0.05) 0%, rgba(239, 68, 68, 0.05) 100%);
           border: 1px solid rgba(220, 38, 38, 0.2);
         }
-
         .leak-card-medium {
           background: linear-gradient(135deg, rgba(245, 158, 11, 0.05) 0%, rgba(251, 191, 36, 0.05) 100%);
           border: 1px solid rgba(245, 158, 11, 0.2);
         }
-
         .leak-card-low {
           background: linear-gradient(135deg, rgba(16, 185, 129, 0.05) 0%, rgba(52, 211, 153, 0.05) 100%);
           border: 1px solid rgba(16, 185, 129, 0.2);
         }
-
         .chart-container {
           background: white;
           border-radius: 12px;
           padding: 20px;
           box-shadow: 0 4px 12px rgba(27, 67, 50, 0.08);
         }
-
-        @media (max-width: 640px) {
-          .mobile-stack {
-            flex-direction: column !important;
-          }
-          
-          .mobile-full {
-            width: 100% !important;
-          }
-          
-          .mobile-text-center {
-            text-align: center !important;
-          }
-          
-          .mobile-p-4 {
-            padding: 1rem !important;
-          }
-          
-          .mobile-gap-4 {
-            gap: 1rem !important;
-          }
-        }
-
-        @media (max-width: 768px) {
-          .tablet-flex-col {
-            flex-direction: column !important;
-          }
-          
-          .tablet-w-full {
-            width: 100% !important;
-          }
-          
-          .tablet-mb-4 {
-            margin-bottom: 1rem !important;
-          }
-        }
       `}</style>
-      
+
       <div className="space-y-6">
         {/* Back Button */}
-        <Button 
-          variant="ghost" 
-          onClick={() => navigate('/bank-linking')} 
-          className="gap-2 btn-secondary"
-        >
+        <Button variant="ghost" onClick={() => navigate("/link")} className="gap-2 btn-secondary">
           <ArrowLeft className="h-4 w-4" />
           Back to Bank Linking
         </Button>
@@ -327,7 +254,7 @@ Report generated by Oli-Branch Financial Dashboard
                 <div className="flex items-center justify-between">
                   <div>
                     <p className="text-sm text-[#52796F]">Total Fees</p>
-                    <p className="text-3xl font-bold text-[#DC2626]">${feeAnalysis.totalFees.toFixed(2)}</p>
+                    <p className="text-3xl font-bold text-[#DC2626]">${Number(feeAnalysis.totalFees || 0).toFixed(2)}</p>
                   </div>
                   <div className="p-3 rounded-full bg-[#DC2626]/10">
                     <DollarSign className="h-6 w-6 text-[#DC2626]" />
@@ -343,7 +270,7 @@ Report generated by Oli-Branch Financial Dashboard
                 <div className="flex items-center justify-between">
                   <div>
                     <p className="text-sm text-[#52796F]">Avoidable Fees</p>
-                    <p className="text-3xl font-bold text-[#F59E0B]">${feeAnalysis.avoidableFees.toFixed(2)}</p>
+                    <p className="text-3xl font-bold text-[#F59E0B]">${Number(feeAnalysis.avoidableFees || 0).toFixed(2)}</p>
                   </div>
                   <div className="p-3 rounded-full bg-[#F59E0B]/10">
                     <AlertTriangle className="h-6 w-6 text-[#F59E0B]" />
@@ -359,7 +286,7 @@ Report generated by Oli-Branch Financial Dashboard
                 <div className="flex items-center justify-between">
                   <div>
                     <p className="text-sm text-[#52796F]">Potential Savings</p>
-                    <p className="text-3xl font-bold text-[#10B981]">${feeAnalysis.savingsPotential.toFixed(2)}</p>
+                    <p className="text-3xl font-bold text-[#10B981]">${Number(feeAnalysis.savingsPotential || 0).toFixed(2)}</p>
                   </div>
                   <div className="p-3 rounded-full bg-[#10B981]/10">
                     <TrendingDown className="h-6 w-6 text-[#10B981]" />
@@ -375,16 +302,13 @@ Report generated by Oli-Branch Financial Dashboard
                 <div className="flex items-center justify-between">
                   <div>
                     <p className="text-sm text-[#52796F]">Mismatch Score</p>
-                    <p className="text-3xl font-bold text-[#1B4332]">{feeAnalysis.mismatchScore}/100</p>
+                    <p className="text-3xl font-bold text-[#1B4332]">{feeAnalysis.mismatchScore ?? 0}/100</p>
                   </div>
                   <div className="p-3 rounded-full bg-[#1B4332]/10">
                     <AlertTriangle className="h-6 w-6 text-[#1B4332]" />
                   </div>
                 </div>
-                <Progress 
-                  value={feeAnalysis.mismatchScore} 
-                  className="mt-3 h-2 progress-gradient"
-                />
+                <Progress value={Number(feeAnalysis.mismatchScore || 0)} className="mt-3 h-2 progress-gradient" />
               </CardContent>
             </Card>
           </motion.div>
@@ -392,7 +316,6 @@ Report generated by Oli-Branch Financial Dashboard
 
         {/* Charts Row */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          {/* Fee Distribution Pie */}
           <Card className="chart-container">
             <CardHeader>
               <CardTitle className="text-[#1B4332]">Fee Distribution</CardTitle>
@@ -416,18 +339,19 @@ Report generated by Oli-Branch Financial Dashboard
                         <Cell key={`cell-${index}`} fill={entry.fill} />
                       ))}
                     </Pie>
-                    <Tooltip 
-                      formatter={(value) => `$${value.toFixed(2)}`}
-                      contentStyle={{ 
-                        borderRadius: '8px',
-                        border: 'none',
-                        boxShadow: '0 4px 12px rgba(27, 67, 50, 0.1)',
-                        backgroundColor: 'white'
+                    <Tooltip
+                      formatter={(value) => `$${Number(value || 0).toFixed(2)}`}
+                      contentStyle={{
+                        borderRadius: "8px",
+                        border: "none",
+                        boxShadow: "0 4px 12px rgba(27, 67, 50, 0.1)",
+                        backgroundColor: "white",
                       }}
                     />
                   </PieChart>
                 </ResponsiveContainer>
               </div>
+
               <div className="flex flex-wrap justify-center gap-4 mt-4">
                 {pieData.map((entry) => (
                   <div key={entry.name} className="flex items-center gap-2">
@@ -439,7 +363,6 @@ Report generated by Oli-Branch Financial Dashboard
             </CardContent>
           </Card>
 
-          {/* Fee Amounts Bar Chart */}
           <Card className="chart-container">
             <CardHeader>
               <CardTitle className="text-[#1B4332]">Fee Amounts by Type</CardTitle>
@@ -450,19 +373,15 @@ Report generated by Oli-Branch Financial Dashboard
                 <ResponsiveContainer width="100%" height="100%">
                   <BarChart data={barData} margin={{ top: 20, right: 30, left: 20, bottom: 5 }}>
                     <CartesianGrid strokeDasharray="3 3" stroke="rgba(27, 67, 50, 0.1)" />
-                    <XAxis 
-                      dataKey="name" 
-                      stroke="#52796F" 
-                      tick={{ fontSize: 11 }} 
-                    />
+                    <XAxis dataKey="name" stroke="#52796F" tick={{ fontSize: 11 }} />
                     <YAxis stroke="#52796F" />
-                    <Tooltip 
-                      formatter={(value) => `$${value.toFixed(2)}`}
-                      contentStyle={{ 
-                        borderRadius: '8px',
-                        border: 'none',
-                        boxShadow: '0 4px 12px rgba(27, 67, 50, 0.1)',
-                        backgroundColor: 'white'
+                    <Tooltip
+                      formatter={(value) => `$${Number(value || 0).toFixed(2)}`}
+                      contentStyle={{
+                        borderRadius: "8px",
+                        border: "none",
+                        boxShadow: "0 4px 12px rgba(27, 67, 50, 0.1)",
+                        backgroundColor: "white",
                       }}
                     />
                     <Bar dataKey="amount" radius={[8, 8, 0, 0]}>
@@ -492,34 +411,37 @@ Report generated by Oli-Branch Financial Dashboard
                   animate={{ opacity: 1, scale: 1 }}
                   transition={{ delay: index * 0.1 }}
                   className={`p-4 rounded-lg ${
-                    rule.severity === 'high' ? 'leak-card-high' :
-                    rule.severity === 'medium' ? 'leak-card-medium' : 'leak-card-low'
+                    rule.severity === "high" ? "leak-card-high" : rule.severity === "medium" ? "leak-card-medium" : "leak-card-low"
                   }`}
                 >
                   <div className="flex items-start gap-3">
-                    <div className={`p-2 rounded-lg ${
-                      rule.severity === 'high' ? 'bg-[#DC2626]/20' :
-                      rule.severity === 'medium' ? 'bg-[#F59E0B]/20' : 'bg-[#10B981]/20'
-                    }`}>
-                      <AlertTriangle className={`h-5 w-5 ${
-                        rule.severity === 'high' ? 'text-[#DC2626]' :
-                        rule.severity === 'medium' ? 'text-[#F59E0B]' : 'text-[#10B981]'
-                      }`} />
+                    <div
+                      className={`p-2 rounded-lg ${
+                        rule.severity === "high" ? "bg-[#DC2626]/20" : rule.severity === "medium" ? "bg-[#F59E0B]/20" : "bg-[#10B981]/20"
+                      }`}
+                    >
+                      <AlertTriangle
+                        className={`h-5 w-5 ${
+                          rule.severity === "high" ? "text-[#DC2626]" : rule.severity === "medium" ? "text-[#F59E0B]" : "text-[#10B981]"
+                        }`}
+                      />
                     </div>
                     <div>
                       <h4 className="font-semibold text-[#1B4332]">{rule.name}</h4>
                       <p className="text-sm text-[#52796F] mt-1">{rule.description}</p>
                       <div className="flex items-center justify-between mt-3">
-                        <Badge className={`${
-                          rule.severity === 'high' ? 'bg-[#DC2626]/10 text-[#DC2626] border-[#DC2626]/20' :
-                          rule.severity === 'medium' ? 'bg-[#F59E0B]/10 text-[#F59E0B] border-[#F59E0B]/20' :
-                          'bg-[#10B981]/10 text-[#10B981] border-[#10B981]/20'
-                        }`}>
+                        <Badge
+                          className={`${
+                            rule.severity === "high"
+                              ? "bg-[#DC2626]/10 text-[#DC2626] border-[#DC2626]/20"
+                              : rule.severity === "medium"
+                              ? "bg-[#F59E0B]/10 text-[#F59E0B] border-[#F59E0B]/20"
+                              : "bg-[#10B981]/10 text-[#10B981] border-[#10B981]/20"
+                          }`}
+                        >
                           {rule.severity} priority
                         </Badge>
-                        <span className="text-sm font-medium text-[#1B4332]">
-                          ${rule.threshold}+
-                        </span>
+                        <span className="text-sm font-medium text-[#1B4332]">${rule.threshold}+</span>
                       </div>
                     </div>
                   </div>
@@ -543,27 +465,28 @@ Report generated by Oli-Branch Financial Dashboard
           </CardHeader>
           <CardContent>
             <div className="space-y-4">
-              {feeAnalysis.feesByType.map((fee, index) => (
+              {feesByType.map((fee, index) => (
                 <motion.div
-                  key={fee.type}
+                  key={fee.type || index}
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: index * 0.1 }}
                   className={`p-4 rounded-lg ${
-                    fee.severity === 'high' ? 'leak-card-high' :
-                    fee.severity === 'medium' ? 'leak-card-medium' : 'leak-card-low'
+                    fee.severity === "high" ? "leak-card-high" : fee.severity === "medium" ? "leak-card-medium" : "leak-card-low"
                   }`}
                 >
                   <div className="flex items-start justify-between mb-3">
                     <div className="flex items-center gap-3">
-                      <div className={`p-2 rounded-lg ${
-                        fee.severity === 'high' ? 'bg-[#DC2626]/20' :
-                        fee.severity === 'medium' ? 'bg-[#F59E0B]/20' : 'bg-[#10B981]/20'
-                      }`}>
-                        <AlertTriangle className={`h-5 w-5 ${
-                          fee.severity === 'high' ? 'text-[#DC2626]' :
-                          fee.severity === 'medium' ? 'text-[#F59E0B]' : 'text-[#10B981]'
-                        }`} />
+                      <div
+                        className={`p-2 rounded-lg ${
+                          fee.severity === "high" ? "bg-[#DC2626]/20" : fee.severity === "medium" ? "bg-[#F59E0B]/20" : "bg-[#10B981]/20"
+                        }`}
+                      >
+                        <AlertTriangle
+                          className={`h-5 w-5 ${
+                            fee.severity === "high" ? "text-[#DC2626]" : fee.severity === "medium" ? "text-[#F59E0B]" : "text-[#10B981]"
+                          }`}
+                        />
                       </div>
                       <div>
                         <h4 className="font-semibold text-[#1B4332]">{fee.name}</h4>
@@ -571,20 +494,25 @@ Report generated by Oli-Branch Financial Dashboard
                       </div>
                     </div>
                     <div className="text-right">
-                      <p className="text-xl font-bold text-[#1B4332]">${fee.total.toFixed(2)}</p>
-                      <p className="text-sm text-[#52796F]">{fee.count} occurrences</p>
+                      <p className="text-xl font-bold text-[#1B4332]">${Number(fee.total || 0).toFixed(2)}</p>
+                      <p className="text-sm text-[#52796F]">{Number(fee.count || 0)} occurrences</p>
                     </div>
                   </div>
-                  
+
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-2">
-                      <Badge className={`${
-                        fee.severity === 'high' ? 'bg-[#DC2626]/10 text-[#DC2626] border-[#DC2626]/20' :
-                        fee.severity === 'medium' ? 'bg-[#F59E0B]/10 text-[#F59E0B] border-[#F59E0B]/20' :
-                        'bg-[#10B981]/10 text-[#10B981] border-[#10B981]/20'
-                      }`}>
+                      <Badge
+                        className={`${
+                          fee.severity === "high"
+                            ? "bg-[#DC2626]/10 text-[#DC2626] border-[#DC2626]/20"
+                            : fee.severity === "medium"
+                            ? "bg-[#F59E0B]/10 text-[#F59E0B] border-[#F59E0B]/20"
+                            : "bg-[#10B981]/10 text-[#10B981] border-[#10B981]/20"
+                        }`}
+                      >
                         {fee.severity} priority
                       </Badge>
+
                       {fee.avoidable && (
                         <Badge className="text-[#10B981] border-[#10B981]/20 bg-[#10B981]/10">
                           <CheckCircle className="h-3 w-3 mr-1" />
@@ -592,11 +520,11 @@ Report generated by Oli-Branch Financial Dashboard
                         </Badge>
                       )}
                     </div>
-                    <a 
-                      href="#" 
+
+                    <a
+                      href="#"
                       onClick={(e) => {
                         e.preventDefault();
-                        // Add functionality for external link
                         toast.info(`Learn more about ${fee.name} fees`);
                       }}
                       className="text-sm text-[#52796F] hover:text-[#1B4332] flex items-center gap-1"
@@ -604,7 +532,7 @@ Report generated by Oli-Branch Financial Dashboard
                       Learn more <ExternalLink className="h-3 w-3" />
                     </a>
                   </div>
-                  
+
                   <div className="mt-3 p-3 rounded-lg bg-white border border-[#52796F]/10">
                     <div className="flex items-start gap-2">
                       <Lightbulb className="h-4 w-4 text-[#1B4332] shrink-0 mt-0.5" />

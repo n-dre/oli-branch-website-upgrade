@@ -1,10 +1,12 @@
 import React, { useRef, useState } from "react";
 import { toast } from "sonner";
-import DashboardLayout from "../../../frontend/src/components/layout/DashboardLayout";
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "../../../frontend/src/components/ui/card";
-import { Button } from "../../../frontend/src/components/ui/button";
+import { useNavigate } from "react-router-dom";
+import DashboardLayout from "../../components/layout/DashboardLayout";
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "../../components/ui/card";
+import { Button } from "../../components/ui/button";
 
 export default function Avatar() {
+  const navigate = useNavigate();
   const fileRef = useRef(null);
   const [previewUrl, setPreviewUrl] = useState("");
 
@@ -21,6 +23,7 @@ export default function Avatar() {
   const onSave = () => {
     // POST /api/settings/avatar (multipart)
     toast.success("Avatar saved.");
+    navigate("/settings");
   };
 
   return (

@@ -1,3 +1,4 @@
+// src/pages/tools/NearbyBanks.jsx
 import React, { useState, useEffect, useCallback } from 'react';
 import { motion } from "framer-motion";
 import {
@@ -11,11 +12,12 @@ import {
   Building2,
   AlertCircle
 } from 'lucide-react';
-import DashboardLayout from '../../../frontend/src/components/layout/DashboardLayout';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '../../../frontend/src/components/ui/card';
-import { Button } from '../../../frontend/src/components/ui/button';
-import { Badge } from '../../../frontend/src/components/ui/badge';
-import { useData } from '../../../frontend/src/context/DataContext';
+
+import DashboardLayout from '../../components/layout/DashboardLayout';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '../../components/ui/card';
+import { Button } from '../../components/ui/button';
+import { Badge } from '../../components/ui/badge';
+import { useData } from '../../context/DataContext';
 import { cn } from '../../lib/utils';
 import { toast } from 'sonner';
 
@@ -149,7 +151,7 @@ export default function NearbyBanks() {
   const requestLocation = useCallback(() => {
     setLoading(true);
     setLocationError(null);
-    
+
     if (!navigator.geolocation) {
       setLocationError('Geolocation is not supported by your browser');
       setLoading(false);
@@ -314,12 +316,12 @@ export default function NearbyBanks() {
                 </div>
                 <div>
                   <h3 className="font-semibold text-white">
-                    {loading ? 'Getting location...' : 
+                    {loading ? 'Getting location...' :
                      location ? 'Location found' : 'Demo Mode'}
                   </h3>
                   <p className="text-sm text-white/80">
                     {locationError || (
-                      location 
+                      location
                         ? `Lat: ${location?.lat?.toFixed(4) || 0}, Lng: ${location?.lng?.toFixed(4) || 0}`
                         : 'Using sample bank data for demonstration'
                     )}
@@ -330,9 +332,9 @@ export default function NearbyBanks() {
                 <Badge variant="outline" className="text-sm bg-white/20 text-white border-white/30">
                   {radiusMiles} mile radius
                 </Badge>
-                <Button 
-                  variant="outline" 
-                  size="sm" 
+                <Button
+                  variant="outline"
+                  size="sm"
                   onClick={requestLocation}
                   disabled={loading}
                   className="bg-white/10 text-white border-white/30 hover:bg-white/20"
@@ -357,8 +359,8 @@ export default function NearbyBanks() {
                   <p className="text-sm font-medium">Current radius: <span className="text-primary font-bold">{radiusMiles} miles</span></p>
                   <p className="text-xs text-muted-foreground">Found {banks.length} banks within this radius</p>
                 </div>
-                <Button 
-                  variant="outline" 
+                <Button
+                  variant="outline"
                   size="sm"
                   className="btn-secondary"
                   asChild
@@ -366,7 +368,7 @@ export default function NearbyBanks() {
                   <a href="/settings#gps">Edit in Settings</a>
                 </Button>
               </div>
-              
+
               <div className="flex flex-wrap gap-2">
                 {radiusOptions.map((radius) => (
                   <Button
@@ -424,7 +426,7 @@ export default function NearbyBanks() {
                           {bank.address}
                         </p>
                       </div>
-                      <Badge 
+                      <Badge
                         variant="default"
                         className="shrink-0 bg-[#1B4332] text-white"
                       >
@@ -457,17 +459,17 @@ export default function NearbyBanks() {
                     </div>
 
                     <div className="flex items-center gap-3 pt-4 border-t border-border">
-                      <Button 
-                        variant="default" 
-                        size="sm" 
+                      <Button
+                        variant="default"
+                        size="sm"
                         className="flex-1 btn-primary"
                         onClick={() => getDirections(bank)}
                       >
                         <Navigation className="h-4 w-4 mr-2" />
                         Directions
                       </Button>
-                      <Button 
-                        variant="outline" 
+                      <Button
+                        variant="outline"
                         size="sm"
                         className="btn-secondary"
                         onClick={() => window.open(`tel:${bank.phone}`, '_self')}

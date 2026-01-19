@@ -123,13 +123,17 @@ const LoginPage = () => {
           </div>
 
           <div className="space-y-6 mb-20">
+            <div className="text-center">
             <h1 className="font-display text-4xl xl:text-5xl font-bold tracking-tight leading-tight uppercase">
-              FIX YOUR<br />BANKING<br /><span style={{ color: colors.gold }}>MISMATCH</span>
+              FIX YOUR BANKING<br /><span style={{ color: colors.gold }}>MISMATCH</span>
             </h1>
-            <p className="text-blue-100 text-base xl:text-lg max-w-md leading-relaxed">
+            </div>
+            <div className="flex justify-center text-center">
+            <p className="text-blue-100 text-base xl:text-lg max-w-md leading-relaxed mx-auto">
               Identify hidden fees, account limits, and banking setups that don't match how your business actually operates—and get clear next steps.
             </p>
           </div>
+         </div>
 
           <div className="text-blue-200 text-xs xl:text-sm">
             <p>Copyright &copy; 2023-2026 Oli-Branch LLC. All Rights Reserved.</p>
@@ -146,7 +150,7 @@ const LoginPage = () => {
               </Link>
             </div>
 
-            <div>
+              <div className="text-center">
               <h2 className="font-display text-2xl sm:text-3xl font-bold" style={{ color: colors.forest}}>Welcome Back</h2>
               <p className="mt-2 text-sm sm:text-base text-gray-500">Sign in to access your dashboard</p>
             </div>
@@ -215,7 +219,7 @@ const LoginPage = () => {
                   />
                   <span className="text-gray-500">Remember me</span>
                 </label>
-                <Link to="/forgot-password" className="font-medium transition-colors" style={{ color: colors.forest }}>
+                <Link to="/password" className="font-medium transition-colors" style={{ color: colors.forest }}>
                   Forgot password?
                 </Link>
               </div>

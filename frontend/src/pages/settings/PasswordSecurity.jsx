@@ -1,17 +1,34 @@
-import React, { useState } from "react";
+import React, { useMemo, useState } from "react";
 import { toast } from "sonner";
-import DashboardLayout from "../../../frontend/src/components/layout/DashboardLayout";
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "../../../frontend/src/components/ui/card";
-import { Button } from "../../../frontend/src/components/ui/button";
-import { Input } from "../../../frontend/src/components/ui/input";
+import { useLocation, useNavigate } from "react-router-dom";
+import DashboardLayout from "../../components/layout/DashboardLayout";
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "../../components/ui/card";
+import { Button } from "../../components/ui/button";
+import { Input } from "../../components/ui/input";
 
 export default function PasswordSecurity() {
-  const [form, setForm] = useState({
+  const location = useLocation();
+  const navigate = useNavigate();
+
+  // Read reset payload once (no effect)
+  const resetPayload = useMemo(() => {
+    const st = location.state;
+    if (st?.fromResetFlow && st?.newPassword) {
+      return {
+        fromResetFlow: true,
+        newPassword: st.newPassword,
+        confirmPassword: st.confirmPassword ?? st.newPassword,
+      };
+    }
+    return null;
+  }, [location.state]);
+
+  const [form, setForm] = useState(() => ({
     currentPassword: "",
-    newPassword: "",
-    confirmPassword: "",
+    newPassword: resetPayload?.newPassword ?? "",
+    confirmPassword: resetPayload?.confirmPassword ?? "",
     mfaEnabled: false,
-  });
+  }));
 
   const set = (k, v) => setForm((s) => ({ ...s, [k]: v }));
 
@@ -20,8 +37,15 @@ export default function PasswordSecurity() {
       toast.error("New password and confirmation do not match.");
       return;
     }
-    // PUT /api/settings/security
+
+    // TODO: PUT /api/settings/security
+    // If this came from reset flow, backend should allow saving without currentPassword
     toast.success("Security settings saved.");
+
+    // Optional: clear router state so it doesn't keep prefilling if user comes back
+    if (resetPayload?.fromResetFlow) {
+      navigate(location.pathname, { replace: true, state: null });
+    }
   };
 
   return (
@@ -35,14 +59,27 @@ export default function PasswordSecurity() {
           <CardContent className="space-y-4">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <Field label="Current password">
-                <Input type="password" value={form.currentPassword} onChange={(e) => set("currentPassword", e.target.value)} />
+                <Input
+                  type="password"
+                  value={form.currentPassword}
+                  onChange={(e) => set("currentPassword", e.target.value)}
+                  placeholder={resetPayload?.fromResetFlow ? "Not required (reset flow)" : ""}
+                />
               </Field>
               <div />
               <Field label="New password">
-                <Input type="password" value={form.newPassword} onChange={(e) => set("newPassword", e.target.value)} />
+                <Input
+                  type="password"
+                  value={form.newPassword}
+                  onChange={(e) => set("newPassword", e.target.value)}
+                />
               </Field>
               <Field label="Confirm new password">
-                <Input type="password" value={form.confirmPassword} onChange={(e) => set("confirmPassword", e.target.value)} />
+                <Input
+                  type="password"
+                  value={form.confirmPassword}
+                  onChange={(e) => set("confirmPassword", e.target.value)}
+                />
               </Field>
             </div>
 

@@ -1,7 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { Home, AlertTriangle, ArrowLeft } from 'lucide-react';
-import { Button } from '../../../frontend/src/components/ui/button';
+import { Button } from '../../../components/ui/button';
 
 export default function NotFoundPage() {
   return (

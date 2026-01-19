@@ -1,7 +1,10 @@
+// frontend/src/components/help/HelpMiniChatModal.jsx
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import { toast } from "sonner";
-import { Button } from "../../../frontend/src/components/ui/button";
-import { Input } from "../../../frontend/src/components/ui/input";
+
+// ✅ FIXED: correct relative imports from src/components/help -> src/components/ui
+import { Button } from "../ui/button";
+import { Input } from "../ui/input";
 
 const CHARCOAL = "#2F2F2F";
 

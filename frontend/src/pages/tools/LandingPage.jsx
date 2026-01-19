@@ -17,11 +17,6 @@ const LandingPage = () => {
     charcoal: '#2D3748'
   };
 
-  const openAudit = () => {
-    setIsModalOpen(true);
-    setAuditProgress('30%');
-  };
-
   const closeAudit = () => {
     setIsModalOpen(false);
     setAuditStep(1);
@@ -86,7 +81,7 @@ const LandingPage = () => {
             {/* Logo */}
             <div className="flex items-center space-x-2">
               <img
-                src="/resources/oli-branch00.png"
+                src="/images/oli-branch00.png"
                 alt="Oli Logo"
                 className="w-12 h-12 rounded-lg"
               />
@@ -137,12 +132,14 @@ const LandingPage = () => {
             Oli is the AI auditor that finds the hidden fees and mismatched services draining your profit.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
-            <button 
-              onClick={openAudit} 
-              className="btn-primary px-9 py-5 rounded-lg text-lg font-medium"
-            >
-              Start My Free Audit
-            </button>
+          <a
+            href="https://financial-mismatch.preview.emergentagent.com"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="btn-primary px-9 py-5 rounded-lg text-lg font-medium inline-block text-center"
+          >
+            Start My Free Audit
+          </a>
             <button 
               onClick={talkToOli}
               className="border-2 border-white text-white bg-transparent hover:bg-white hover:text-green-900 px-8 py-4 rounded-lg text-lg font-semibold transition-all"
@@ -164,7 +161,7 @@ const LandingPage = () => {
           borderColor: colors.gold
         }}
       >
-        <img src="/resources/Gemini_Generated_Image_qt3fakqt3fakqt3f.png" alt="Oli Avatar" className="w-full h-full object-cover" />
+        <img src="/images/Gemini_Generated_Image_qt3fakqt3fakqt3f.png" alt="Oli Avatar" className="w-full h-full object-cover" />
       </div>
 
       {/* Audit Modal */}
@@ -251,7 +248,7 @@ const LandingPage = () => {
             <div className="md:col-span-2">
               <div className="flex items-center space-x-2 mb-4">
                 <div className="w-10 h-10 rounded-lg flex items-center justify-center overflow-hidden">
-                  <img src="/resources/oli-branch00.png" alt="Oli Logo" className="w-full h-full object-cover" />
+                  <img src="/images/oli-branch00.png" alt="Oli Logo" className="w-full h-full object-cover" />
                 </div>
                 <span className="font-display font-bold text-xl">Oli-Branch</span>
               </div>

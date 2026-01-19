@@ -117,18 +117,22 @@ const SignupPage = () => {
       <div className="hidden lg:flex lg:w-2/5 hero-gradient flex-col justify-between p-8 xl:p-12 text-white relative">
         <div className="flex items-center">
           <Link to="/">
-            <img src="/resources/oli-branch00.png" alt="Oli-Branch Logo" className="h-12 w-auto rounded-lg" />
+            <img src="/images/oli-branch00.png" alt="Oli-Branch Logo" className="h-12 w-auto rounded-lg" />
           </Link>
         </div>
 
-        <div className="space-y-6 mb-20">
-          <h1 className="font-display text-4xl xl:text-5xl font-bold tracking-tight leading-tight uppercase">
-            FIX YOUR<br />FINANCIAL<br /><span style={{ color: colors.gold }}>MISMATCH</span>
-          </h1>
-          <p className="text-blue-100 text-base xl:text-lg max-w-md leading-relaxed">
+          <div className="space-y-6 mb-20">
+            <div className="text-center">
+            <h1 className="font-display text-4xl xl:text-5xl font-bold tracking-tight leading-tight uppercase">
+              FIX YOUR BANKING<br /><span style={{ color: colors.gold }}>MISMATCH</span>
+            </h1>
+            </div>
+          <div className="flex justify-center text-center">
+            <p className="text-blue-100 text-base xl:text-lg max-w-md leading-relaxed mx-auto">
             Create an account to identify hidden fees, account limits, and banking setups that don't match how your business actually operates.
           </p>
         </div>
+       </div>
 
         <div className="text-blue-200 text-xs xl:text-sm">
           <p>Copyright &copy; 2023-2026 Oli-Branch LLC. All Rights Reserved.</p>
@@ -141,7 +145,7 @@ const SignupPage = () => {
           {/* Mobile Logo */}
           <div className="lg:hidden flex items-center justify-center mb-4">
             <Link to="/">
-              <img src="/resources/oli-branch00.png" alt="Oli-Branch" className="h-12 rounded-lg" />
+              <img src="/images/oli-branch00.png" alt="Oli-Branch Logo" className="h-12 w-auto rounded-lg" />
             </Link>
           </div>
 
@@ -153,11 +157,9 @@ const SignupPage = () => {
             Back to Login
           </Link>
 
-          <div>
-            <h2 className="font-display text-2xl sm:text-3xl font-bold" style={{ color: colors. forest}}>
-              Create Account
-            </h2>
-            <p className="mt-2 text-sm sm:text-base text-gray-500">Start your financial journey with Oli-Branch</p>
+          <div className="text-center">
+            <h2 className="font-display text-2xl sm:text-3xl font-bold" style={{ color: colors.forest}}>Welcome Back</h2>
+            <p className="mt-2 text-sm sm:text-base text-gray-500">Sign in to access your dashboard</p>
           </div>
 
           <form onSubmit={handleSubmit} className="space-y-4" noValidate>
