@@ -115,7 +115,7 @@ const LandingPage = () => {
               rel="noopener noreferrer"
               className="btn-primary px-6 py-2 rounded-lg font-medium inline-flex items-center justify-center"
             >
-              Demo Free Audit
+              Free Demo
             </a>
           </div>
         </div>
@@ -138,7 +138,7 @@ const LandingPage = () => {
             rel="noopener noreferrer"
             className="btn-primary px-9 py-5 rounded-lg text-lg font-medium inline-block text-center"
           >
-            Start My Free Audit
+            Start a Free 14-Day Trial
           </a>
             <button 
               onClick={talkToOli}

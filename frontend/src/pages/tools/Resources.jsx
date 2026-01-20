@@ -319,7 +319,7 @@ const ResourcesPage = () => {
                 className="px-8 py-4 rounded-lg text-lg font-bold hover:opacity-90 transition-all text-center"
                 style={{ backgroundColor: colors.gold, color: colors.forest }}
               >
-                Take Financial Health Check
+                Start a Free 14-Day Trial
               </Link>
             </div>
           </div>
