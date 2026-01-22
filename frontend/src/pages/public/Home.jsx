@@ -16,7 +16,6 @@ const HeroSection = ({ onTalkToOli }) => {
       {/* if Navbar is fixed, Layout will add pt-24 to main.
           so hero itself should NOT add pt-24 */}
 
-     
       <div className="relative z-10 max-w-6xl mx-auto px-6 text-center flex items-center justify-center min-h-[calc(100vh-6rem)]">
         <div style={{ color: "#F8F5F0" }}>
           <h1 className="font-display text-5xl md:text-7xl font-bold mb-6 leading-tight">
@@ -35,7 +34,7 @@ const HeroSection = ({ onTalkToOli }) => {
               className="px-9 py-5 rounded-lg font-semibold inline-flex items-center justify-center transition-all hover:-translate-y-0.5 hover:shadow-lg"
               style={{ background: "#1B4332", color: "#F8F5F0" }}
             >
-              Start My Free Audit
+              Start a Free 14-Day Trial
             </a>
 
             <button

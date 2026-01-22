@@ -225,7 +225,7 @@ const About = () => {
                 rel="noopener noreferrer"
                 className="btn-primary px-6 py-2 rounded-lg font-medium inline-flex items-center justify-center"
               >
-                Demo Free Audit
+                Free Demo Audit
               </a>
             </div>
             </div>
@@ -252,7 +252,7 @@ const About = () => {
                 className="px-8 py-4 rounded-lg text-lg font-bold hover:opacity-90 transition-all"
                 style={{ backgroundColor: colors.gold, color: colors.forest }}
               >
-                Start Your Journey
+                Start a Free 14-Day Trial
               </Link>
               <a href="#story" className="btn-secondary px-8 py-4 rounded-lg text-lg font-semibold">
                 Our Story
@@ -684,7 +684,7 @@ const About = () => {
 
           {/* Copyright */}
           <div className="border-t border-gray-700 mt-8 pt-8 text-center text-gray-300">
-            <p>Copyright &copy; 2023-2026 Oli-Branch LLC. All Rights Reserved.</p>
+            <p> &copy; 2023-2026 Oli-Branch LLC. All Rights Reserved.</p>
           </div>
         </div>
       </footer>

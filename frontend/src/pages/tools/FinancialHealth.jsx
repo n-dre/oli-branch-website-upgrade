@@ -132,7 +132,7 @@ export default function FinancialHealth() {
         addHealthHistory(result.score);
 
         toast.success(`Score calculated: ${result.score}`, {
-          description: `Your financial health is ${healthLabel(result.score).toLowerCase()}.`,
+          description: `Your business financial health is ${healthLabel(result.score).toLowerCase()}.`,
         });
 
         setActiveTab("results");
@@ -567,11 +567,16 @@ export default function FinancialHealth() {
                         Financial Health Inputs
                       </CardTitle>
                       <CardDescription className="mt-1 text-[#52796F]">
-                        Enter your financial details to calculate your health score
+                        Enter your business financial details to calculate your health score
                       </CardDescription>
                     </div>
                     <div className="flex gap-2">
-                      <Button variant="outline" size="sm" onClick={handleQuickExample} className="text-xs md:text-sm btn-secondary">
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={handleQuickExample}
+                        className="text-xs md:text-sm btn-secondary"
+                      >
                         Load Example
                       </Button>
                       <Button
@@ -687,10 +692,18 @@ export default function FinancialHealth() {
                     </Button>
 
                     <div className="flex gap-3">
-                      <Button variant="outline" onClick={handleClear} className="h-12 flex-1 sm:flex-none btn-secondary">
+                      <Button
+                        variant="outline"
+                        onClick={handleClear}
+                        className="h-12 flex-1 sm:flex-none btn-secondary"
+                      >
                         Clear All
                       </Button>
-                      <Button variant="outline" onClick={handleQuickExample} className="h-12 flex-1 sm:flex-none btn-secondary">
+                      <Button
+                        variant="outline"
+                        onClick={handleQuickExample}
+                        className="h-12 flex-1 sm:flex-none btn-secondary"
+                      >
                         Load Example
                       </Button>
                     </div>
@@ -701,7 +714,7 @@ export default function FinancialHealth() {
                     <div className="flex items-start gap-2">
                       <Info className="w-4 h-4 text-[#1B4332] mt-0.5 flex-shrink-0" />
                       <p className="text-sm text-[#1B4332]">
-                        <span className="font-semibold">Tip:</span> All calculations are done locally in your browser. Your data is
+                        <span className="font-semibold">B2B Tip:</span> All calculations are done locally in your browser. Your business data is
                         stored only on your device for privacy.
                       </p>
                     </div>
@@ -828,7 +841,10 @@ export default function FinancialHealth() {
                           </div>
                           <div className="text-2xl font-bold text-[#1B4332]">{(metrics.margin * 100).toFixed(1)}%</div>
                           <div className="mt-2 h-2 bg-[#10B981]/20 rounded-full overflow-hidden">
-                            <div className="h-full rounded-full progress-gradient" style={{ width: `${Math.min(100, metrics.margin * 200)}%` }} />
+                            <div
+                              className="h-full rounded-full progress-gradient"
+                              style={{ width: `${Math.min(100, metrics.margin * 200)}%` }}
+                            />
                           </div>
                         </div>
 
@@ -892,7 +908,11 @@ export default function FinancialHealth() {
                           </div>
                         )}
 
-                        <Button variant="outline" className="w-full mt-4 btn-secondary" onClick={() => setActiveTab("results")}>
+                        <Button
+                          variant="outline"
+                          className="w-full mt-4 btn-secondary"
+                          onClick={() => setActiveTab("results")}
+                        >
                           View Full Analysis
                           <ArrowRight className="w-4 h-4 ml-2" />
                         </Button>
@@ -966,7 +986,9 @@ export default function FinancialHealth() {
                                 <Target className="h-5 w-5" style={{ color: BAR_COLORS.net }} />
                                 <span className="font-semibold text-[#1B4332]">Net Profit</span>
                               </div>
-                              <p className="text-2xl font-bold text-[#1B4332]">${Math.max(0, revenue - expenses).toLocaleString()}</p>
+                              <p className="text-2xl font-bold text-[#1B4332]">
+                                ${Math.max(0, revenue - expenses).toLocaleString()}
+                              </p>
                               <p className="text-sm mt-1" style={{ color: BAR_COLORS.net }}>
                                 {(metrics.margin * 100).toFixed(1)}% profit margin
                               </p>
@@ -986,7 +1008,7 @@ export default function FinancialHealth() {
                             Key Mismatch Areas
                           </CardTitle>
                           <CardDescription className="text-[#52796F]">
-                            Areas requiring attention based on your financial data
+                            Business areas requiring attention based on your financial data
                           </CardDescription>
                         </CardHeader>
                         <CardContent>
@@ -1053,7 +1075,11 @@ export default function FinancialHealth() {
                                   <span className="text-sm font-medium text-[#1B4332]">{rec}</span>
 
                                   <div className="mt-3 flex flex-col sm:flex-row gap-2 w-full">
-                                    <Button size="sm" variant="outline" className="h-9 text-xs sm:text-sm btn-secondary w-full sm:w-auto">
+                                    <Button
+                                      size="sm"
+                                      variant="outline"
+                                      className="h-9 text-xs sm:text-sm btn-secondary w-full sm:w-auto"
+                                    >
                                       Learn More
                                     </Button>
                                     <Button size="sm" className="h-9 text-xs sm:text-sm btn-primary w-full sm:w-auto">
@@ -1075,7 +1101,7 @@ export default function FinancialHealth() {
                     <Calculator className="h-16 w-16 mx-auto mb-4 text-[#52796F]/30" />
                     <h3 className="text-lg font-semibold text-[#1B4332] mb-2">No Results Yet</h3>
                     <p className="text-[#52796F] mb-4">
-                      Calculate your financial health score to see detailed results and insights
+                      Calculate your business financial health score to see detailed results and insights
                     </p>
                     <Button onClick={() => setActiveTab("input")} className="btn-primary">
                       Go to Input
@@ -1143,4 +1169,3 @@ export default function FinancialHealth() {
     </DashboardLayout>
   );
 }
-

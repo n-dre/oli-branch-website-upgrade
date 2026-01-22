@@ -115,7 +115,7 @@ const LandingPage = () => {
               rel="noopener noreferrer"
               className="btn-primary px-6 py-2 rounded-lg font-medium inline-flex items-center justify-center"
             >
-              Free Demo
+              Free Demo Audit
             </a>
           </div>
         </div>
@@ -365,7 +365,7 @@ const LandingPage = () => {
   
           {/* Copyright */}
           <div className="border-t border-gray-700 mt-8 pt-8 text-center text-gray-300">
-            <p>Copyright &copy; 2023-2026 Oli-Branch LLC. All Rights Reserved.</p>
+            <p> &copy; 2023-2026 Oli-Branch LLC. All Rights Reserved.</p>
           </div>
         </div>
       </footer>

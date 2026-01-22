@@ -1,4 +1,3 @@
-// frontend/src/components/DashboardLayout.jsx
 import React, { useState } from "react";
 import Sidebar from "./Sidebar";
 import Header from "./Header";
@@ -18,7 +17,7 @@ export default function DashboardLayout({ children, title, subtitle }) {
             aria-label="Toggle menu"
           >
             {sidebarOpen ? (
-              <X className="h-6 w-6 text-gray-700" />
+              <X className="h-2 w-2 text-gray-700" />
             ) : (
               <Menu className="h-6 w-6 text-gray-700" />
             )}
@@ -32,7 +31,7 @@ export default function DashboardLayout({ children, title, subtitle }) {
         </div>
       </header>
 
-      {/* DESKTOP HEADER - uses custom class */}
+      {/* DESKTOP HEADER - With title */}
       <div className="desktop-header sticky top-0 z-30">
         <Header title={title} subtitle={subtitle} />
       </div>
@@ -41,19 +40,19 @@ export default function DashboardLayout({ children, title, subtitle }) {
       <div className="flex">
         {/* Mobile overlay */}
         {sidebarOpen && (
-          <div 
+          <div
             className="fixed inset-0 bg-black/50 z-40 lg:hidden"
             onClick={() => setSidebarOpen(false)}
           />
         )}
 
         {/* Sidebar */}
-        <aside 
+        <aside
           className={`
             fixed lg:sticky lg:top-0 top-0 left-0 z-50
-            h-screen w-64 flex-shrink-0
+            h-screen flex-shrink-0
             transform transition-transform duration-300 ease-in-out
-            ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'}
+            ${sidebarOpen ? "translate-x-0" : "-translate-x-full"}
             lg:translate-x-0
           `}
         >

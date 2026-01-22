@@ -324,16 +324,17 @@ export default function Profile() {
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         className="grid grid-cols-1 lg:grid-cols-2 gap-6"
+        style={{ backgroundColor: '#f5f5f5' }}
       >
         {/* Profile Information */}
-        <Card>
-          <CardHeader>
+        <Card style={{ border: 'none', backgroundColor: '#f5f5f5', boxShadow: 'none' }}>
+          <CardHeader style={{ borderBottom: 'none', paddingBottom: '0.5rem' }}>
             <CardTitle className="flex items-center gap-2">
               <User className="h-5 w-5 text-primary" />
               Profile Information
             </CardTitle>
           </CardHeader>
-          <CardContent className="space-y-5">
+          <CardContent className="space-y-5" style={{ paddingTop: '0.5rem' }}>
             {/* Avatar */}
             <div className="flex items-center gap-4">
               <Avatar className="h-20 w-20">
@@ -397,14 +398,14 @@ export default function Profile() {
         </Card>
 
         {/* Account Settings */}
-        <Card>
-          <CardHeader>
+        <Card style={{ border: 'none', backgroundColor: '#f5f5f5', boxShadow: 'none' }}>
+          <CardHeader style={{ borderBottom: 'none', paddingBottom: '0.5rem' }}>
             <CardTitle className="flex items-center gap-2">
               <Lock className="h-5 w-5 text-primary" />
               Account Settings
             </CardTitle>
           </CardHeader>
-          <CardContent className="space-y-4">
+          <CardContent className="space-y-4" style={{ paddingTop: '0.5rem' }}>
             <div className="space-y-2">
               <Label>Current Password</Label>
               <Input

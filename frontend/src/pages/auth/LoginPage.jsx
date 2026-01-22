@@ -136,7 +136,7 @@ const LoginPage = () => {
          </div>
 
           <div className="text-blue-200 text-xs xl:text-sm">
-            <p>Copyright &copy; 2023-2026 Oli-Branch LLC. All Rights Reserved.</p>
+            <p> &copy; 2023-2026 Oli-Branch LLC. All Rights Reserved.</p>
           </div>
         </div>
 
