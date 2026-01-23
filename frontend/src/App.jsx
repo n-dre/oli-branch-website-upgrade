@@ -170,7 +170,7 @@ export default function App() {
                 <Route path="/QuickStartGuide" element={<QuickStartGuide />} />
 
                 <Route path="/admin" element={<AdminDashboard />} />
-                <Route path="/board" element={<UserDashboard />} />
+                <Route path="/dashboard" element={<UserDashboard />} />
 
                 <Route path="/tools" element={<Tools />} />
                 <Route path="/services" element={<Services />} />
