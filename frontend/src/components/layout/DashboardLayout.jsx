@@ -1,9 +1,10 @@
 import React, { useState } from "react";
-import Sidebar from "./Sidebar";
+//import Sidebar from "./Sidebar";
 import Header from "./Header";
 import { Menu, X } from "lucide-react";
 
 export default function DashboardLayout({ children, title, subtitle }) {
+
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
   return (
@@ -47,17 +48,17 @@ export default function DashboardLayout({ children, title, subtitle }) {
         )}
 
         {/* Sidebar */}
-        <aside
-          className={`
-            fixed lg:sticky lg:top-0 top-0 left-0 z-50
-            h-screen flex-shrink-0
-            transform transition-transform duration-300 ease-in-out
-            ${sidebarOpen ? "translate-x-0" : "-translate-x-full"}
-            lg:translate-x-0
-          `}
-        >
-          <Sidebar onClose={() => setSidebarOpen(false)} />
-        </aside>
+        {/*<aside*/}
+        {/*  className={`*/}
+        {/*    fixed lg:sticky lg:top-0 top-0 left-0 z-50*/}
+        {/*    h-screen flex-shrink-0*/}
+        {/*    transform transition-transform duration-300 ease-in-out*/}
+        {/*    ${sidebarOpen ? "translate-x-0" : "-translate-x-full"}*/}
+        {/*    lg:translate-x-0*/}
+        {/*  `}*/}
+        {/*>*/}
+        {/*  <Sidebar onClose={() => setSidebarOpen(false)} />*/}
+        {/*</aside>*/}
 
         {/* Main content */}
         <main className="flex-1 min-w-0 p-4 lg:p-6 xl:p-8">

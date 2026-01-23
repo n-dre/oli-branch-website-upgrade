@@ -63,7 +63,7 @@ const QUICK_ACTIONS = [
   }
 ];
 
-export default function Dashboard() {
+const UserDashboard = () => {
   const context = useData();
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [activeView, setActiveView] = useState('overview');
@@ -658,3 +658,5 @@ export default function Dashboard() {
     </div>
   );
 }
+
+export default UserDashboard;
