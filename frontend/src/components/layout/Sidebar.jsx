@@ -1,5 +1,5 @@
 // frontend/src/components/layout/Sidebar.jsx
-import React, { useEffect, useState } from "react";
+import React from "react";
 import { NavLink, useNavigate } from "react-router-dom";
 import {
   LayoutDashboard,
@@ -17,7 +17,7 @@ import {
   BarChart3,
   X,
   PanelLeftClose,
-  PanelLeft
+  PanelLeft,
 } from "lucide-react";
 
 import { cn } from "../../lib/utils";
@@ -71,84 +71,97 @@ function GroupHeader({ children, collapsed }) {
   );
 }
 
-export default function Sidebar({ onClose }) {
+/**
+ * Production Sidebar (no localStorage)
+ *
+ * Props:
+ * - collapsed?: boolean (default false)
+ * - onCollapsedChange?: (next:boolean) => void
+ * - onClose?: () => void   // mobile drawer close
+ */
+export default function Sidebar({ collapsed = false, onCollapsedChange, onClose }) {
   const navigate = useNavigate();
-  const { subscription } = useData();
+  const data = useData?.() || {};
+  const subscription = data.subscription;
   const isPremium = subscription?.plan === "premium";
 
-  const [isCollapsed, setIsCollapsed] = useState(() => {
-    const saved = localStorage.getItem("ob_sidebar_collapsed");
-    return saved !== null ? saved === "true" : false;
-  });
-
-  useEffect(() => {
-    localStorage.setItem("ob_sidebar_collapsed", isCollapsed.toString());
-  }, [isCollapsed]);
+  const safeClose = typeof onClose === "function" ? onClose : null;
+  const setCollapsed =
+    typeof onCollapsedChange === "function" ? onCollapsedChange : null;
 
   const handleLogout = () => {
-    localStorage.removeItem("oliBranchLogin");
+    // Production: logout should be handled by your auth layer.
+    // This is a safe client-side fallback.
+    try {
+      sessionStorage.removeItem("oliBranchLogin");
+    } catch {
+      // ignore
+    }
     navigate("/");
   };
 
   const handleNavClick = () => {
-    if (onClose) onClose();
+    if (safeClose) safeClose();
+  };
+
+  const toggleCollapsed = () => {
+    if (setCollapsed) setCollapsed(!collapsed);
   };
 
   return (
-    <div
+    <aside
       className={cn(
         "flex flex-col h-full transition-all duration-300 bg-[#1B4332]",
-        isCollapsed ? "w-12": "w-54"
+        collapsed ? "w-14" : "w-64"
       )}
     >
-      {/* Header with Toggle */}
+      {/* Header */}
       <div className="flex items-center justify-between p-3 border-b border-white/10">
-        {!isCollapsed && (
+        {!collapsed && (
           <div className="flex items-center gap-2 px-1">
             <img src={LOGO_SRC} alt="Oli-Branch" className="h-7 w-7" />
-            <span className="font-bold text-sm text-[#F8F5F0]">
-              Oli-Branch
-            </span>
+            <span className="font-bold text-sm text-[#F8F5F0]">Oli-Branch</span>
           </div>
         )}
 
-        {/* Mobile Close Button */}
-        <button
-          onClick={onClose}
-          className="lg:hidden p-2 text-[#F8F5F0] hover:bg-white/10 rounded-lg transition-colors"
-          aria-label="Close sidebar"
-          type="button"
-        >
-          <X className="h-5 w-5" />
-        </button>
+        {/* Mobile close (only when passed) */}
+        {safeClose && (
+          <button
+            onClick={safeClose}
+            className="lg:hidden p-2 text-[#F8F5F0] hover:bg-white/10 rounded-lg transition-colors"
+            aria-label="Close sidebar"
+            type="button"
+          >
+            <X className="h-5 w-5" />
+          </button>
+        )}
 
-        {/* Desktop Collapse/Expand Button */}
-        <button
-          onClick={() => setIsCollapsed(!isCollapsed)}
-          className={cn(
-            "hidden lg:flex p-2 text-[#F8F5F0] hover:bg-white/10 rounded-lg transition-colors",
-            isCollapsed && "mx-auto"
-          )}
-          aria-label={isCollapsed ? "Expand sidebar" : "Collapse sidebar"}
-          type="button"
-        >
-          {isCollapsed ? (
-            <PanelLeft className="h-5 w-5" />
-          ) : (
-            <PanelLeftClose className="h-5 w-5" />
-          )}
-        </button>
+        {/* Desktop collapse toggle (only when controlled) */}
+        {setCollapsed && (
+<button
+  onClick={toggleCollapsed}
+  className={cn(
+    "hidden lg:flex p-2 text-gray-200 hover:bg-white/10 rounded-lg transition-colors",
+    collapsed && "mx-auto"
+  )}
+  aria-label={collapsed ? "Expand sidebar" : "Collapse sidebar"}
+  type="button"
+>
+  {collapsed ? (
+    <PanelLeft className="h-5 w-5" />
+  ) : (
+    <PanelLeftClose className="h-5 w-5" />
+  )}
+</button>
+
+        )}
       </div>
 
-      {/* Navigation */}
+      {/* Nav */}
       <nav className="flex-1 space-y-1 overflow-y-auto px-3 py-2">
         {navGroups.map((group, idx) => (
           <div key={group.title || idx}>
-            {group.title && (
-              <GroupHeader collapsed={isCollapsed}>
-                {group.title}
-              </GroupHeader>
-            )}
+            {group.title && <GroupHeader collapsed={collapsed}>{group.title}</GroupHeader>}
 
             {group.items.map((item) => (
               <NavLink
@@ -161,19 +174,15 @@ export default function Sidebar({ onClose }) {
                     isActive
                       ? "bg-[#D4AF37] text-[#1B4332] shadow-[0_0_20px_rgba(212,175,55,0.4)]"
                       : "text-[#F8F5F0]/80 hover:bg-white/10",
-                    isCollapsed && "justify-center px-0"
+                    collapsed && "justify-center px-0"
                   )
                 }
               >
                 <item.icon className="h-4 w-4 shrink-0" />
-                {!isCollapsed && (
+                {!collapsed && (
                   <>
-                    <span className="flex-1 whitespace-nowrap">
-                      {item.label}
-                    </span>
-                    {item.premium && !isPremium && (
-                      <Crown className="h-3 w-3 text-[#D4AF37]" />
-                    )}
+                    <span className="flex-1 whitespace-nowrap">{item.label}</span>
+                    {item.premium && !isPremium && <Crown className="h-3 w-3 text-[#D4AF37]" />}
                   </>
                 )}
               </NavLink>
@@ -186,15 +195,16 @@ export default function Sidebar({ onClose }) {
       <div className="p-3 border-t border-white/10">
         <button
           onClick={handleLogout}
+          type="button"
           className={cn(
             "flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-red-300 hover:bg-red-900/20 transition-colors w-full",
-            isCollapsed && "justify-center px-0"
+            collapsed && "justify-center px-0"
           )}
         >
           <LogOut className="h-4 w-4" />
-          {!isCollapsed && "Logout"}
+          {!collapsed && "Logout"}
         </button>
       </div>
-    </div>
+    </aside>
   );
 }

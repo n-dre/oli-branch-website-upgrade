@@ -10,7 +10,6 @@ import {
   HelpCircle,
   GraduationCap,
   Settings,
-  Grid,
   MoreHorizontal,
   X,
 } from "lucide-react";
@@ -96,10 +95,6 @@ export default function Header({ title, subtitle }) {
             onClick={() => navigate("/settings")}
           >
             <Settings className="h-5 w-5" />
-          </Button>
-
-          <Button variant="ghost" size="icon" onClick={() => navigate("/apps")}>
-            <Grid className="h-5 w-5" />
           </Button>
 
           <div className="flex items-center gap-3 pl-3 border-l border-border">
@@ -200,10 +195,6 @@ export default function Header({ title, subtitle }) {
                 onClick={() => navigate("/settings")}
               >
                 <Settings className="h-5 w-5" />
-              </Button>
-
-              <Button variant="ghost" size="icon" onClick={() => navigate("/apps")}>
-                <Grid className="h-5 w-5" />
               </Button>
             </div>
           </div>

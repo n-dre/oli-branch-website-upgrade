@@ -1,8 +1,8 @@
 import React, { useState } from "react";
 import { toast } from "sonner";
-import DashboardLayout from "../../../frontend/src/components/layout/DashboardLayout";
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "../../../frontend/src/components/ui/card";
-import { Button } from "../../../frontend/src/components/ui/button";
+import DashboardLayout from "../../components/layout/DashboardLayout";
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "../../components/ui/card";
+import { Button } from "../../components/ui/button";
 
 export default function NotificationsSounds() {
   const [state, setState] = useState({

@@ -186,7 +186,7 @@ export default function App() {
                 <Route path="/learning" element={<Learning />} />
                 <Route path="/nearby-banks" element={<NearbyBanks />} />
                 <Route path="/profile" element={<Profile />} />
-                <Route path="/settings/notifications-sounds" element={<NotificationsSounds />} />
+                <Route path="/notifications" element={<NotificationsSounds />} />
 
                 <Route path="/intake" element={<IntakeForm />} />
                 <Route path="/report" element={<Report />} />

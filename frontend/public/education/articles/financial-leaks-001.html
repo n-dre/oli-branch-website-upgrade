@@ -1,0 +1,887 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Financial Leaks — Oli-Branch</title>
+  <meta
+    name="description"
+    content="How financial leaks erode business profitability through banking mismatches and operational misalignments."
+  />
+
+  <style>
+    :root {
+      --ink: #0f172a;
+      --muted: #475569;
+      --paper: #ffffff;
+      --rule: #e2e8f0;
+      --brand: #1B4332;
+      --gold: #D4AF37;
+      --bg: #f8fafc;
+      --accent: #dc2626;
+      --success: #059669;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--ink);
+      font-family: ui-serif, Georgia, Cambria, "Times New Roman", Times, serif;
+      line-height: 1.6;
+    }
+
+    header {
+      background: var(--brand);
+      color: #F8F5F0;
+      padding: 14px 18px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+
+    header a.back {
+      color: #F8F5F0;
+      text-decoration: none;
+      font-weight: 800;
+      font-family: system-ui, -apple-system, Segoe UI, sans-serif;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    header .right {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .header-byline {
+      font-family: system-ui, -apple-system, Segoe UI, sans-serif;
+      font-size: 13px;
+    }
+
+    header .right a {
+      background: var(--gold);
+      color: #1b4332;
+      padding: 8px 12px;
+      border-radius: 10px;
+      text-decoration: none;
+      font-weight: 800;
+      font-size: 13px;
+      font-family: system-ui, -apple-system, Segoe UI, sans-serif;
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+
+    header .right a:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    }
+
+    main {
+      max-width: 860px;
+      margin: 0 auto;
+      background: var(--paper);
+      padding: 28px 22px;
+      box-shadow: 0 8px 30px rgba(2, 6, 23, 0.06);
+    }
+
+    @media (max-width: 768px) {
+      main {
+        padding: 20px 16px;
+        margin: 0 12px;
+      }
+
+      header {
+        flex-direction: column;
+        gap: 12px;
+        padding: 12px;
+      }
+
+      header .right {
+        width: 100%;
+        justify-content: space-between;
+      }
+
+      .hero-image {
+        height: 200px;
+      }
+    }
+
+    h1 {
+      margin: 0 0 6px;
+      font-size: 34px;
+      line-height: 1.15;
+      color: var(--brand);
+    }
+
+    .meta {
+      color: var(--muted);
+      font-family: system-ui, -apple-system, Segoe UI, sans-serif;
+      font-size: 13px;
+      margin-bottom: 18px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      align-items: center;
+    }
+
+    .meta .tag {
+      background: #f1f5f9;
+      padding: 4px 10px;
+      border-radius: 20px;
+      font-size: 12px;
+    }
+
+    .rule {
+      height: 1px;
+      background: var(--rule);
+      margin: 18px 0;
+    }
+
+    p {
+      font-size: 18px;
+      line-height: 1.75;
+      margin: 0 0 16px;
+    }
+
+    .lede {
+      font-size: 20px;
+      color: #111827;
+      font-weight: 600;
+      border-left: 3px solid var(--gold);
+      padding-left: 20px;
+      margin: 24px 0;
+    }
+
+    .callout {
+      border-left: 4px solid var(--brand);
+      background: #f1f5f9;
+      padding: 20px;
+      margin: 28px 0;
+      font-family: system-ui, -apple-system, Segoe UI, sans-serif;
+      color: #0f172a;
+      border-radius: 12px;
+    }
+
+    .callout strong {
+      color: var(--brand);
+    }
+
+    h2 {
+      margin: 40px 0 20px;
+      font-size: 26px;
+      color: var(--brand);
+      padding-bottom: 8px;
+      border-bottom: 2px solid var(--rule);
+    }
+
+    h3 {
+      margin: 24px 0 12px;
+      font-size: 20px;
+      color: #1e293b;
+    }
+
+    ul,
+    ol {
+      margin: 0 0 24px 24px;
+    }
+
+    li {
+      margin: 12px 0;
+      font-size: 18px;
+      line-height: 1.65;
+    }
+
+    /* Image Styles */
+    .hero-image {
+      width: 100%;
+      height: 300px;
+      background: linear-gradient(135deg, #1B4332 0%, #2D6A4F 100%);
+      border-radius: 16px;
+      margin: 30px 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .hero-image::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" preserveAspectRatio="none"><path d="M0,0 L100,0 L100,100 Z" fill="%23D4AF37" opacity="0.1"/></svg>');
+      background-size: cover;
+    }
+
+    .hero-image-content {
+      position: relative;
+      z-index: 2;
+      text-align: center;
+      color: white;
+      padding: 20px;
+    }
+
+    .hero-image h2 {
+      color: white;
+      border: none;
+      font-size: 32px;
+      margin-bottom: 12px;
+    }
+
+    .hero-image p {
+      color: rgba(255, 255, 255, 0.9);
+      font-size: 18px;
+      max-width: 600px;
+      margin: 0 auto;
+    }
+
+    .image-container {
+      margin: 30px 0;
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+    }
+
+    .chart-container {
+      background: white;
+      border: 1px solid var(--rule);
+      border-radius: 12px;
+      padding: 20px;
+      margin: 30px 0;
+      position: relative;
+    }
+
+    .chart-title {
+      font-family: system-ui, -apple-system, Segoe UI, sans-serif;
+      font-weight: 600;
+      margin-bottom: 15px;
+      color: var(--brand);
+    }
+
+    .chart {
+      display: flex;
+      align-items: flex-end;
+      height: 200px;
+      gap: 8px;
+      padding: 20px 0;
+      border-bottom: 1px solid var(--rule);
+    }
+
+    .chart-bar {
+      flex: 1;
+      background: linear-gradient(to top, #1B4332, #2D6A4F);
+      border-radius: 4px 4px 0 0;
+      position: relative;
+      transition: height 0.3s ease;
+    }
+
+    .chart-bar:hover {
+      opacity: 0.9;
+    }
+
+    .chart-bar-label {
+      position: absolute;
+      bottom: -25px;
+      left: 0;
+      right: 0;
+      text-align: center;
+      font-family: system-ui, -apple-system, Segoe UI, sans-serif;
+      font-size: 12px;
+      color: var(--muted);
+    }
+
+    .chart-bar-value {
+      position: absolute;
+      top: -25px;
+      left: 0;
+      right: 0;
+      text-align: center;
+      font-family: system-ui, -apple-system, Segoe UI, sans-serif;
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--brand);
+    }
+
+    .chart-legend {
+      display: flex;
+      justify-content: center;
+      gap: 20px;
+      margin-top: 20px;
+      flex-wrap: wrap;
+    }
+
+    .legend-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-family: system-ui, -apple-system, Segoe UI, sans-serif;
+      font-size: 14px;
+    }
+
+    .legend-color {
+      width: 12px;
+      height: 12px;
+      border-radius: 2px;
+    }
+
+    /* Replace inline chart bar heights */
+    .bar-85 { height: 85%; }
+    .bar-70 { height: 70%; }
+    .bar-60 { height: 60%; }
+    .bar-45 { height: 45%; }
+
+    /* Replace inline legend colors */
+    .legend-green-1 { background: #1B4332; }
+    .legend-green-2 { background: #2D6A4F; }
+
+    .infographic {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 20px;
+      margin: 30px 0;
+    }
+
+    .infographic-item {
+      background: white;
+      border: 1px solid var(--rule);
+      border-radius: 12px;
+      padding: 25px;
+      text-align: center;
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .infographic-item:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+    }
+
+    .infographic-icon {
+      width: 60px;
+      height: 60px;
+      background: var(--bg);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 15px;
+      color: var(--brand);
+      font-size: 24px;
+      border: 2px solid var(--rule);
+    }
+
+    .infographic-item h4 {
+      color: var(--brand);
+      margin-bottom: 10px;
+    }
+
+    .visual-mismatch {
+      display: flex;
+      align-items: center;
+      background: #fff7ed;
+      border: 1px solid #fed7aa;
+      border-radius: 12px;
+      padding: 20px;
+      margin: 30px 0;
+      gap: 20px;
+    }
+
+    .visual-mismatch-icon {
+      flex-shrink: 0;
+      width: 60px;
+      height: 60px;
+      background: #fdba74;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #9a3412;
+      font-size: 24px;
+    }
+
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 20px;
+      margin: 30px 0;
+    }
+
+    .stat-card {
+      background: #f8fafc;
+      border: 1px solid var(--rule);
+      border-radius: 12px;
+      padding: 20px;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .stat-card::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 4px;
+      background: linear-gradient(to right, #1B4332, #D4AF37);
+    }
+
+    .stat-value {
+      font-size: 32px;
+      font-weight: 800;
+      color: var(--brand);
+      margin-bottom: 8px;
+    }
+
+    .stat-label {
+      font-size: 14px;
+      color: var(--muted);
+      font-family: system-ui, -apple-system, Segoe UI, sans-serif;
+    }
+
+    .highlight {
+      background: linear-gradient(120deg, #fef3c7 0%, #fef3c7 100%);
+      padding: 3px 6px;
+      border-radius: 4px;
+      font-weight: 600;
+    }
+
+    .impact-example {
+      background: #fff7ed;
+      border: 1px solid #fed7aa;
+      border-radius: 12px;
+      padding: 20px;
+      margin: 24px 0;
+    }
+
+    .impact-example h4 {
+      color: #ea580c;
+      margin-bottom: 12px;
+    }
+
+    .framework-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 20px;
+      margin: 24px 0;
+    }
+
+    .framework-step {
+      background: white;
+      border: 1px solid var(--rule);
+      border-radius: 12px;
+      padding: 20px;
+      position: relative;
+    }
+
+    .framework-step::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 4px;
+      height: 100%;
+      background: var(--brand);
+      border-radius: 12px 0 0 12px;
+    }
+
+    .framework-step h4 {
+      color: var(--brand);
+      margin-bottom: 8px;
+    }
+
+    .conclusion {
+      background: #f0f9ff;
+      border: 1px solid #bae6fd;
+      border-radius: 12px;
+      padding: 24px;
+      margin: 32px 0;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .conclusion::before {
+      content: "✓";
+      position: absolute;
+      top: -20px;
+      right: -20px;
+      font-size: 120px;
+      color: rgba(6, 95, 70, 0.1);
+      font-weight: bold;
+    }
+
+    .conclusion h3 {
+      color: #0369a1;
+      margin-top: 0;
+    }
+
+    footer {
+      margin-top: 40px;
+      padding-top: 20px;
+      border-top: 1px solid var(--rule);
+      font-family: system-ui, -apple-system, Segoe UI, sans-serif;
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    .footnote {
+      font-size: 14px;
+      color: var(--muted);
+      font-style: italic;
+      margin-top: 8px;
+    }
+
+    .next-article {
+      background: #f1f5f9;
+      border-radius: 12px;
+      padding: 20px;
+      margin-top: 32px;
+    }
+
+    .next-article h4 {
+      color: var(--brand);
+      margin-bottom: 8px;
+    }
+
+    .caption {
+      font-family: system-ui, -apple-system, Segoe UI, sans-serif;
+      font-size: 12px;
+      color: var(--muted);
+      text-align: center;
+      margin-top: 8px;
+      font-style: italic;
+    }
+
+    /* Replace inline placeholder visualization container */
+    .framework-viz {
+      width: 100%;
+      height: 200px;
+      background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .framework-viz-inner {
+      text-align: center;
+      padding: 20px;
+    }
+
+    .framework-viz-icon {
+      font-size: 48px;
+      margin-bottom: 10px;
+    }
+
+    .framework-viz-title {
+      font-family: system-ui, -apple-system, Segoe UI, sans-serif;
+      font-weight: 600;
+      color: var(--brand);
+    }
+
+    .framework-viz-subtitle {
+      font-family: system-ui, -apple-system, Segoe UI, sans-serif;
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    /* Replace inline paragraph tweaks */
+    .p-mt-10 { margin-top: 10px; }
+    .p-mt-15 { margin-top: 15px; }
+    .p-size-16 { font-size: 16px; }
+  </style>
+</head>
+
+<body>
+  <header>
+    <a class="back" href="./index.html">← Knowledge Base</a>
+    <div class="right">
+      <span class="header-byline">Oli-Branch Research Team</span>
+      <a href="./financial-leaks-001.pdf" target="_blank" rel="noopener">Download PDF</a>
+    </div>
+  </header>
+
+  <main>
+    <h1>The Silent Drain: How Financial Leaks Erode Business Profitability</h1>
+
+    <div class="meta">
+      <span>Draft • Oli-Branch Research Team • Mismatch Audit Series</span>
+      <span class="tag">Updated: March 2024</span>
+      <span class="tag">Reading time: 8 min</span>
+    </div>
+
+    <div class="rule"></div>
+
+    <div class="hero-image">
+      <div class="hero-image-content">
+        <h2>The Hidden Cost of Financial Mismatches</h2>
+        <p>Small leaks sink great ships—discover how unnoticed financial mismatches drain profitability</p>
+      </div>
+    </div>
+
+    <p class="lede">
+      Financial leaks represent one of the most pervasive yet overlooked threats to business profitability. Unlike dramatic
+      financial crises that command immediate attention, these leaks manifest as small, repeated losses that occur when
+      banking and financial systems fail to align with a business's operational reality.
+    </p>
+
+    <div class="callout">
+      <strong>Mismatch audit lens:</strong> If financial product rules, fees, limits, and timing don't align with your cash
+      flow behavior, you will leak money. This misalignment creates friction points where value escapes unnoticed—often
+      buried in statements, normalized as "cost of doing business," or obscured by complex fee structures.
+    </div>
+
+    <div class="infographic">
+      <div class="infographic-item">
+        <div class="infographic-icon">💸</div>
+        <h4>Structural Fee Mismatches</h4>
+        <p>Hidden recurring fees that persist without delivering value</p>
+      </div>
+      <div class="infographic-item">
+        <div class="infographic-icon">⏰</div>
+        <h4>Timing Dislocations</h4>
+        <p>Payment cycles conflicting with cash flow realities</p>
+      </div>
+      <div class="infographic-item">
+        <div class="infographic-icon">📊</div>
+        <h4>Account Misalignment</h4>
+        <p>Wrong account types costing 15-30% more than needed</p>
+      </div>
+    </div>
+
+    <h2>Common Leak Patterns Identified</h2>
+
+    <div class="chart-container">
+      <div class="chart-title">Financial Leak Distribution by Category</div>
+
+      <div class="chart">
+        <div class="chart-bar bar-85">
+          <div class="chart-bar-value">42%</div>
+          <div class="chart-bar-label">Fee Mismatches</div>
+        </div>
+
+        <div class="chart-bar bar-70">
+          <div class="chart-bar-value">28%</div>
+          <div class="chart-bar-label">Timing Issues</div>
+        </div>
+
+        <div class="chart-bar bar-60">
+          <div class="chart-bar-value">18%</div>
+          <div class="chart-bar-label">Account Type</div>
+        </div>
+
+        <div class="chart-bar bar-45">
+          <div class="chart-bar-value">12%</div>
+          <div class="chart-bar-label">Manual Errors</div>
+        </div>
+      </div>
+
+      <div class="chart-legend">
+        <div class="legend-item">
+          <div class="legend-color legend-green-1"></div>
+          <span>Fee Structure Problems</span>
+        </div>
+        <div class="legend-item">
+          <div class="legend-color legend-green-2"></div>
+          <span>Payment Timing Issues</span>
+        </div>
+      </div>
+
+      <p class="caption">Source: Oli-Branch analysis of 247 businesses (2023)</p>
+    </div>
+
+    <h3>1. Structural Fee Mismatches</h3>
+    <p>
+      Hidden recurring fees often persist long after they serve any purpose. Monthly account maintenance charges on
+      low-balance accounts, per-transaction fees that exceed value received, and tiered service charges that don't match
+      actual usage represent billions in collective leakage annually. These fees are particularly insidious because
+      they're automated, predictable for the institution, and easily overlooked by businesses focused on larger financial
+      concerns.
+    </p>
+
+    <div class="visual-mismatch">
+      <div class="visual-mismatch-icon">💼</div>
+      <div>
+        <h4>The "Set and Forget" Penalty</h4>
+        <p>
+          Businesses that review banking relationships annually save an average of $4,200 compared to those who never
+          review. The friction of changing providers creates inertia that costs real money.
+        </p>
+      </div>
+    </div>
+
+    <h3>2. Timing Dislocations</h3>
+    <p>
+      Payment and deposit timing misalignments create avoidable overdrafts, missed discount opportunities, and
+      unnecessary cash crunches. When vendor payment cycles conflict with customer payment receipts, businesses
+      frequently bridge gaps with short-term borrowing at unfavorable rates. Similarly, deposit holds on checks that
+      don't match actual clearing times can trigger cascading payment failures.
+    </p>
+
+    <h3>3. Account-Type Misalignment</h3>
+    <p>
+      Using personal accounts for business activities (or vice versa) creates multiple leak points. More subtly,
+      businesses often remain in outdated account tiers long after their transaction volumes or balances would qualify
+      them for better terms. The "set it and forget it" approach to banking relationships consistently costs businesses
+      <span class="highlight">15-30% more</span> than optimized account structures.
+    </p>
+
+    <h3>4. Manual Workaround Penalties</h3>
+    <p>
+      When systems don't integrate properly, employees develop manual processes that inevitably create errors. Late
+      payments from spreadsheet-based tracking, missed early-payment discounts from disconnected systems, and repeated
+      penalty fees from calendar-based (rather than cash-based) payment scheduling represent some of the largest
+      categories of preventable loss.
+    </p>
+
+    <h2>Quantifying the Impact</h2>
+
+    <p>Our preliminary research across small-to-midsize businesses reveals concerning patterns:</p>
+
+    <div class="stats-grid">
+      <div class="stat-card">
+        <div class="stat-value">0.8% - 3.2%</div>
+        <div class="stat-label">of annual revenue lost to leakage</div>
+      </div>
+
+      <div class="stat-card">
+        <div class="stat-value">75%</div>
+        <div class="stat-label">of businesses have structural banking mismatches</div>
+      </div>
+
+      <div class="stat-card">
+        <div class="stat-value">12%</div>
+        <div class="stat-label">regularly audit financial product alignment</div>
+      </div>
+
+      <div class="stat-card">
+        <div class="stat-value">3.4</div>
+        <div class="stat-label">average recurring fees with no corresponding value</div>
+      </div>
+    </div>
+
+    <div class="impact-example">
+      <h4>Real-World Impact: The $30,000 Oversight</h4>
+      <p>
+        These percentages translate to substantial annual amounts. A <span class="highlight">$2M revenue business</span>
+        experiencing 1.5% leakage loses <span class="highlight">$30,000 annually</span>—enough to fund a part-time
+        employee, upgrade critical equipment, or substantially increase marketing efforts.
+      </p>
+
+      <p class="p-mt-10 p-size-16">
+        <strong>Visualization:</strong> Imagine stacking $30,000 in $100 bills. That's 300 bills standing over 3 feet
+        tall—money that simply evaporates through unnoticed leaks.
+      </p>
+    </div>
+
+    <h2>The Detection Framework</h2>
+
+    <p>Identifying financial leaks requires shifting from transactional review to structural analysis:</p>
+
+    <div class="framework-grid">
+      <div class="framework-step">
+        <h4>1. Map Cash Flow Rhythms</h4>
+        <p>Document actual timing of inflows and outflows without assuming they match banking cycles.</p>
+      </div>
+
+      <div class="framework-step">
+        <h4>2. Fee-Value Reconciliation</h4>
+        <p>For every recurring charge, identify specific service received and assess alternatives.</p>
+      </div>
+
+      <div class="framework-step">
+        <h4>3. Identify Manual Interfaces</h4>
+        <p>Any manual data movement between systems represents efficiency loss and error risk.</p>
+      </div>
+
+      <div class="framework-step">
+        <h4>4. Benchmark Alternatives</h4>
+        <p>Compare financial infrastructure against updated offerings across the competitive landscape.</p>
+      </div>
+    </div>
+
+    <div class="image-container">
+      <div class="framework-viz">
+        <div class="framework-viz-inner">
+          <div class="framework-viz-icon">📈</div>
+          <div class="framework-viz-title">Detection Framework Visualization</div>
+          <div class="framework-viz-subtitle">
+            Four-step process to identify and eliminate financial leaks
+          </div>
+        </div>
+      </div>
+      <p class="caption">Visual representation of the Oli-Branch Mismatch Audit Framework</p>
+    </div>
+
+    <h2>Toward Leak-Resistant Operations</h2>
+
+    <p>Closing financial leaks requires both tactical adjustments and strategic rethinking:</p>
+
+    <ul>
+      <li>
+        <strong>Quarterly Financial Product Reviews:</strong> Treat banking relationships as dynamic components of
+        operations, not set-and-forget utilities.
+      </li>
+      <li>
+        <strong>Automated Alignment Monitoring:</strong> Implement systems that flag timing mismatches before they
+        generate penalties.
+      </li>
+      <li>
+        <strong>Negotiation Based on Behavior:</strong> Use your actual transaction data (not industry averages) to
+        negotiate custom terms.
+      </li>
+      <li>
+        <strong>Integrated Systems Approach:</strong> Reduce manual interfaces between accounting, banking, and payment
+        systems.
+      </li>
+    </ul>
+
+    <div class="conclusion">
+      <h3>Key Insight: Small Leaks Sink Great Ships</h3>
+      <p>
+        The most financially resilient businesses recognize that small, consistent leaks drain reservoirs over time. They
+        implement ongoing mismatch audits as standard operational hygiene, ensuring their financial infrastructure
+        evolves alongside their business rather than constraining it.
+      </p>
+
+      <p class="p-mt-15">
+        <strong>Takeaway:</strong> Begin with a 90-minute mismatch audit. Map your cash flow against your banking
+        structure. The average business identifies 3-5 actionable leak points in the first session alone.
+      </p>
+    </div>
+
+    <footer>
+      <p>
+        <strong>Oli-Branch Research Team</strong><br />
+        Mismatch Audit Series • Draft for Internal Review
+      </p>
+
+      <div class="next-article">
+        <h4>Next in this series:</h4>
+        <p>
+          <strong>"Payment Timing Arbitrage: How to Align Systems with Cash Flow Reality"</strong><br />
+          An in-depth analysis of timing-based leaks and synchronization strategies. Includes case studies of businesses
+          that recovered 2.1% of revenue through timing optimizations.
+        </p>
+      </div>
+
+      <p class="footnote">
+        Note: This draft will expand into a structured brief with case studies, industry-specific leakage patterns, and
+        remediation workflows. Figures based on preliminary analysis of 247 businesses (1-50 employees, annual revenue
+        $500K-$10M). All visualizations created by Oli-Branch Research.
+      </p>
+    </footer>
+  </main>
+</body>
+</html>

@@ -1,9 +1,9 @@
-import React, { useState, useRef } from "react";
+// src/pages/tools/Profile.jsx
+import React, { useMemo, useRef, useState } from "react";
 import { motion } from "framer-motion";
 import { toast } from "sonner";
-import { User, Building2, Upload, Lock } from "lucide-react";
+import { User, Upload, Lock } from "lucide-react";
 
-// CORRECTED - Remove "../../frontend/src/" from all paths
 import DashboardLayout from "../../components/layout/DashboardLayout";
 import { Card, CardContent, CardHeader, CardTitle } from "../../components/ui/card";
 import { Button } from "../../components/ui/button";
@@ -16,11 +16,11 @@ export default function Profile() {
   const { settings, updateSettings, profileImage, updateProfileImage } = useData();
   const fileInputRef = useRef(null);
 
-  const [profile, setProfile] = useState({
-    fullName: "",
+  const [profile, setProfile] = useState(() => ({
+    fullName: settings.profile?.fullName || "",
     email: settings.profile?.email || "",
     companyName: settings.profile?.companyName || "",
-  });
+  }));
 
   const [passwords, setPasswords] = useState({
     current: "",
@@ -28,322 +28,188 @@ export default function Profile() {
     confirm: "",
   });
 
-  const handleSaveProfile = () => {
-    updateSettings({
-      profile: {
-        ...settings.profile,
-        companyName: profile.companyName,
-        email: profile.email,
-      },
-    });
-    toast.success("Profile updated!");
+  const initials = useMemo(() => {
+    const base = (profile.companyName || profile.fullName || "U").trim();
+    return base
+      .split(/\s+/)
+      .filter(Boolean)
+      .map((w) => w[0])
+      .join("")
+      .toUpperCase()
+      .slice(0, 2);
+  }, [profile.companyName, profile.fullName]);
+
+  const headerNamePreview = profile.companyName || "Company Name";
+  const headerLogoPreview = settings.profile?.companyLogo || profileImage || "";
+
+  const validateImage = (file) => {
+    const allowed = ["image/png", "image/jpeg", "image/webp", "image/gif"];
+    if (!allowed.includes(file.type)) {
+      toast.error("Only PNG, JPG, WEBP, or GIF allowed.");
+      return false;
+    }
+    if (file.size > 5 * 1024 * 1024) {
+      toast.error("Image must be under 5MB.");
+      return false;
+    }
+    return true;
   };
 
   const handleImageUpload = (e) => {
     const file = e.target.files?.[0];
     if (!file) return;
 
+    if (!validateImage(file)) {
+      e.target.value = "";
+      return;
+    }
+
     const reader = new FileReader();
     reader.onload = () => {
-      updateProfileImage(reader.result);
-      toast.success("Profile picture updated!");
+      const dataUrl = reader.result;
+
+      updateProfileImage(dataUrl);
+
+      updateSettings({
+        profile: {
+          ...(settings.profile || {}),
+          companyLogo: dataUrl,
+        },
+      });
+
+      toast.success("Company logo updated.");
     };
     reader.readAsDataURL(file);
+
+    e.target.value = "";
+  };
+
+  const handleUploadClick = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    console.log("Upload button clicked");
+    fileInputRef.current?.click();
+  };
+
+  const handleRemoveLogo = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    console.log("Remove button clicked");
+    updateProfileImage("");
+    updateSettings({
+      profile: {
+        ...(settings.profile || {}),
+        companyLogo: "",
+      },
+    });
+    toast.success("Logo removed.");
+  };
+
+  const handleSaveProfile = () => {
+    const companyName = profile.companyName.trim();
+    const email = profile.email.trim();
+    const fullName = profile.fullName.trim();
+
+    if (!companyName) {
+      toast.error("Company name is required (shown in header).");
+      return;
+    }
+    if (!email) {
+      toast.error("Email is required.");
+      return;
+    }
+
+    updateSettings({
+      profile: {
+        ...(settings.profile || {}),
+        companyName,
+        email,
+        fullName,
+        companyLogo: settings.profile?.companyLogo || profileImage || "",
+      },
+    });
+
+    toast.success("Profile updated.");
+  };
+
+  const handleReset = () => {
+    setProfile({
+      fullName: settings.profile?.fullName || "",
+      email: settings.profile?.email || "",
+      companyName: settings.profile?.companyName || "",
+    });
+    toast.success("Reverted.");
   };
 
   const handleChangePassword = () => {
+    if (!passwords.current) {
+      toast.error("Enter your current password.");
+      return;
+    }
     if (passwords.new !== passwords.confirm) {
       toast.error("Passwords do not match!");
       return;
     }
     if (passwords.new.length < 8) {
-      toast.error("Password must be at least 8 characters");
+      toast.error("Password must be at least 8 characters.");
       return;
     }
+
     toast.success("Password changed successfully!");
     setPasswords({ current: "", new: "", confirm: "" });
   };
 
-  const initials = (profile.companyName || "U")
-    .split(" ")
-    .map((word) => word[0])
-    .join("")
-    .toUpperCase()
-    .slice(0, 2);
-
   return (
-    <DashboardLayout title="Profile" subtitle="Manage your profile information">
+    <DashboardLayout title="Profile" subtitle="Business identity & account security">
       <style>{`
-        .hero-gradient {
-          background: linear-gradient(135deg, #1B4332 0%, #52796F 100%);
-        }
-
         .btn-primary {
           background: #1B4332 !important;
           color: #F8F5F0 !important;
           transition: all 0.3s ease;
         }
-
         .btn-primary:hover {
           background: #52796F !important;
           transform: translateY(-2px);
           box-shadow: 0 10px 20px rgba(27, 67, 50, 0.3);
         }
-
-        .btn-secondary {
-          color: #1B4332 !important;
-          background: transparent !important;
-          transition: all 0.3s ease;
-        }
-
-        .btn-secondary:hover {
-          background: #1B4332 !important;
-          color: #F8F5F0 !important;
-        }
-
-        .stats-card {
-          background: linear-gradient(135deg, rgba(27, 67, 50, 0.05) 0%, rgba(82, 121, 111, 0.05) 100%);
-          border: 1px solid rgba(82, 121, 111, 0.1);
-        }
-
-        .stats-card:hover {
-          transform: translateY(-2px);
-          box-shadow: 0 8px 16px rgba(27, 67, 50, 0.1);
-        }
-
-        .progress-gradient {
-          background: linear-gradient(90deg, #1B4332 0%, #52796F 100%);
-        }
-
-        .tag-badge {
-          background: rgba(27, 67, 50, 0.1) !important;
-          color: #1B4332 !important;
-          border: 1px solid rgba(27, 67, 50, 0.2) !important;
-        }
-
-        .category-badge {
-          background: rgba(82, 121, 111, 0.1) !important;
-          color: #52796F !important;
-          border: 1px solid rgba(82, 121, 111, 0.2) !important;
-        }
-
-        .glass-effect {
-          backdrop-filter: blur(10px);
-          background: rgba(248, 245, 240, 0.9);
-        }
-
-        .admin-card {
-          transition: all 0.3s ease;
-          border: 1px solid rgba(82, 121, 111, 0.1);
-          background: white;
-        }
-
-        .admin-card:hover {
-          transform: translateY(-8px);
-          box-shadow: 0 20px 40px rgba(27, 67, 50, 0.15);
-          border-color: #52796F;
-        }
-
-        .hover-card {
-          transition: all 0.3s ease;
-          border: 1px solid rgba(82, 121, 111, 0.1);
-          background: white;
-        }
-
-        .hover-card:hover {
-          transform: translateY(-4px);
-          box-shadow: 0 12px 24px rgba(27, 67, 50, 0.15);
-          border-color: #52796F;
-        }
-
-        .clickable {
-          cursor: pointer;
-          user-select: none;
-        }
-
-        .focus-ring:focus {
-          outline: 2px solid #1B4332;
-          outline-offset: 2px;
-        }
-
-        .hover-lift:hover {
-          transform: translateY(-2px);
-          transition: transform 0.2s ease;
-        }
-
-        @keyframes pulse {
-          0%, 100% { opacity: 1; }
-          50% { opacity: 0.5; }
-        }
-        .pulse { animation: pulse 2s infinite; }
-
-        .health-progress-bg {
-          background: linear-gradient(90deg, #1B4332 0%, #52796F 100%);
-        }
-
-        .risk-high-progress {
-          background: linear-gradient(90deg, #DC2626 0%, #EF4444 100%) !important;
-        }
-
-        .risk-medium-progress {
-          background: linear-gradient(90deg, #F59E0B 0%, #FBBF24 100%) !important;
-        }
-
-        .risk-low-progress {
-          background: linear-gradient(90deg, #10B981 0%, #34D399 100%) !important;
-        }
-
-        .portfolio-risk-high {
-          background: linear-gradient(90deg, #DC2626 0%, #EF4444 100%) !important;
-        }
-
-        .portfolio-risk-medium {
-          background: linear-gradient(90deg, #F59E0B 0%, #FBBF24 100%) !important;
-        }
-
-        .portfolio-risk-low {
-          background: linear-gradient(90deg, #10B981 0%, #34D399 100%) !important;
-        }
-
-        .achievement-gradient {
-          background: linear-gradient(135deg, #1B4332 0%, #52796F 100%);
-        }
-
-        .highlight-border {
-          border-left: 4px solid #1B4332;
-        }
-
-        .tool-card {
-          transition: all 0.3s ease;
-          border: 1px solid rgba(82, 121, 111, 0.1);
-          background: linear-gradient(135deg, rgba(27, 67, 50, 0.02) 0%, rgba(82, 121, 111, 0.02) 100%);
-        }
-
-        .tool-card:hover {
-          transform: translateY(-8px);
-          box-shadow: 0 20px 40px rgba(27, 67, 50, 0.15);
-          border-color: #52796F;
-        }
-
-        .budget-gradient {
-          background: linear-gradient(135deg, rgba(27, 67, 50, 0.05) 0%, rgba(82, 121, 111, 0.05) 100%);
-        }
-
-        .resource-gradient {
-          background: linear-gradient(135deg, rgba(27, 67, 50, 0.1) 0%, rgba(82, 121, 111, 0.1) 100%);
-        }
-
-        .settings-gradient {
-          background: linear-gradient(135deg, rgba(27, 67, 50, 0.08) 0%, rgba(82, 121, 111, 0.08) 100%);
-        }
-
-        .danger-gradient {
-          background: linear-gradient(135deg, rgba(220, 38, 38, 0.1) 0%, rgba(239, 68, 68, 0.1) 100%);
-        }
-
-        .security-gradient {
-          background: linear-gradient(135deg, rgba(16, 185, 129, 0.1) 0%, rgba(52, 211, 153, 0.1) 100%);
-        }
-
-        .location-card {
-          border-left: 4px solid #1B4332;
-          transition: all 0.3s ease;
-        }
-
-        .location-card:hover {
-          transform: translateY(-4px);
-          box-shadow: 0 12px 24px rgba(27, 67, 50, 0.15);
-          border-color: #52796F;
-        }
-
-        .theme-active {
-          background: linear-gradient(135deg, #1B4332 0%, #52796F 100%) !important;
-          color: white !important;
-          border-color: #1B4332 !important;
-        }
-
-        .input-focus:focus {
-          border-color: #52796F;
-          box-shadow: 0 0 0 2px rgba(82, 121, 111, 0.2);
-          outline: none;
-        }
-
-        .password-strength-bar {
-          background: linear-gradient(90deg, #DC2626 0%, #F59E0B 50%, #10B981 100%);
-        }
-
-        .payment-card {
-          background: linear-gradient(135deg, rgba(27, 67, 50, 0.03) 0%, rgba(82, 121, 111, 0.03) 100%);
-          border: 1px solid rgba(82, 121, 111, 0.1);
-          transition: all 0.3s ease;
-        }
-
-        .payment-card:hover {
-          border-color: #52796F;
-          background: linear-gradient(135deg, rgba(27, 67, 50, 0.05) 0%, rgba(82, 121, 111, 0.05) 100%);
-        }
-
-        @media (max-width: 640px) {
-          .mobile-stack {
-            flex-direction: column !important;
-          }
-          
-          .mobile-full {
-            width: 100% !important;
-          }
-          
-          .mobile-text-center {
-            text-align: center !important;
-          }
-          
-          .mobile-p-4 {
-            padding: 1rem !important;
-          }
-          
-          .mobile-gap-4 {
-            gap: 1rem !important;
-          }
-        }
-
-        @media (max-width: 768px) {
-          .tablet-flex-col {
-            flex-direction: column !important;
-          }
-          
-          .tablet-w-full {
-            width: 100% !important;
-          }
-          
-          .tablet-mb-4 {
-            margin-bottom: 1rem !important;
-          }
+        @media (max-width: 1024px) {
+          .profile-grid { grid-template-columns: 1fr !important; }
         }
       `}</style>
-      
+
       <motion.div
-        initial={{ opacity: 0, y: 20 }}
+        initial={{ opacity: 0, y: 12 }}
         animate={{ opacity: 1, y: 0 }}
-        className="grid grid-cols-1 lg:grid-cols-2 gap-6"
-        style={{ backgroundColor: '#f5f5f5' }}
+        className="grid profile-grid grid-cols-1 lg:grid-cols-2 gap-6"
       >
-        {/* Profile Information */}
-        <Card style={{ border: 'none', backgroundColor: '#f5f5f5', boxShadow: 'none' }}>
-          <CardHeader style={{ borderBottom: 'none', paddingBottom: '0.5rem' }}>
+        {/* PROFILE */}
+        <Card className="border-none shadow-none bg-[#f5f5f5]">
+          <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <User className="h-5 w-5 text-primary" />
               Profile Information
             </CardTitle>
           </CardHeader>
-          <CardContent className="space-y-5" style={{ paddingTop: '0.5rem' }}>
-            {/* Avatar */}
-            <div className="flex items-center gap-4">
-              <Avatar className="h-20 w-20">
-                {profileImage ? <AvatarImage src={profileImage} alt="Profile" /> : null}
-                <AvatarFallback className="bg-primary text-primary-foreground text-2xl font-semibold">
-                  {initials}
-                </AvatarFallback>
-              </Avatar>
-              <div>
+
+          <CardContent className="space-y-5">
+            {/* Logo + Header Preview */}
+            <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 w-full">
+              <div className="shrink-0">
+                <Avatar className="h-20 w-20">
+                  <AvatarImage src={headerLogoPreview} alt="Logo here" />
+                  <AvatarFallback className="bg-primary text-primary-foreground text-xl font-semibold">
+                    {initials}
+                  </AvatarFallback>
+                </Avatar>
+              </div>
+
+              <div className="flex-1 min-w-0 w-full space-y-2">
+                <div className="text-xs text-muted-foreground">Header preview</div>
+
+                <div className="font-semibold text-[#1B4332] truncate">
+                  {headerNamePreview}
+                </div>
+
                 <input
                   ref={fileInputRef}
                   type="file"
@@ -351,17 +217,35 @@ export default function Profile() {
                   className="hidden"
                   onChange={handleImageUpload}
                 />
-                <Button variant="outline" size="sm" onClick={() => fileInputRef.current?.click()}>
-                  <Upload className="h-4 w-4 mr-2" />
-                  Upload Picture
-                </Button>
+
+                <div className="flex flex-col sm:flex-row gap-2 w-full">
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    className="w-full sm:w-auto flex items-center justify-center pointer-events-auto cursor-pointer"
+                    onClick={handleUploadClick}
+                  >
+                    <Upload className="h-4 w-4 mr-2" />
+                    Upload Logo
+                  </Button>
+
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    className="w-full sm:w-auto flex items-center justify-center pointer-events-auto cursor-pointer"
+                    onClick={handleRemoveLogo}
+                  >
+                    Remove
+                  </Button>
+                </div>
               </div>
             </div>
 
             <div className="space-y-2">
               <Label>Full Name (optional)</Label>
               <Input
-                placeholder="Optional"
                 value={profile.fullName}
                 onChange={(e) => setProfile((p) => ({ ...p, fullName: e.target.value }))}
               />
@@ -369,43 +253,47 @@ export default function Profile() {
 
             <div className="space-y-2">
               <Label>Email</Label>
-              <div className="relative">
-                <Building2 className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                <Input
-                  placeholder="e.g., oli-branch.com"
-                  value={profile.email}
-                  onChange={(e) => setProfile((p) => ({ ...p, email: e.target.value }))}
-                  className="pl-10"
-                />
-              </div>
+              <Input
+                value={profile.email}
+                onChange={(e) => setProfile((p) => ({ ...p, email: e.target.value }))}
+              />
             </div>
 
             <div className="space-y-2">
               <Label>Company Name (shown in header)</Label>
-              <div className="relative">
-                <Building2 className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                <Input
-                  placeholder="e.g., Logistics LLC"
-                  value={profile.companyName}
-                  onChange={(e) => setProfile((p) => ({ ...p, companyName: e.target.value }))}
-                  className="pl-10"
-                />
-              </div>
+              <Input
+                value={profile.companyName}
+                onChange={(e) =>
+                  setProfile((p) => ({ ...p, companyName: e.target.value }))
+                }
+              />
             </div>
 
-            <Button onClick={handleSaveProfile}>Update Profile</Button>
+            <div className="flex flex-col sm:flex-row gap-2">
+              <Button className="btn-primary w-full sm:w-auto" onClick={handleSaveProfile}>
+                Update Profile
+              </Button>
+              <Button type="button" variant="outline" className="w-full sm:w-auto" onClick={handleReset}>
+                Cancel
+              </Button>
+            </div>
+
+            <div className="text-xs text-muted-foreground">
+              This saves <b>companyName</b> + <b>companyLogo</b> for the header.
+            </div>
           </CardContent>
         </Card>
 
-        {/* Account Settings */}
-        <Card style={{ border: 'none', backgroundColor: '#f5f5f5', boxShadow: 'none' }}>
-          <CardHeader style={{ borderBottom: 'none', paddingBottom: '0.5rem' }}>
+        {/* SECURITY */}
+        <Card className="border-none shadow-none bg-[#f5f5f5]">
+          <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <Lock className="h-5 w-5 text-primary" />
               Account Settings
             </CardTitle>
           </CardHeader>
-          <CardContent className="space-y-4" style={{ paddingTop: '0.5rem' }}>
+
+          <CardContent className="space-y-4">
             <div className="space-y-2">
               <Label>Current Password</Label>
               <Input
@@ -436,7 +324,9 @@ export default function Profile() {
               />
             </div>
 
-            <Button onClick={handleChangePassword}>Change Password</Button>
+            <Button className="btn-primary w-full sm:w-auto" onClick={handleChangePassword}>
+              Change Password
+            </Button>
           </CardContent>
         </Card>
       </motion.div>
