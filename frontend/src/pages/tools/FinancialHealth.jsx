@@ -52,6 +52,8 @@ import {
   LineChart as LineChartIcon,
   Percent,
   Wallet,
+  Save,
+  Trash2,
 } from "lucide-react";
 
 import DashboardLayout from "../../components/layout/DashboardLayout";
@@ -122,18 +124,20 @@ export default function FinancialHealth() {
     addHealthHistory,
     computeHealthScore,
     healthLabel,
+    clearHealthData, // Added: function to clear all saved data
   } = useData();
 
+  // Initialize formData with empty values, NOT from healthInputs
   const [formData, setFormData] = useState({
-    revenue: healthInputs?.revenue || "",
-    expenses: healthInputs?.expenses || "",
-    debt: healthInputs?.debt || "",
-    cash: healthInputs?.cash || "",
-    industry: healthInputs?.industry || "saas",
-    teamSize: healthInputs?.teamSize || "",
-    customers: healthInputs?.customers || "",
-    companyName: healthInputs?.companyName || "",
-    location: healthInputs?.location || "",
+    revenue: "",
+    expenses: "",
+    debt: "",
+    cash: "",
+    industry: "saas",
+    teamSize: "",
+    customers: "",
+    companyName: "",
+    location: "",
   });
 
   const [activeView, setActiveView] = useState("input");
@@ -141,7 +145,7 @@ export default function FinancialHealth() {
   const [timeframe, setTimeframe] = useState("monthly");
   const [comparisonMode, setComparisonMode] = useState("industry");
   const [alertsEnabled, setAlertsEnabled] = useState(true);
-  const [selectedIndustry, setSelectedIndustry] = useState(healthInputs?.industry || "saas");
+  const [selectedIndustry, setSelectedIndustry] = useState("saas");
 
   const calcTimerRef = useRef(null);
 
@@ -334,6 +338,71 @@ export default function FinancialHealth() {
     setFormData(prev => ({ ...prev, [field]: value }));
   };
 
+  // NEW: Explicit save function
+  const handleSave = () => {
+    const inputs = {
+      revenue: Number(formData.revenue || 0),
+      expenses: Number(formData.expenses || 0),
+      debt: Number(formData.debt || 0),
+      cash: Number(formData.cash || 0),
+      industry: formData.industry,
+      teamSize: Number(formData.teamSize || 0),
+      customers: Number(formData.customers || 0),
+      companyName: formData.companyName,
+      location: formData.location,
+    };
+
+    if (!inputs.revenue && !inputs.expenses && !inputs.debt && !inputs.cash) {
+      toast.error("Cannot save empty data", {
+        description: "Please enter financial data first",
+      });
+      return;
+    }
+
+    updateHealthInputs(inputs);
+    toast.success("Data saved successfully", {
+      description: "Your financial data has been saved to history",
+    });
+  };
+
+  // NEW: Clear unsaved inputs only
+  const handleClearInputs = () => {
+    setFormData({
+      revenue: "",
+      expenses: "",
+      debt: "",
+      cash: "",
+      industry: "saas",
+      teamSize: "",
+      customers: "",
+      companyName: "",
+      location: "",
+    });
+    toast.info("Inputs cleared", {
+      description: "Unsaved data has been cleared",
+    });
+  };
+
+  // NEW: Delete all saved data
+  const handleDeleteSavedData = () => {
+    clearHealthData(); // This should wipe healthInputs and healthHistory
+    setFormData({
+      revenue: "",
+      expenses: "",
+      debt: "",
+      cash: "",
+      industry: "saas",
+      teamSize: "",
+      customers: "",
+      companyName: "",
+      location: "",
+    });
+    setActiveView("input");
+    toast.success("All data deleted", {
+      description: "Saved data and history have been cleared",
+    });
+  };
+
   const handleCalculate = () => {
     if (isCalculating) return;
 
@@ -361,7 +430,8 @@ export default function FinancialHealth() {
     setIsCalculating(true);
     calcTimerRef.current = setTimeout(() => {
       try {
-        updateHealthInputs(inputs);
+        // Note: We're NOT calling updateHealthInputs here anymore
+        // Data only gets saved when user explicitly clicks Save
         const result = computeHealthScore(inputs);
         addHealthHistory(result.score);
 
@@ -810,6 +880,17 @@ export default function FinancialHealth() {
                     All calculations are performed locally. Your data never leaves your browser.
                   </CardDescription>
                 </div>
+                <div className="flex gap-2">
+                  <Button
+                    variant="outline"
+                    onClick={handleDeleteSavedData}
+                    className="btn-secondary text-destructive border-destructive hover:bg-destructive hover:text-white"
+                    disabled={!healthInputs && (!healthHistory || healthHistory.length === 0)}
+                  >
+                    <Trash2 className="h-4 w-4 mr-2" />
+                    Delete Saved Data
+                  </Button>
+                </div>
               </div>
             </CardHeader>
             <CardContent>
@@ -1005,23 +1086,19 @@ export default function FinancialHealth() {
 
                 <div className="flex gap-3">
                   <Button
+                    onClick={handleSave}
+                    disabled={!metrics.hasData}
+                    className="btn-primary"
+                  >
+                    <Save className="h-5 w-5 mr-2" />
+                    Save Data
+                  </Button>
+                  <Button
                     variant="outline"
-                    onClick={() => {
-                      setFormData({
-                        revenue: "",
-                        expenses: "",
-                        debt: "",
-                        cash: "",
-                        industry: "saas",
-                        teamSize: "",
-                        customers: "",
-                        companyName: "",
-                        location: "",
-                      });
-                    }}
+                    onClick={handleClearInputs}
                     className="btn-secondary"
                   >
-                    Clear All
+                    Clear Inputs
                   </Button>
                 </div>
               </div>
@@ -1033,6 +1110,9 @@ export default function FinancialHealth() {
                     <p className="font-medium text-[#1B4332]">Privacy First</p>
                     <p className="text-sm text-[#52796F] mt-1">
                       All calculations happen in your browser. Your financial data is never sent to any server.
+                    </p>
+                    <p className="text-sm text-[#52796F] mt-2">
+                      <strong>Note:</strong> Data is only saved when you explicitly click "Save Data".
                     </p>
                   </div>
                 </div>
@@ -1458,7 +1538,7 @@ export default function FinancialHealth() {
                       <div className="h-full flex flex-col items-center justify-center">
                         <TrendingUp className="h-16 w-16 text-[#52796F]/30 mb-4" />
                         <p className="text-[#1B4332] font-medium">No history yet</p>
-                        <p className="text-[#52796F] text-sm">Run multiple analyses to track progress</p>
+                        <p className="text-[#52796F] text-sm">Save data to track progress over time</p>
                       </div>
                     )}
                   </div>
