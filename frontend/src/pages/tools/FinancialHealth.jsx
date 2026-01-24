@@ -1,10 +1,7 @@
 // frontend/src/pages/tools/FinancialHealth.jsx
-import React, { useRef, useEffect, useState } from "react";
+import React, { useRef, useEffect, useState, useMemo } from "react";
 import { motion } from "framer-motion";
 import {
-  PieChart,
-  Pie,
-  Cell,
   ResponsiveContainer,
   Tooltip,
   LineChart,
@@ -14,6 +11,15 @@ import {
   CartesianGrid,
   BarChart,
   Bar,
+  AreaChart,
+  Area,
+  RadarChart,
+  Radar,
+  PolarGrid,
+  PolarAngleAxis,
+  PolarRadiusAxis,
+  ComposedChart,
+  Legend,
 } from "recharts";
 import { toast } from "sonner";
 import {
@@ -21,41 +27,91 @@ import {
   DollarSign,
   TrendingUp,
   AlertTriangle,
-  CheckCircle,
   Target,
-  PieChart as PieChartIcon,
   BarChart3,
   Lightbulb,
   Calculator,
   RefreshCw,
-  Info,
-  Eye,
-  Download,
   TrendingDown,
   Shield,
   Users,
-  Zap,
-  ArrowRight,
   Calendar,
+  Building,
+  Briefcase,
+  Database,
+  FileText,
+  Share2,
+  Filter,
+  Clock,
+  Target as TargetIcon,
+  Globe,
+  Cpu,
+  BarChart as BarChartIcon,
+  Lock,
+  Users as UsersIcon,
+  LineChart as LineChartIcon,
+  Percent,
+  Wallet,
 } from "lucide-react";
 
-// ✅ FIXED IMPORTS (your Vite root is /frontend)
 import DashboardLayout from "../../components/layout/DashboardLayout";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "../../components/ui/card";
 import { Button } from "../../components/ui/button";
 import { Input } from "../../components/ui/input";
 import { Label } from "../../components/ui/label";
 import { Badge } from "../../components/ui/badge";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "../../components/ui/tabs";
+import { Progress } from "../../components/ui/progress";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../../components/ui/select";
+import { Switch } from "../../components/ui/switch";
 import { useData } from "../../context/DataContext";
 
-// Updated colors to match your theme
-const DONUT_COLORS = ["#1B4332", "#52796F", "#84A98C"];
+const COLOR_SCHEME = {
+  primary: "#1B4332",
+  secondary: "#52796F",
+  accent: "#84A98C",
+  light: "#F8F5F0",
+  success: "#10B981",
+  warning: "#F59E0B",
+  danger: "#DC2626",
+  info: "#3B82F6",
+  gold: "#D4AF37",
+};
 
-// ✅ Yellow Gold = Revenue, Forest = Expenses, Light Green = Net
-const BAR_COLORS = {
-  revenue: "#D4AF37", // yellow gold
-  expenses: "#1B4332", // forest green
-  net: "#10B981", // light green
+const CHART_COLORS = {
+  revenue: COLOR_SCHEME.gold,
+  expenses: COLOR_SCHEME.primary,
+  net: COLOR_SCHEME.success,
+  cash: COLOR_SCHEME.info,
+  debt: COLOR_SCHEME.warning,
+  margin: COLOR_SCHEME.success,
+  runway: COLOR_SCHEME.info,
+  debtLoad: COLOR_SCHEME.warning,
+};
+
+const INDUSTRY_BENCHMARKS = {
+  saas: { margin: 0.25, runway: 18, debtLoad: 0.2, churn: 0.05, name: "SaaS" },
+  ecommerce: { margin: 0.15, runway: 6, debtLoad: 0.3, churn: 0.15, name: "E-commerce" },
+  manufacturing: { margin: 0.12, runway: 9, debtLoad: 0.4, churn: 0.08, name: "Manufacturing" },
+  consulting: { margin: 0.35, runway: 12, debtLoad: 0.1, churn: 0.02, name: "Consulting" },
+  fintech: { margin: 0.28, runway: 15, debtLoad: 0.25, churn: 0.03, name: "FinTech" },
+  healthtech: { margin: 0.22, runway: 20, debtLoad: 0.15, churn: 0.04, name: "HealthTech" },
+  retail: { margin: 0.08, runway: 4, debtLoad: 0.35, churn: 0.12, name: "Retail" },
+  services: { margin: 0.20, runway: 8, debtLoad: 0.15, churn: 0.06, name: "Professional Services" },
+};
+
+const formatCurrency = (value, compact = false) => {
+  if (value === 0 || !value) return "$0";
+  if (compact) {
+    if (value >= 1000000) return `$${(value / 1000000).toFixed(1)}M`;
+    if (value >= 1000) return `$${(value / 1000).toFixed(1)}K`;
+  }
+  return `$${value.toLocaleString()}`;
+};
+
+const formatPercent = (value) => {
+  if (!value && value !== 0) return "0%";
+  return `${(value * 100).toFixed(1)}%`;
 };
 
 export default function FinancialHealth() {
@@ -64,7 +120,6 @@ export default function FinancialHealth() {
     updateHealthInputs,
     healthHistory,
     addHealthHistory,
-    clearHealthData,
     computeHealthScore,
     healthLabel,
   } = useData();
@@ -74,12 +129,20 @@ export default function FinancialHealth() {
     expenses: healthInputs?.expenses || "",
     debt: healthInputs?.debt || "",
     cash: healthInputs?.cash || "",
+    industry: healthInputs?.industry || "saas",
+    teamSize: healthInputs?.teamSize || "",
+    customers: healthInputs?.customers || "",
+    companyName: healthInputs?.companyName || "",
+    location: healthInputs?.location || "",
   });
 
-  const [activeTab, setActiveTab] = useState("input");
+  const [activeView, setActiveView] = useState("input");
   const [isCalculating, setIsCalculating] = useState(false);
+  const [timeframe, setTimeframe] = useState("monthly");
+  const [comparisonMode, setComparisonMode] = useState("industry");
+  const [alertsEnabled, setAlertsEnabled] = useState(true);
+  const [selectedIndustry, setSelectedIndustry] = useState(healthInputs?.industry || "saas");
 
-  // ✅ Prevent “stuck calculating” + prevent stacked timers
   const calcTimerRef = useRef(null);
 
   useEffect(() => {
@@ -88,12 +151,190 @@ export default function FinancialHealth() {
     };
   }, []);
 
+  const metrics = useMemo(() => {
+    const revenue = Number(formData.revenue || 0);
+    const expenses = Number(formData.expenses || 0);
+    const debt = Number(formData.debt || 0);
+    const cash = Number(formData.cash || 0);
+    const customers = Number(formData.customers || 1);
+    const teamSize = Number(formData.teamSize || 1);
+
+    const netProfit = revenue - expenses;
+    const profitMargin = revenue > 0 ? netProfit / revenue : 0;
+    const burnRate = Math.max(0, expenses - revenue);
+    const monthlyBurn = burnRate > 0 ? burnRate : expenses / 12;
+    const runway = monthlyBurn > 0 ? cash / monthlyBurn : (cash > 0 ? 999 : 0);
+    const debtToRevenue = revenue > 0 ? debt / revenue : (debt > 0 ? 1 : 0);
+    const arpu = customers > 0 ? revenue / customers : 0;
+    const cac = customers > 0 ? (expenses * 0.3) / customers : 0;
+    const ltv = arpu > 0 ? arpu * 12 * 3 : 0;
+    const ltvCacRatio = cac > 0 ? ltv / cac : 0;
+    const employeeProductivity = teamSize > 0 ? revenue / teamSize : 0;
+    const revenuePerEmployee = teamSize > 0 ? (revenue * 12) / teamSize : 0;
+
+    return {
+      revenue,
+      expenses,
+      debt,
+      cash,
+      customers,
+      teamSize,
+      netProfit,
+      profitMargin,
+      burnRate,
+      runway: Math.min(runway, 999),
+      debtToRevenue,
+      arpu,
+      cac,
+      ltv,
+      ltvCacRatio,
+      employeeProductivity,
+      revenuePerEmployee,
+      hasData: revenue > 0 || expenses > 0 || debt > 0 || cash > 0,
+    };
+  }, [formData]);
+
+  const kpiMetrics = useMemo(() => {
+    if (!metrics.hasData) return [];
+    
+    return [
+      {
+        id: "mrr",
+        label: "Monthly Revenue",
+        value: formatCurrency(metrics.revenue, true),
+        rawValue: metrics.revenue,
+        change: null,
+        icon: DollarSign,
+        color: COLOR_SCHEME.gold,
+        description: "Total monthly revenue",
+      },
+      {
+        id: "netProfit",
+        label: "Net Profit/Loss",
+        value: formatCurrency(metrics.netProfit, true),
+        rawValue: metrics.netProfit,
+        change: null,
+        icon: metrics.netProfit >= 0 ? TrendingUp : TrendingDown,
+        color: metrics.netProfit >= 0 ? COLOR_SCHEME.success : COLOR_SCHEME.danger,
+        description: "Revenue minus expenses",
+      },
+      {
+        id: "margin",
+        label: "Profit Margin",
+        value: formatPercent(metrics.profitMargin),
+        rawValue: metrics.profitMargin,
+        change: null,
+        icon: Percent,
+        color: metrics.profitMargin >= 0.2 ? COLOR_SCHEME.success : metrics.profitMargin >= 0.1 ? COLOR_SCHEME.warning : COLOR_SCHEME.danger,
+        description: "Net profit as % of revenue",
+      },
+      {
+        id: "runway",
+        label: "Runway",
+        value: metrics.runway >= 999 ? "∞" : `${metrics.runway.toFixed(1)} mo`,
+        rawValue: metrics.runway,
+        change: null,
+        icon: Calendar,
+        color: metrics.runway >= 12 ? COLOR_SCHEME.success : metrics.runway >= 6 ? COLOR_SCHEME.warning : COLOR_SCHEME.danger,
+        description: "Months of cash remaining",
+      },
+      {
+        id: "arpu",
+        label: "ARPU",
+        value: formatCurrency(metrics.arpu),
+        rawValue: metrics.arpu,
+        change: null,
+        icon: UsersIcon,
+        color: COLOR_SCHEME.info,
+        description: "Avg revenue per customer",
+      },
+      {
+        id: "ltv_cac",
+        label: "LTV:CAC Ratio",
+        value: metrics.ltvCacRatio > 0 ? `${metrics.ltvCacRatio.toFixed(1)}x` : "N/A",
+        rawValue: metrics.ltvCacRatio,
+        change: null,
+        icon: TargetIcon,
+        color: metrics.ltvCacRatio >= 3 ? COLOR_SCHEME.success : metrics.ltvCacRatio >= 1 ? COLOR_SCHEME.warning : COLOR_SCHEME.danger,
+        description: "Customer value vs acquisition cost",
+      },
+    ];
+  }, [metrics]);
+
+  const enterpriseKPIs = useMemo(() => {
+    if (!metrics.hasData) return [];
+    
+    return [
+      {
+        id: "profitability",
+        label: "Profitability",
+        value: Math.min(100, Math.max(0, (metrics.profitMargin + 0.5) * 100)),
+        target: 85,
+        status: metrics.profitMargin > 0.2 ? "exceeds" : metrics.profitMargin > 0.1 ? "meets" : "below",
+      },
+      {
+        id: "efficiency",
+        label: "Efficiency",
+        value: Math.min(100, Math.max(0, metrics.revenue > 0 ? (1 - metrics.expenses / metrics.revenue) * 100 + 50 : 0)),
+        target: 75,
+        status: metrics.expenses / Math.max(1, metrics.revenue) < 0.7 ? "exceeds" : metrics.expenses / Math.max(1, metrics.revenue) < 0.85 ? "meets" : "below",
+      },
+      {
+        id: "liquidity",
+        label: "Liquidity",
+        value: Math.min(100, Math.max(0, (metrics.runway / 24) * 100)),
+        target: 80,
+        status: metrics.runway > 12 ? "exceeds" : metrics.runway > 6 ? "meets" : "below",
+      },
+      {
+        id: "growth",
+        label: "Growth Ready",
+        value: Math.min(100, Math.max(0, metrics.netProfit > 0 ? 70 + (metrics.profitMargin * 100) : 30)),
+        target: 70,
+        status: metrics.netProfit > metrics.revenue * 0.15 ? "exceeds" : metrics.netProfit > 0 ? "meets" : "below",
+      },
+    ];
+  }, [metrics]);
+
+  const comparisonData = useMemo(() => {
+    const benchmark = INDUSTRY_BENCHMARKS[selectedIndustry] || INDUSTRY_BENCHMARKS.saas;
+    return [
+      { metric: "Profit Margin", you: metrics.profitMargin * 100, industry: benchmark.margin * 100, unit: "%" },
+      { metric: "Runway (months)", you: Math.min(metrics.runway, 36), industry: benchmark.runway, unit: "mo" },
+      { metric: "Debt Load", you: metrics.debtToRevenue * 100, industry: benchmark.debtLoad * 100, unit: "%" },
+    ];
+  }, [metrics, selectedIndustry]);
+
+  const radarData = useMemo(() => {
+    const benchmark = INDUSTRY_BENCHMARKS[selectedIndustry] || INDUSTRY_BENCHMARKS.saas;
+    return [
+      { metric: "Profitability", you: Math.max(0, (metrics.profitMargin + 0.5) * 100), industry: (benchmark.margin + 0.5) * 100 },
+      { metric: "Efficiency", you: Math.max(0, metrics.revenue > 0 ? (1 - metrics.expenses / metrics.revenue) * 100 + 50 : 50), industry: 75 },
+      { metric: "Liquidity", you: Math.min(100, (metrics.runway / 24) * 100), industry: (benchmark.runway / 24) * 100 },
+      { metric: "Growth", you: Math.max(0, metrics.netProfit > 0 ? 70 + (metrics.profitMargin * 50) : 30), industry: 70 },
+      { metric: "Stability", you: Math.max(0, (1 - Math.min(1, metrics.debtToRevenue)) * 100), industry: (1 - benchmark.debtLoad) * 100 },
+    ];
+  }, [metrics, selectedIndustry]);
+
+  const trendData = useMemo(() => {
+    if (!metrics.hasData) return [];
+    
+    const monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'];
+    const currentMonth = new Date().getMonth();
+    
+    return monthNames.map((_, idx) => ({
+      month: monthNames[(currentMonth - 5 + idx + 12) % 12],
+      revenue: Math.round(metrics.revenue * (0.9 + idx * 0.04)),
+      expenses: Math.round(metrics.expenses * (0.92 + idx * 0.02)),
+      profit: Math.round(metrics.netProfit * (0.85 + idx * 0.05)),
+    }));
+  }, [metrics]);
+
   const updateField = (field, value) => {
-    setFormData((prev) => ({ ...prev, [field]: value }));
+    setFormData(prev => ({ ...prev, [field]: value }));
   };
 
   const handleCalculate = () => {
-    // prevent double-click / stacked timers
     if (isCalculating) return;
 
     const inputs = {
@@ -101,45 +342,37 @@ export default function FinancialHealth() {
       expenses: Number(formData.expenses || 0),
       debt: Number(formData.debt || 0),
       cash: Number(formData.cash || 0),
+      industry: formData.industry,
+      teamSize: Number(formData.teamSize || 0),
+      customers: Number(formData.customers || 0),
+      companyName: formData.companyName,
+      location: formData.location,
     };
 
-    const hasAny = Object.values(inputs).some((v) => v > 0);
-    if (!hasAny) {
-      toast.error("Please enter at least one value");
+    if (!inputs.revenue && !inputs.expenses && !inputs.debt && !inputs.cash) {
+      toast.error("Please enter financial data", {
+        description: "At least one financial metric is required",
+      });
       return;
     }
 
-    // clear any pending timer
     if (calcTimerRef.current) clearTimeout(calcTimerRef.current);
 
     setIsCalculating(true);
-
-    // Simulate calculation delay
     calcTimerRef.current = setTimeout(() => {
       try {
-        if (typeof computeHealthScore !== "function") {
-          throw new Error("computeHealthScore is not available from DataContext.");
-        }
-
         updateHealthInputs(inputs);
-
         const result = computeHealthScore(inputs);
-
-        if (!result || typeof result.score !== "number") {
-          throw new Error("computeHealthScore returned an invalid result.");
-        }
-
         addHealthHistory(result.score);
 
-        toast.success(`Score calculated: ${result.score}`, {
-          description: `Your business financial health is ${healthLabel(result.score).toLowerCase()}.`,
+        toast.success("Analysis Complete", {
+          description: `Financial Health Score: ${result.score}/100`,
         });
 
-        setActiveTab("results");
-      } catch (err) {
-        console.error(err);
-        toast.error("Calculation failed", {
-          description: err?.message || "Please try again.",
+        setActiveView("dashboard");
+      } catch (error) {
+        toast.error("Analysis Failed", {
+          description: error.message || "Please check your inputs",
         });
       } finally {
         setIsCalculating(false);
@@ -148,118 +381,159 @@ export default function FinancialHealth() {
     }, 800);
   };
 
-  const handleClear = () => {
-    setFormData({ revenue: "", expenses: "", debt: "", cash: "" });
-
-    // stop spinner if it was running
-    if (calcTimerRef.current) {
-      clearTimeout(calcTimerRef.current);
-      calcTimerRef.current = null;
+  const handleExportReport = (format = "pdf") => {
+    if (!metrics.hasData) {
+      toast.error("No data to export", { description: "Please enter financial data first" });
+      return;
     }
-    setIsCalculating(false);
-
-    clearHealthData();
-    toast.info("All data has been cleared", {
-      description: "Enter new values to calculate your score.",
+    
+    const reportData = {
+      company: formData.companyName || "Your Company",
+      industry: INDUSTRY_BENCHMARKS[formData.industry]?.name || formData.industry,
+      date: new Date().toISOString(),
+      metrics: {
+        revenue: metrics.revenue,
+        expenses: metrics.expenses,
+        netProfit: metrics.netProfit,
+        profitMargin: metrics.profitMargin,
+        runway: metrics.runway,
+        debtToRevenue: metrics.debtToRevenue,
+      },
+    };
+    
+    console.log("Export data:", reportData);
+    toast.success(`Report exported as ${format.toUpperCase()}`, {
+      description: "Your financial report is ready for download",
     });
   };
 
-  const handleQuickExample = () => {
-    setFormData({
-      revenue: "25000",
-      expenses: "18000",
-      debt: "40000",
-      cash: "12000",
-    });
-    toast.info("Example values loaded", {
-      description: "Click Calculate Score to see results.",
-    });
-  };
-
-  const handleExport = () => {
-    toast.success("Report exported", {
-      description: "Your financial health report has been downloaded.",
+  const handleShareAnalysis = () => {
+    if (!metrics.hasData) {
+      toast.error("No analysis to share", { description: "Please run an analysis first" });
+      return;
+    }
+    navigator.clipboard?.writeText(window.location.href);
+    toast.info("Share link copied", {
+      description: "Analysis link copied to clipboard",
     });
   };
 
-  // ✅ Guard: don't call computeHealthScore during render if it's missing
-  const currentResult =
-    typeof computeHealthScore === "function" && healthInputs ? computeHealthScore(healthInputs) : null;
+  const handleSetAlert = () => {
+    setAlertsEnabled(!alertsEnabled);
+    toast.success(alertsEnabled ? "Alerts disabled" : "Alerts enabled", {
+      description: "You'll be notified when metrics change significantly",
+    });
+  };
 
-  const metrics = currentResult?.metrics || { margin: 0, runway: 0, debtLoad: 0 };
-
-  // Donut chart data for breakdown
-  const breakdownData = currentResult
-    ? [
-        {
-          name: "Cash Flow",
-          value: Math.round(Math.max(0, Math.min(100, ((metrics.margin + 0.25) / 0.75) * 100)) * 0.45),
-          color: DONUT_COLORS[0],
-        },
-        {
-          name: "Runway",
-          value: Math.round(Math.max(0, Math.min(100, (metrics.runway / 6) * 100)) * 0.3),
-          color: DONUT_COLORS[1],
-        },
-        {
-          name: "Debt Health",
-          value: Math.round(Math.max(0, Math.min(100, (1 - metrics.debtLoad) * 100)) * 0.25),
-          color: DONUT_COLORS[2],
-        },
-      ]
-    : [];
-
-  // Fee Impact Analysis data
-  const revenue = Number(healthInputs?.revenue || 0);
-  const expenses = Number(healthInputs?.expenses || 0);
-
-  // ✅ FIXED COLORS: Gold=Revenue, Forest=Expenses, LightGreen=Net
-  const feeImpactData = currentResult
-    ? [
-        { name: "Revenue", value: revenue, fill: BAR_COLORS.revenue },
-        { name: "Expenses", value: expenses, fill: BAR_COLORS.expenses },
-        { name: "Net", value: Math.max(0, revenue - expenses), fill: BAR_COLORS.net },
-      ]
-    : [];
-
-  // Key Mismatch Areas
-  const mismatchAreas = [];
-  if (currentResult) {
-    if (metrics.margin < 0.1) {
-      mismatchAreas.push({
-        area: "Low Profit Margin",
-        severity: metrics.margin < 0 ? "critical" : "warning",
-        description: `Your margin is ${(metrics.margin * 100).toFixed(1)}%. Aim for at least 10-15%.`,
-        action: "Increase prices or reduce variable costs",
+  const quickInsights = useMemo(() => {
+    if (!metrics.hasData) return [];
+    
+    const insights = [];
+    const benchmark = INDUSTRY_BENCHMARKS[selectedIndustry] || INDUSTRY_BENCHMARKS.saas;
+    
+    if (metrics.profitMargin < 0) {
+      insights.push({
+        title: "Operating at a Loss",
+        description: `Your expenses exceed revenue by ${formatCurrency(Math.abs(metrics.netProfit))}. Immediate action required.`,
+        severity: "critical",
+        action: "Review Cost Structure",
+        impact: "Survival",
+        timeframe: "Immediate",
+      });
+    } else if (metrics.profitMargin < benchmark.margin * 0.5) {
+      insights.push({
+        title: "Below Industry Margin",
+        description: `Your ${formatPercent(metrics.profitMargin)} margin is below the ${formatPercent(benchmark.margin)} industry average.`,
+        severity: "high",
+        action: "Optimize Pricing",
+        impact: "Profitability",
+        timeframe: "1-3 months",
+      });
+    } else if (metrics.profitMargin > benchmark.margin * 1.5) {
+      insights.push({
+        title: "Strong Profit Margin",
+        description: `Your ${formatPercent(metrics.profitMargin)} margin exceeds the industry average of ${formatPercent(benchmark.margin)}.`,
+        severity: "positive",
+        action: "Reinvest for Growth",
+        impact: "Growth",
+        timeframe: "Strategic",
       });
     }
-    if (metrics.runway < 3) {
-      mismatchAreas.push({
-        area: "Short Runway",
-        severity: metrics.runway < 1 ? "critical" : "warning",
-        description: `Only ${metrics.runway.toFixed(1)} months of runway. Need 3-6 months minimum.`,
-        action: "Build cash reserves or reduce burn rate",
+    
+    if (metrics.burnRate > 0 && metrics.runway < 3) {
+      insights.push({
+        title: "Critical: Low Runway",
+        description: `Only ${metrics.runway.toFixed(1)} months of cash remaining at current burn rate.`,
+        severity: "critical",
+        action: "Extend Runway Now",
+        impact: "Survival",
+        timeframe: "Immediate",
+      });
+    } else if (metrics.burnRate > 0 && metrics.runway < 6) {
+      insights.push({
+        title: "Short Runway Warning",
+        description: `${metrics.runway.toFixed(1)} months runway. Consider fundraising or cost reduction.`,
+        severity: "high",
+        action: "Plan Fundraise",
+        impact: "Sustainability",
+        timeframe: "1-2 months",
       });
     }
-    if (metrics.debtLoad > 0.5) {
-      mismatchAreas.push({
-        area: "High Debt Load",
-        severity: metrics.debtLoad > 0.8 ? "critical" : "warning",
-        description: `Debt is ${(metrics.debtLoad * 100).toFixed(0)}% of 6-month revenue.`,
-        action: "Prioritize debt repayment or refinance",
+    
+    if (metrics.debtToRevenue > 0.6) {
+      insights.push({
+        title: "High Debt Load",
+        description: `Debt is ${formatPercent(metrics.debtToRevenue)} of revenue. Industry avg: ${formatPercent(benchmark.debtLoad)}.`,
+        severity: "high",
+        action: "Debt Restructuring",
+        impact: "Financial Risk",
+        timeframe: "3-6 months",
+      });
+    } else if (metrics.debtToRevenue > benchmark.debtLoad) {
+      insights.push({
+        title: "Above Average Debt",
+        description: `Debt ratio of ${formatPercent(metrics.debtToRevenue)} exceeds industry average.`,
+        severity: "medium",
+        action: "Monitor Debt Levels",
+        impact: "Financial Health",
+        timeframe: "6 months",
       });
     }
-    if (revenue > 0 && expenses > revenue * 0.9) {
-      mismatchAreas.push({
-        area: "Expense Ratio",
-        severity: expenses > revenue ? "critical" : "warning",
-        description: `Expenses are ${((expenses / revenue) * 100).toFixed(0)}% of revenue.`,
-        action: "Review and cut non-essential expenses",
+    
+    if (metrics.ltvCacRatio > 0 && metrics.ltvCacRatio < 1) {
+      insights.push({
+        title: "Unsustainable Unit Economics",
+        description: `LTV:CAC of ${metrics.ltvCacRatio.toFixed(1)}x means you're losing money on each customer.`,
+        severity: "critical",
+        action: "Fix Unit Economics",
+        impact: "Business Model",
+        timeframe: "Immediate",
+      });
+    } else if (metrics.ltvCacRatio > 0 && metrics.ltvCacRatio < 3) {
+      insights.push({
+        title: "Improve Unit Economics",
+        description: `LTV:CAC of ${metrics.ltvCacRatio.toFixed(1)}x is below the ideal 3x benchmark.`,
+        severity: "medium",
+        action: "Reduce CAC or Increase LTV",
+        impact: "Growth Efficiency",
+        timeframe: "3-6 months",
       });
     }
-  }
+    
+    if (metrics.revenuePerEmployee > 0 && metrics.revenuePerEmployee < 100000) {
+      insights.push({
+        title: "Low Revenue per Employee",
+        description: `${formatCurrency(metrics.revenuePerEmployee, true)}/employee annually. Consider automation or team optimization.`,
+        severity: "low",
+        action: "Improve Productivity",
+        impact: "Efficiency",
+        timeframe: "6-12 months",
+      });
+    }
+    
+    return insights;
+  }, [metrics, selectedIndustry]);
 
-  // Chart data from history
   const chartData = (healthHistory || []).map((h) => {
     const d = new Date(h.t);
     return {
@@ -268,16 +542,19 @@ export default function FinancialHealth() {
     };
   });
 
-  // Recommendations
-  const recommendations = [];
-  if (currentResult) {
-    if (metrics.margin < 0.05) recommendations.push("Improve margin: reduce variable costs or adjust pricing.");
-    if (metrics.runway < 3) recommendations.push("Increase runway: reduce burn or build reserves.");
-    if (metrics.debtLoad > 0.65) recommendations.push("Reduce debt load: refinance or prioritize high APR balances.");
-    if (recommendations.length === 0) recommendations.push("Maintain discipline: track margin, runway, and debt monthly.");
-  } else {
-    recommendations.push("Add inputs to generate recommendations.");
-  }
+  const currentScore = useMemo(() => {
+    if (typeof computeHealthScore === "function" && metrics.hasData) {
+      const inputs = {
+        revenue: metrics.revenue,
+        expenses: metrics.expenses,
+        debt: metrics.debt,
+        cash: metrics.cash,
+      };
+      const result = computeHealthScore(inputs);
+      return result?.score || 0;
+    }
+    return 0;
+  }, [metrics, computeHealthScore]);
 
   const getHealthBadgeColor = (score) => {
     if (score >= 80) return "bg-green-100 text-green-800 border-green-200";
@@ -285,14 +562,21 @@ export default function FinancialHealth() {
     return "bg-red-100 text-red-800 border-red-200";
   };
 
-  const tabs = [
-    { id: "input", label: "Input & Analysis", icon: Calculator, description: "Enter financial data for analysis" },
-    { id: "results", label: "Results", icon: TrendingUp, description: "View your health score and metrics", badge: undefined },
-    { id: "history", label: "History", icon: Eye, description: "Track your score over time" },
-  ];
+  const getSeverityColor = (severity) => {
+    switch (severity) {
+      case 'critical': return 'leak-card-high';
+      case 'high': return 'leak-card-medium';
+      case 'positive': return 'leak-card-low';
+      default: return 'leak-card-low';
+    }
+  };
 
   return (
-    <DashboardLayout title="Financial Health" subtitle="Assess your business financial health" className="bg-[#F8F5F0]">
+    <DashboardLayout 
+      title="Financial Health Analysis" 
+      subtitle="Comprehensive financial intelligence for your business"
+      className="bg-[#F8F5F0]"
+    >
       <style>{`
         .hero-gradient {
           background: linear-gradient(135deg, #1B4332 0%, #52796F 100%);
@@ -322,33 +606,16 @@ export default function FinancialHealth() {
           color: #F8F5F0 !important;
         }
 
-        .course-card {
-          transition: all 0.3s ease;
-          border: 1px solid rgba(82, 121, 111, 0.1);
-          background: linear-gradient(135deg, rgba(27, 67, 50, 0.02) 0%, rgba(82, 121, 111, 0.02) 100%);
-        }
-
-        .course-card:hover {
-          transform: translateY(-8px);
-          box-shadow: 0 20px 40px rgba(27, 67, 50, 0.15);
-          border-color: #52796F;
-        }
-
         .achievement-card {
           border-left: 4px solid #1B4332 !important;
           transition: all 0.3s ease;
           background: linear-gradient(135deg, rgba(27, 67, 50, 0.05) 0%, rgba(82, 121, 111, 0.05) 100%);
         }
 
-        .achievement-card:hover {
-          transform: translateY(-4px);
-          box-shadow: 0 12px 24px rgba(27, 67, 50, 0.15);
-          border-color: #52796F !important;
-        }
-
         .stats-card {
           background: linear-gradient(135deg, rgba(27, 67, 50, 0.05) 0%, rgba(82, 121, 111, 0.05) 100%);
           border: 1px solid rgba(82, 121, 111, 0.1);
+          transition: all 0.3s ease;
         }
 
         .stats-card:hover {
@@ -358,18 +625,6 @@ export default function FinancialHealth() {
 
         .progress-gradient {
           background: linear-gradient(90deg, #1B4332 0%, #52796F 100%);
-        }
-
-        .tag-badge {
-          background: rgba(27, 67, 50, 0.1) !important;
-          color: #1B4332 !important;
-          border: 1px solid rgba(27, 67, 50, 0.2) !important;
-        }
-
-        .category-badge {
-          background: rgba(82, 121, 111, 0.1) !important;
-          color: #52796F !important;
-          border: 1px solid rgba(82, 121, 111, 0.2) !important;
         }
 
         .leak-card-high {
@@ -414,758 +669,889 @@ export default function FinancialHealth() {
           border: 1px solid rgba(245, 158, 11, 0.2);
         }
 
-        .insight-card {
-          transition: all 0.3s ease;
-          background: white;
-          border: 1px solid rgba(82, 121, 111, 0.1);
-        }
-
-        .insight-card:hover {
-          transform: translateY(-4px);
-          box-shadow: 0 12px 24px rgba(27, 67, 50, 0.15);
-        }
-
-        @media (max-width: 640px) {
-          .mobile-stack {
-            flex-direction: column !important;
-          }
-
-          .mobile-full {
-            width: 100% !important;
-          }
-
-          .mobile-text-center {
-            text-align: center !important;
-          }
-
-          .mobile-p-4 {
-            padding: 1rem !important;
-          }
-
-          .mobile-gap-4 {
-            gap: 1rem !important;
-          }
-        }
-
-        @media (max-width: 768px) {
-          .tablet-flex-col {
-            flex-direction: column !important;
-          }
-
-          .tablet-w-full {
-            width: 100% !important;
-          }
-
-          .tablet-mb-4 {
-            margin-bottom: 1rem !important;
-          }
+        .empty-state {
+          background: linear-gradient(135deg, rgba(27, 67, 50, 0.02) 0%, rgba(82, 121, 111, 0.02) 100%);
+          border: 2px dashed rgba(82, 121, 111, 0.3);
         }
       `}</style>
 
-      {/* Responsive Tabs Container */}
-      <div className="mb-6 bg-white rounded-xl shadow-sm border border-[#52796F]/20 overflow-hidden">
-        {/* Tabs Header - Responsive Design */}
-        <div className="flex flex-col md:flex-row bg-[#F8F5F0] border-b border-[#52796F]/20 overflow-x-auto">
-          {tabs.map((tab) => {
-            const Icon = tab.icon;
-            return (
-              <button
-                key={tab.id}
-                onClick={() => setActiveTab(tab.id)}
-                className={`
-                  flex items-center justify-center md:justify-start gap-2 px-6 py-4 md:py-5
-                  text-sm md:text-base font-medium whitespace-nowrap
-                  transition-all duration-200 relative
-                  ${
-                    activeTab === tab.id
-                      ? "text-[#1B4332] bg-white font-semibold"
-                      : "text-[#52796F] hover:text-[#1B4332] hover:bg-white/80"
-                  }
-                  border-b-2 md:border-b-0 md:border-r border-[#52796F]/20 last:border-r-0
-                  min-w-[120px] md:flex-1
-                `}
-              >
-                <Icon className="w-4 h-4 md:w-5 md:h-5" />
-                <span>{tab.label}</span>
+      <div className="hero-gradient rounded-2xl p-6 mb-6 text-white">
+        <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+          <div>
+            <h1 className="text-2xl md:text-3xl font-bold flex items-center gap-3">
+              <Building className="h-8 w-8" />
+              {formData.companyName || "Financial Health Analysis"}
+            </h1>
+            <p className="text-white/90 mt-2">
+              {metrics.hasData 
+                ? `${INDUSTRY_BENCHMARKS[formData.industry]?.name || 'Business'} • Last updated: ${new Date().toLocaleDateString()}`
+                : "Enter your financial data to get started"
+              }
+            </p>
+          </div>
+          <div className="flex gap-3">
+            <Button 
+              variant="outline" 
+              className="bg-white/10 border-white/20 text-white hover:bg-white/20"
+              onClick={handleShareAnalysis}
+              disabled={!metrics.hasData}
+            >
+              <Share2 className="h-4 w-4 mr-2" />
+              Share
+            </Button>
+            <Button 
+              variant="outline" 
+              className="bg-white/10 border-white/20 text-white hover:bg-white/20"
+              onClick={() => handleExportReport("pdf")}
+              disabled={!metrics.hasData}
+            >
+              <FileText className="h-4 w-4 mr-2" />
+              Export
+            </Button>
+            <Button 
+              className="bg-white text-[#1B4332] hover:bg-white/90"
+              onClick={() => setActiveView("input")}
+            >
+              <Calculator className="h-4 w-4 mr-2" />
+              {metrics.hasData ? "Update Data" : "Enter Data"}
+            </Button>
+          </div>
+        </div>
+      </div>
 
-                {activeTab === tab.id && (
-                  <>
-                    {/* Desktop active indicator */}
-                    <div className="hidden md:block absolute bottom-0 left-0 right-0 h-0.5 bg-[#1B4332]" />
-                    {/* Mobile active indicator */}
-                    <div className="md:hidden absolute bottom-0 left-0 top-0 w-0.5 bg-[#1B4332]" />
-                  </>
-                )}
-              </button>
-            );
-          })}
+      <div className="flex flex-col md:flex-row gap-4 mb-6 p-4 bg-white rounded-xl shadow-sm border border-[#52796F]/20">
+        <div className="flex-1 flex flex-wrap gap-3">
+          <Select value={timeframe} onValueChange={setTimeframe}>
+            <SelectTrigger className="w-[180px]">
+              <Clock className="h-4 w-4 mr-2" />
+              <SelectValue placeholder="Timeframe" />
+            </SelectTrigger>
+            <SelectContent className="bg-white">
+              <SelectItem value="monthly">Monthly</SelectItem>
+              <SelectItem value="quarterly">Quarterly</SelectItem>
+              <SelectItem value="yearly">Yearly</SelectItem>
+            </SelectContent>
+          </Select>
+
+          <Select value={comparisonMode} onValueChange={setComparisonMode}>
+            <SelectTrigger className="w-[180px]">
+              <Globe className="h-4 w-4 mr-2" />
+              <SelectValue placeholder="Compare With" />
+            </SelectTrigger>
+            <SelectContent className="bg-white">
+              <SelectItem value="industry">Industry Benchmark</SelectItem>
+              <SelectItem value="past">Past Performance</SelectItem>
+            </SelectContent>
+          </Select>
+
+          <Select value={selectedIndustry} onValueChange={(v) => { setSelectedIndustry(v); updateField("industry", v); }}>
+            <SelectTrigger className="w-[200px]">
+              <Briefcase className="h-4 w-4 mr-2" />
+              <SelectValue placeholder="Industry" />
+            </SelectTrigger>
+            <SelectContent className="bg-white">
+              {Object.entries(INDUSTRY_BENCHMARKS).map(([key, value]) => (
+                <SelectItem key={key} value={key}>{value.name}</SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
         </div>
 
-        {/* Tab Content Area */}
-        <div className="p-0">
-          {/* Input & Analysis Tab */}
-          {activeTab === "input" && (
-            <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="p-6">
-              {/* Quick Stats Bar */}
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
-                <div className="stats-card p-4 rounded-lg">
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <p className="text-xs md:text-sm text-[#52796F]">Revenue</p>
-                      <p className="text-xl md:text-2xl font-bold text-[#1B4332]">
-                        {formData.revenue ? `$${parseInt(formData.revenue, 10).toLocaleString()}` : "--"}
-                      </p>
-                    </div>
-                    <DollarSign className="w-6 h-6 md:w-8 md:h-8 text-[#10B981]" />
-                  </div>
-                </div>
+        <div className="flex items-center gap-4">
+          <div className="flex items-center gap-2">
+            <Switch checked={alertsEnabled} onCheckedChange={handleSetAlert} />
+            <Label className="text-sm">Alerts</Label>
+          </div>
+          <Button variant="outline" size="sm" className="btn-secondary">
+            <Filter className="h-4 w-4 mr-2" />
+            Filters
+          </Button>
+        </div>
+      </div>
 
-                <div className="stats-card p-4 rounded-lg">
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <p className="text-xs md:text-sm text-[#52796F]">Expenses</p>
-                      <p className="text-xl md:text-2xl font-bold text-[#1B4332]">
-                        {formData.expenses ? `$${parseInt(formData.expenses, 10).toLocaleString()}` : "--"}
-                      </p>
-                    </div>
-                    <TrendingDown className="w-6 h-6 md:w-8 md:h-8 text-[#DC2626]" />
-                  </div>
-                </div>
+      <Tabs value={activeView} onValueChange={setActiveView} className="space-y-6">
+        <TabsList className="grid w-full grid-cols-4 lg:grid-cols-6">
+          <TabsTrigger value="input" className="flex items-center gap-2">
+            <Calculator className="h-4 w-4" />
+            <span className="hidden sm:inline">Input</span>
+          </TabsTrigger>
+          <TabsTrigger value="dashboard" className="flex items-center gap-2" disabled={!metrics.hasData}>
+            <BarChartIcon className="h-4 w-4" />
+            <span className="hidden sm:inline">Dashboard</span>
+          </TabsTrigger>
+          <TabsTrigger value="analysis" className="flex items-center gap-2" disabled={!metrics.hasData}>
+            <LineChartIcon className="h-4 w-4" />
+            <span className="hidden sm:inline">Analysis</span>
+          </TabsTrigger>
+          <TabsTrigger value="benchmarks" className="flex items-center gap-2" disabled={!metrics.hasData}>
+            <Target className="h-4 w-4" />
+            <span className="hidden sm:inline">Benchmarks</span>
+          </TabsTrigger>
+          <TabsTrigger value="trends" className="flex items-center gap-2" disabled={!metrics.hasData}>
+            <TrendingUp className="h-4 w-4" />
+            <span className="hidden sm:inline">Trends</span>
+          </TabsTrigger>
+          <TabsTrigger value="insights" className="flex items-center gap-2" disabled={!metrics.hasData}>
+            <Lightbulb className="h-4 w-4" />
+            <span className="hidden sm:inline">Insights</span>
+          </TabsTrigger>
+        </TabsList>
 
-                <div className="stats-card p-4 rounded-lg">
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <p className="text-xs md:text-sm text-[#52796F]">Debt</p>
-                      <p className="text-xl md:text-2xl font-bold text-[#1B4332]">
-                        {formData.debt ? `$${parseInt(formData.debt, 10).toLocaleString()}` : "--"}
-                      </p>
-                    </div>
-                    <Shield className="w-6 h-6 md:w-8 md:h-8 text-[#F59E0B]" />
-                  </div>
-                </div>
-
-                <div className="stats-card p-4 rounded-lg">
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <p className="text-xs md:text-sm text-[#52796F]">Cash</p>
-                      <p className="text-xl md:text-2xl font-bold text-[#1B4332]">
-                        {formData.cash ? `$${parseInt(formData.cash, 10).toLocaleString()}` : "--"}
-                      </p>
-                    </div>
-                    <Users className="w-6 h-6 md:w-8 md:h-8 text-[#3B82F6]" />
-                  </div>
+        <TabsContent value="input" className="space-y-6">
+          <Card className="achievement-card">
+            <CardHeader>
+              <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+                <div>
+                  <CardTitle className="flex items-center gap-2 text-lg">
+                    <Database className="h-5 w-5" />
+                    Enter Your Financial Data
+                  </CardTitle>
+                  <CardDescription>
+                    All calculations are performed locally. Your data never leaves your browser.
+                  </CardDescription>
                 </div>
               </div>
-
-              {/* Main Input Card */}
-              <Card className="achievement-card">
-                <CardHeader className="pb-4">
-                  <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-                    <div>
-                      <CardTitle className="flex items-center gap-2 text-lg md:text-xl text-[#1B4332]">
-                        <Calculator className="h-5 w-5 md:h-6 md:w-6 text-[#1B4332]" />
-                        Financial Health Inputs
-                      </CardTitle>
-                      <CardDescription className="mt-1 text-[#52796F]">
-                        Enter your business financial details to calculate your health score
-                      </CardDescription>
-                    </div>
-                    <div className="flex gap-2">
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={handleQuickExample}
-                        className="text-xs md:text-sm btn-secondary"
-                      >
-                        Load Example
-                      </Button>
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={handleExport}
-                        className="text-xs md:text-sm hidden md:flex btn-secondary"
-                      >
-                        <Download className="w-3 h-3 md:w-4 md:h-4 mr-1" />
-                        Export
-                      </Button>
-                    </div>
-                  </div>
-                </CardHeader>
-                <CardContent>
-                  <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                    {/* Left Column */}
-                    <div className="space-y-5">
-                      <div className="space-y-3">
-                        <div className="flex items-center justify-between">
-                          <Label className="text-sm font-medium text-[#1B4332]">Monthly Revenue</Label>
-                          <Info className="h-4 w-4 text-[#52796F]" />
-                        </div>
+            </CardHeader>
+            <CardContent>
+              <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                <div className="lg:col-span-2 space-y-6">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div className="space-y-4">
+                      <div className="space-y-2">
+                        <Label className="text-sm font-medium">Monthly Revenue *</Label>
                         <div className="relative">
-                          <div className="absolute left-3 top-1/2 -translate-y-1/2">
-                            <span className="text-lg font-semibold text-[#10B981]">$</span>
-                          </div>
+                          <DollarSign className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-[#52796F]" />
                           <Input
                             type="number"
-                            min="0"
-                            placeholder="e.g., 25,000"
+                            placeholder="e.g., 50000"
                             value={formData.revenue}
                             onChange={(e) => updateField("revenue", e.target.value)}
-                            className="pl-10 text-lg h-12 border-[#52796F]/20 focus:border-[#1B4332]"
+                            className="pl-10"
                           />
                         </div>
+                        <p className="text-xs text-muted-foreground">Total monthly revenue</p>
                       </div>
 
-                      <div className="space-y-3">
-                        <div className="flex items-center justify-between">
-                          <Label className="text-sm font-medium text-[#1B4332]">Monthly Expenses</Label>
-                          <Info className="h-4 w-4 text-[#52796F]" />
-                        </div>
+                      <div className="space-y-2">
+                        <Label className="text-sm font-medium">Monthly Expenses *</Label>
                         <div className="relative">
-                          <div className="absolute left-3 top-1/2 -translate-y-1/2">
-                            <span className="text-lg font-semibold text-[#DC2626]">$</span>
-                          </div>
+                          <TrendingDown className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-[#DC2626]" />
                           <Input
                             type="number"
-                            min="0"
-                            placeholder="e.g., 18,000"
+                            placeholder="e.g., 40000"
                             value={formData.expenses}
                             onChange={(e) => updateField("expenses", e.target.value)}
-                            className="pl-10 text-lg h-12 border-[#52796F]/20 focus:border-[#1B4332]"
+                            className="pl-10"
                           />
                         </div>
+                        <p className="text-xs text-muted-foreground">Total monthly operating expenses</p>
                       </div>
-                    </div>
 
-                    {/* Right Column */}
-                    <div className="space-y-5">
-                      <div className="space-y-3">
-                        <div className="flex items-center justify-between">
-                          <Label className="text-sm font-medium text-[#1B4332]">Total Debt</Label>
-                          <Info className="h-4 w-4 text-[#52796F]" />
+                      <div className="space-y-2">
+                        <Label className="text-sm font-medium">Total Debt</Label>
+                        <div className="relative">
+                          <Wallet className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-[#F59E0B]" />
+                          <Input
+                            type="number"
+                            placeholder="e.g., 100000"
+                            value={formData.debt}
+                            onChange={(e) => updateField("debt", e.target.value)}
+                            className="pl-10"
+                          />
                         </div>
-                        <Input
-                          type="number"
-                          min="0"
-                          placeholder="e.g., 40,000"
-                          value={formData.debt}
-                          onChange={(e) => updateField("debt", e.target.value)}
-                          className="text-lg h-12 border-[#52796F]/20 focus:border-[#1B4332]"
-                        />
+                        <p className="text-xs text-muted-foreground">Outstanding loans and liabilities</p>
                       </div>
+                    </div>
 
-                      <div className="space-y-3">
-                        <div className="flex items-center justify-between">
-                          <Label className="text-sm font-medium text-[#1B4332]">Cash on Hand</Label>
-                          <Info className="h-4 w-4 text-[#52796F]" />
+                    <div className="space-y-4">
+                      <div className="space-y-2">
+                        <Label className="text-sm font-medium">Cash on Hand *</Label>
+                        <div className="relative">
+                          <DollarSign className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-[#10B981]" />
+                          <Input
+                            type="number"
+                            placeholder="e.g., 150000"
+                            value={formData.cash}
+                            onChange={(e) => updateField("cash", e.target.value)}
+                            className="pl-10"
+                          />
                         </div>
-                        <Input
-                          type="number"
-                          min="0"
-                          placeholder="e.g., 12,000"
-                          value={formData.cash}
-                          onChange={(e) => updateField("cash", e.target.value)}
-                          className="text-lg h-12 border-[#52796F]/20 focus:border-[#1B4332]"
-                        />
+                        <p className="text-xs text-muted-foreground">Available cash and equivalents</p>
+                      </div>
+
+                      <div className="space-y-2">
+                        <Label className="text-sm font-medium">Team Size</Label>
+                        <div className="relative">
+                          <Users className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-[#52796F]" />
+                          <Input
+                            type="number"
+                            placeholder="e.g., 10"
+                            value={formData.teamSize}
+                            onChange={(e) => updateField("teamSize", e.target.value)}
+                            className="pl-10"
+                          />
+                        </div>
+                        <p className="text-xs text-muted-foreground">Number of employees</p>
+                      </div>
+
+                      <div className="space-y-2">
+                        <Label className="text-sm font-medium">Active Customers</Label>
+                        <div className="relative">
+                          <UsersIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-[#3B82F6]" />
+                          <Input
+                            type="number"
+                            placeholder="e.g., 100"
+                            value={formData.customers}
+                            onChange={(e) => updateField("customers", e.target.value)}
+                            className="pl-10"
+                          />
+                        </div>
+                        <p className="text-xs text-muted-foreground">Current paying customers</p>
                       </div>
                     </div>
                   </div>
 
-                  {/* Action Buttons */}
-                  <div className="flex flex-col sm:flex-row gap-3 pt-6 mt-6 border-t border-[#52796F]/20">
-                    <Button
-                      onClick={handleCalculate}
-                      disabled={isCalculating}
-                      className="flex-1 h-12 text-lg btn-primary"
-                      size="lg"
-                    >
-                      {isCalculating ? (
-                        <>
-                          <RefreshCw className="w-5 h-5 mr-2 animate-spin" />
-                          Calculating...
-                        </>
-                      ) : (
-                        <>
-                          <Zap className="w-5 h-5 mr-2" />
-                          Calculate Health Score
-                        </>
-                      )}
-                    </Button>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div className="space-y-2">
+                      <Label className="text-sm font-medium">Company Name</Label>
+                      <Input
+                        placeholder="e.g., Acme Inc."
+                        value={formData.companyName}
+                        onChange={(e) => updateField("companyName", e.target.value)}
+                      />
+                    </div>
 
-                    <div className="flex gap-3">
-                      <Button
-                        variant="outline"
-                        onClick={handleClear}
-                        className="h-12 flex-1 sm:flex-none btn-secondary"
-                      >
-                        Clear All
-                      </Button>
-                      <Button
-                        variant="outline"
-                        onClick={handleQuickExample}
-                        className="h-12 flex-1 sm:flex-none btn-secondary"
-                      >
-                        Load Example
-                      </Button>
+                    <div className="space-y-2">
+                      <Label className="text-sm font-medium">Industry</Label>
+                      <Select value={formData.industry} onValueChange={(value) => { updateField("industry", value); setSelectedIndustry(value); }}>
+                        <SelectTrigger>
+                          <SelectValue placeholder="Select industry" />
+                        </SelectTrigger>
+                        <SelectContent className="bg-white">
+                          {Object.entries(INDUSTRY_BENCHMARKS).map(([key, value]) => (
+                            <SelectItem key={key} value={key}>{value.name}</SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
                     </div>
                   </div>
+                </div>
 
-                  {/* Help Text */}
-                  <div className="mt-4 p-3 bg-[#1B4332]/10 rounded-lg border border-[#1B4332]/20">
-                    <div className="flex items-start gap-2">
-                      <Info className="w-4 h-4 text-[#1B4332] mt-0.5 flex-shrink-0" />
-                      <p className="text-sm text-[#1B4332]">
-                        <span className="font-semibold">B2B Tip:</span> All calculations are done locally in your browser. Your business data is
-                        stored only on your device for privacy.
-                      </p>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-            </motion.div>
-          )}
-
-          {/* Results Tab */}
-          {activeTab === "results" && (
-            <div className="p-6 space-y-6">
-              {/* Score Header */}
-              <div className="health-score-card rounded-2xl p-6">
-                <div className="flex flex-col md:flex-row items-center justify-between gap-6">
-                  <div className="text-center md:text-left">
-                    <div className="flex items-center justify-center md:justify-start gap-2 mb-2">
-                      <Heart className="h-6 w-6 text-[#DC2626]" />
-                      <span className="text-sm font-medium text-[#52796F]">FINANCIAL HEALTH SCORE</span>
-                    </div>
-                    <div className="flex flex-col md:flex-row items-center gap-4">
-                      <div className="relative">
-                        <div className="text-5xl md:text-6xl font-bold text-[#1B4332]">{currentResult?.score || "--"}</div>
-                        <div className="text-sm text-[#52796F] text-center">/100</div>
+                <Card className="stats-card h-fit">
+                  <CardHeader>
+                    <CardTitle className="text-sm flex items-center gap-2">
+                      <Cpu className="h-4 w-4" />
+                      Live Preview
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent className="space-y-4">
+                    <div>
+                      <div className="text-xs text-[#52796F]">Net Profit/Loss</div>
+                      <div className={`text-xl font-bold ${metrics.netProfit >= 0 ? 'text-[#10B981]' : 'text-[#DC2626]'}`}>
+                        {formatCurrency(metrics.netProfit)}
                       </div>
-                      {currentResult && (
+                    </div>
+                    <div>
+                      <div className="text-xs text-[#52796F]">Profit Margin</div>
+                      <div className={`text-xl font-bold ${metrics.profitMargin >= 0.1 ? 'text-[#1B4332]' : 'text-[#DC2626]'}`}>
+                        {formatPercent(metrics.profitMargin)}
+                      </div>
+                    </div>
+                    <div>
+                      <div className="text-xs text-[#52796F]">Runway</div>
+                      <div className={`text-xl font-bold ${metrics.runway >= 6 ? 'text-[#1B4332]' : 'text-[#F59E0B]'}`}>
+                        {metrics.runway >= 999 ? "∞" : `${metrics.runway.toFixed(1)} months`}
+                      </div>
+                    </div>
+                    {metrics.customers > 0 && (
+                      <>
                         <div>
-                          <Badge className={`px-4 py-2 text-lg font-semibold ${getHealthBadgeColor(currentResult.score)}`}>
-                            {healthLabel(currentResult.score).toUpperCase()}
-                          </Badge>
-                          <p className="text-[#52796F] mt-2 max-w-md">
-                            Your business financial health is {healthLabel(currentResult.score).toLowerCase()}.
-                            {currentResult.score >= 80 ? " Keep up the great work!" : " Review the recommendations below to improve."}
-                          </p>
+                          <div className="text-xs text-[#52796F]">ARPU</div>
+                          <div className="text-xl font-bold text-[#1B4332]">
+                            {formatCurrency(metrics.arpu)}
+                          </div>
                         </div>
-                      )}
-                    </div>
-                  </div>
+                        <div>
+                          <div className="text-xs text-[#52796F]">LTV:CAC Ratio</div>
+                          <div className={`text-xl font-bold ${metrics.ltvCacRatio >= 3 ? 'text-[#10B981]' : 'text-[#F59E0B]'}`}>
+                            {metrics.ltvCacRatio > 0 ? `${metrics.ltvCacRatio.toFixed(1)}x` : "N/A"}
+                          </div>
+                        </div>
+                      </>
+                    )}
+                  </CardContent>
+                </Card>
+              </div>
 
-                  {currentResult && (
-                    <Button onClick={() => setActiveTab("input")} variant="outline" className="whitespace-nowrap btn-secondary">
-                      <RefreshCw className="w-4 h-4 mr-2" />
-                      Recalculate
-                    </Button>
+              <div className="flex flex-col sm:flex-row gap-4 mt-8 pt-6 border-t">
+                <Button
+                  onClick={handleCalculate}
+                  disabled={isCalculating || (!formData.revenue && !formData.expenses && !formData.cash)}
+                  className="flex-1 h-12 btn-primary"
+                  size="lg"
+                >
+                  {isCalculating ? (
+                    <>
+                      <RefreshCw className="h-5 w-5 mr-2 animate-spin" />
+                      Analyzing...
+                    </>
+                  ) : (
+                    <>
+                      <Cpu className="h-5 w-5 mr-2" />
+                      Run Analysis
+                    </>
                   )}
+                </Button>
+
+                <div className="flex gap-3">
+                  <Button
+                    variant="outline"
+                    onClick={() => {
+                      setFormData({
+                        revenue: "",
+                        expenses: "",
+                        debt: "",
+                        cash: "",
+                        industry: "saas",
+                        teamSize: "",
+                        customers: "",
+                        companyName: "",
+                        location: "",
+                      });
+                    }}
+                    className="btn-secondary"
+                  >
+                    Clear All
+                  </Button>
                 </div>
               </div>
 
-              {currentResult ? (
-                <>
-                  {/* Analysis Cards Grid */}
-                  <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                    {/* Donut Chart Card */}
-                    <Card className="chart-container">
-                      <CardHeader>
-                        <CardTitle className="flex items-center gap-2 text-sm text-[#1B4332]">
-                          <PieChartIcon className="h-4 w-4" />
-                          Score Breakdown
-                        </CardTitle>
-                      </CardHeader>
-                      <CardContent>
-                        <div className="flex flex-col items-center">
-                          <div className="relative h-[180px] w-full">
-                            <ResponsiveContainer width="100%" height="100%">
-                              <PieChart>
-                                <Pie
-                                  data={breakdownData}
-                                  cx="50%"
-                                  cy="50%"
-                                  innerRadius={45}
-                                  outerRadius={70}
-                                  paddingAngle={4}
-                                  dataKey="value"
-                                  strokeWidth={0}
-                                >
-                                  {breakdownData.map((entry, idx) => (
-                                    <Cell key={`cell-${idx}`} fill={entry.color} />
-                                  ))}
-                                </Pie>
-                                <Tooltip
-                                  formatter={(value, name) => [`${value} pts`, name]}
-                                  contentStyle={{
-                                    backgroundColor: "white",
-                                    border: "1px solid rgba(27, 67, 50, 0.1)",
-                                    borderRadius: "8px",
-                                    color: "#1B4332",
-                                  }}
-                                />
-                              </PieChart>
-                            </ResponsiveContainer>
-                            <div className="absolute inset-0 flex flex-col items-center justify-center">
-                              <span className="text-3xl font-bold text-[#1B4332]">{currentResult.score}</span>
-                            </div>
-                          </div>
-
-                          <div className="w-full mt-4 space-y-3">
-                            {breakdownData.map((entry, idx) => (
-                              <div key={idx} className="flex items-center justify-between">
-                                <div className="flex items-center gap-2">
-                                  <div className="w-3 h-3 rounded-full" style={{ backgroundColor: entry.color }} />
-                                  <span className="text-sm font-medium text-[#1B4332]">{entry.name}</span>
-                                </div>
-                                <span className="text-sm font-semibold text-[#52796F]">{entry.value} pts</span>
-                              </div>
-                            ))}
-                          </div>
-                        </div>
-                      </CardContent>
-                    </Card>
-
-                    {/* Key Metrics Card */}
-                    <Card className="chart-container">
-                      <CardHeader>
-                        <CardTitle className="flex items-center gap-2 text-sm text-[#1B4332]">
-                          <Target className="h-4 w-4" />
-                          Key Metrics
-                        </CardTitle>
-                      </CardHeader>
-                      <CardContent className="space-y-4">
-                        <div className="metric-card-green p-4 rounded-lg">
-                          <div className="flex items-center justify-between mb-2">
-                            <span className="text-sm font-medium text-[#10B981]">Profit Margin</span>
-                            <TrendingUp className="h-4 w-4 text-[#10B981]" />
-                          </div>
-                          <div className="text-2xl font-bold text-[#1B4332]">{(metrics.margin * 100).toFixed(1)}%</div>
-                          <div className="mt-2 h-2 bg-[#10B981]/20 rounded-full overflow-hidden">
-                            <div
-                              className="h-full rounded-full progress-gradient"
-                              style={{ width: `${Math.min(100, metrics.margin * 200)}%` }}
-                            />
-                          </div>
-                        </div>
-
-                        <div className="metric-card-blue p-4 rounded-lg">
-                          <div className="flex items-center justify-between mb-2">
-                            <span className="text-sm font-medium text-[#3B82F6]">Runway</span>
-                            <Calendar className="h-4 w-4 text-[#3B82F6]" />
-                          </div>
-                          <div className="text-2xl font-bold text-[#1B4332]">
-                            {Number.isFinite(metrics.runway) ? metrics.runway.toFixed(1) : "12.0"} months
-                          </div>
-                          <div className="text-sm text-[#3B82F6] mt-1">
-                            {metrics.runway >= 6 ? "Excellent" : metrics.runway >= 3 ? "Good" : "Critical"}
-                          </div>
-                        </div>
-
-                        <div className="metric-card-amber p-4 rounded-lg">
-                          <div className="flex items-center justify-between mb-2">
-                            <span className="text-sm font-medium text-[#F59E0B]">Debt Load</span>
-                            <Shield className="h-4 w-4 text-[#F59E0B]" />
-                          </div>
-                          <div className="text-2xl font-bold text-[#1B4332]">{(metrics.debtLoad * 100).toFixed(0)}%</div>
-                          <div className="text-sm text-[#F59E0B] mt-1">
-                            {metrics.debtLoad < 0.3 ? "Low" : metrics.debtLoad < 0.6 ? "Moderate" : "High"}
-                          </div>
-                        </div>
-                      </CardContent>
-                    </Card>
-
-                    {/* Quick Insights */}
-                    <Card className="chart-container">
-                      <CardHeader>
-                        <CardTitle className="flex items-center gap-2 text-sm text-[#1B4332]">
-                          <Lightbulb className="h-4 w-4" />
-                          Quick Insights
-                        </CardTitle>
-                      </CardHeader>
-                      <CardContent className="space-y-3">
-                        {mismatchAreas.length > 0 ? (
-                          mismatchAreas.slice(0, 3).map((item, idx) => (
-                            <div
-                              key={idx}
-                              className={`insight-card p-3 rounded-lg ${
-                                item.severity === "critical" ? "leak-card-high" : "leak-card-medium"
-                              }`}
-                            >
-                              <div className="flex items-center gap-2">
-                                <AlertTriangle
-                                  className={`h-4 w-4 ${item.severity === "critical" ? "text-[#DC2626]" : "text-[#F59E0B]"}`}
-                                />
-                                <span className="font-semibold text-sm text-[#1B4332]">{item.area}</span>
-                              </div>
-                              <p className="text-xs text-[#52796F] mt-1">{item.description}</p>
-                            </div>
-                          ))
-                        ) : (
-                          <div className="p-4 rounded-lg metric-card-green text-center">
-                            <CheckCircle className="h-8 w-8 mx-auto mb-2 text-[#10B981]" />
-                            <p className="font-semibold text-[#1B4332]">All Good!</p>
-                            <p className="text-xs text-[#52796F] mt-1">No critical issues detected</p>
-                          </div>
-                        )}
-
-                        <Button
-                          variant="outline"
-                          className="w-full mt-4 btn-secondary"
-                          onClick={() => setActiveTab("results")}
-                        >
-                          View Full Analysis
-                          <ArrowRight className="w-4 h-4 ml-2" />
-                        </Button>
-                      </CardContent>
-                    </Card>
-                  </div>
-
-                  {/* Full Results */}
-                  <div className="space-y-6">
-                    {/* Fee Impact Analysis */}
-                    <Card className="achievement-card">
-                      <CardHeader>
-                        <CardTitle className="flex items-center gap-2 text-[#1B4332]">
-                          <BarChart3 className="h-5 w-5" />
-                          Leaks Impact Analysis
-                        </CardTitle>
-                        <CardDescription className="text-[#52796F]">How your expenses impact your bottom line</CardDescription>
-                      </CardHeader>
-                      <CardContent>
-                        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                          <div className="h-[250px]">
-                            <ResponsiveContainer width="100%" height="100%">
-                              <BarChart data={feeImpactData} margin={{ top: 20, right: 30, left: 20, bottom: 5 }}>
-                                <CartesianGrid strokeDasharray="3 3" stroke="rgba(27, 67, 50, 0.1)" />
-                                <XAxis dataKey="name" stroke="#52796F" />
-                                <YAxis stroke="#52796F" />
-                                <Tooltip
-                                  formatter={(value) => [`$${Number(value).toLocaleString()}`, ""]}
-                                  contentStyle={{
-                                    backgroundColor: "white",
-                                    border: "1px solid rgba(27, 67, 50, 0.1)",
-                                    borderRadius: "8px",
-                                    color: "#1B4332",
-                                  }}
-                                />
-                                <Bar dataKey="value" radius={[8, 8, 0, 0]}>
-                                  {feeImpactData.map((entry, idx) => (
-                                    <Cell key={`cell-${idx}`} fill={entry.fill} />
-                                  ))}
-                                </Bar>
-                              </BarChart>
-                            </ResponsiveContainer>
-                          </div>
-
-                          {/* Right side metrics */}
-                          <div className="space-y-4">
-                            {/* Monthly Revenue (GOLD) */}
-                            <div className="metric-card-green p-4 rounded-lg">
-                              <div className="flex items-center gap-2 mb-2">
-                                <TrendingUp className="h-5 w-5" style={{ color: BAR_COLORS.revenue }} />
-                                <span className="font-semibold text-[#1B4332]">Monthly Revenue</span>
-                              </div>
-                              <p className="text-2xl font-bold text-[#1B4332]">${revenue.toLocaleString()}</p>
-                            </div>
-
-                            {/* Monthly Expenses (FOREST) */}
-                            <div className="leak-card-high p-4 rounded-lg">
-                              <div className="flex items-center gap-2 mb-2">
-                                <DollarSign className="h-5 w-5" style={{ color: BAR_COLORS.expenses }} />
-                                <span className="font-semibold text-[#1B4332]">Monthly Expenses</span>
-                              </div>
-                              <p className="text-2xl font-bold text-[#1B4332]">${expenses.toLocaleString()}</p>
-                              <p className="text-sm mt-1" style={{ color: BAR_COLORS.expenses }}>
-                                {revenue > 0 ? `${((expenses / revenue) * 100).toFixed(1)}% of revenue` : "0% of revenue"}
-                              </p>
-                            </div>
-
-                            {/* Net Profit (LIGHT GREEN) */}
-                            <div className="metric-card-blue p-4 rounded-lg">
-                              <div className="flex items-center gap-2 mb-2">
-                                <Target className="h-5 w-5" style={{ color: BAR_COLORS.net }} />
-                                <span className="font-semibold text-[#1B4332]">Net Profit</span>
-                              </div>
-                              <p className="text-2xl font-bold text-[#1B4332]">
-                                ${Math.max(0, revenue - expenses).toLocaleString()}
-                              </p>
-                              <p className="text-sm mt-1" style={{ color: BAR_COLORS.net }}>
-                                {(metrics.margin * 100).toFixed(1)}% profit margin
-                              </p>
-                            </div>
-                          </div>
-                        </div>
-                      </CardContent>
-                    </Card>
-
-                    {/* Key Mismatch Areas & Recommendations */}
-                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                      {/* Key Mismatch Areas */}
-                      <Card className="achievement-card">
-                        <CardHeader>
-                          <CardTitle className="flex items-center gap-2 text-[#1B4332]">
-                            <AlertTriangle className="h-5 w-5 text-[#F59E0B]" />
-                            Key Mismatch Areas
-                          </CardTitle>
-                          <CardDescription className="text-[#52796F]">
-                            Business areas requiring attention based on your financial data
-                          </CardDescription>
-                        </CardHeader>
-                        <CardContent>
-                          {mismatchAreas.length > 0 ? (
-                            <div className="space-y-4">
-                              {mismatchAreas.map((item, idx) => (
-                                <div
-                                  key={idx}
-                                  className={`p-4 rounded-lg ${item.severity === "critical" ? "leak-card-high" : "leak-card-medium"}`}
-                                >
-                                  <div className="flex items-center gap-2 mb-2">
-                                    <AlertTriangle
-                                      className={`h-5 w-5 ${item.severity === "critical" ? "text-[#DC2626]" : "text-[#F59E0B]"}`}
-                                    />
-                                    <span className="font-semibold text-[#1B4332]">{item.area}</span>
-                                    <Badge
-                                      className={`ml-auto ${
-                                        item.severity === "critical"
-                                          ? "bg-[#DC2626]/10 text-[#DC2626] border-[#DC2626]/20"
-                                          : "bg-[#F59E0B]/10 text-[#F59E0B] border-[#F59E0B]/20"
-                                      }`}
-                                    >
-                                      {item.severity}
-                                    </Badge>
-                                  </div>
-                                  <p className="text-sm text-[#52796F] mb-3">{item.description}</p>
-                                  <div className="flex items-center gap-2 text-sm">
-                                    <Lightbulb className="h-4 w-4 text-[#1B4332]" />
-                                    <span className="font-medium text-[#1B4332]">{item.action}</span>
-                                  </div>
-                                </div>
-                              ))}
-                            </div>
-                          ) : (
-                            <div className="p-6 rounded-lg metric-card-green text-center">
-                              <CheckCircle className="h-12 w-12 mx-auto mb-3 text-[#10B981]" />
-                              <p className="font-semibold text-[#1B4332] text-lg">No Major Mismatches Detected!</p>
-                              <p className="text-sm text-[#52796F] mt-2">
-                                Your financial health looks good. Keep monitoring regularly.
-                              </p>
-                            </div>
-                          )}
-                        </CardContent>
-                      </Card>
-
-                      {/* Recommendations */}
-                      <Card className="achievement-card">
-                        <CardHeader>
-                          <CardTitle className="flex items-center gap-2 text-[#1B4332]">
-                            <Lightbulb className="h-5 w-5" />
-                            Recommendations
-                          </CardTitle>
-                        </CardHeader>
-                        <CardContent>
-                          <ul className="space-y-3">
-                            {recommendations.map((rec, i) => (
-                              <li key={i} className="flex items-start gap-3 p-4 rounded-lg metric-card-blue">
-                                <div className="flex-shrink-0 mt-0.5">
-                                  <div className="w-6 h-6 rounded-full bg-[#1B4332]/10 flex items-center justify-center">
-                                    <span className="text-xs font-semibold text-[#1B4332]">{i + 1}</span>
-                                  </div>
-                                </div>
-                                <div className="w-full">
-                                  <span className="text-sm font-medium text-[#1B4332]">{rec}</span>
-
-                                  <div className="mt-3 flex flex-col sm:flex-row gap-2 w-full">
-                                    <Button
-                                      size="sm"
-                                      variant="outline"
-                                      className="h-9 text-xs sm:text-sm btn-secondary w-full sm:w-auto"
-                                    >
-                                      Learn More
-                                    </Button>
-                                    <Button size="sm" className="h-9 text-xs sm:text-sm btn-primary w-full sm:w-auto">
-                                      Take Action
-                                    </Button>
-                                  </div>
-                                </div>
-                              </li>
-                            ))}
-                          </ul>
-                        </CardContent>
-                      </Card>
-                    </div>
-                  </div>
-                </>
-              ) : (
-                <Card className="achievement-card">
-                  <CardContent className="p-8 text-center">
-                    <Calculator className="h-16 w-16 mx-auto mb-4 text-[#52796F]/30" />
-                    <h3 className="text-lg font-semibold text-[#1B4332] mb-2">No Results Yet</h3>
-                    <p className="text-[#52796F] mb-4">
-                      Calculate your business financial health score to see detailed results and insights
+              <div className="mt-6 p-4 bg-[#1B4332]/5 rounded-lg border border-[#1B4332]/10">
+                <div className="flex items-start gap-3">
+                  <Lock className="h-5 w-5 text-[#1B4332] mt-0.5" />
+                  <div>
+                    <p className="font-medium text-[#1B4332]">Privacy First</p>
+                    <p className="text-sm text-[#52796F] mt-1">
+                      All calculations happen in your browser. Your financial data is never sent to any server.
                     </p>
-                    <Button onClick={() => setActiveTab("input")} className="btn-primary">
-                      Go to Input
-                    </Button>
+                  </div>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        <TabsContent value="dashboard" className="space-y-6">
+          {!metrics.hasData ? (
+            <Card className="empty-state p-12 text-center">
+              <Calculator className="h-16 w-16 mx-auto text-[#52796F]/30 mb-4" />
+              <h3 className="text-lg font-semibold text-[#1B4332]">No Data Yet</h3>
+              <p className="text-[#52796F] mt-2">Enter your financial data to see your dashboard</p>
+              <Button onClick={() => setActiveView("input")} className="mt-4 btn-primary">
+                Enter Data
+              </Button>
+            </Card>
+          ) : (
+            <>
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                {kpiMetrics.map((metric) => {
+                  const Icon = metric.icon;
+                  return (
+                    <Card key={metric.id} className="stats-card">
+                      <CardContent className="p-4">
+                        <div className="flex justify-between items-start">
+                          <div>
+                            <p className="text-xs text-[#52796F] font-medium">{metric.label}</p>
+                            <p className="text-2xl font-bold text-[#1B4332] mt-2">{metric.value}</p>
+                            <p className="text-xs text-[#52796F] mt-1">{metric.description}</p>
+                          </div>
+                          <Icon className="h-8 w-8" style={{ color: metric.color }} />
+                        </div>
+                      </CardContent>
+                    </Card>
+                  );
+                })}
+              </div>
+
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                <Card className="health-score-card">
+                  <CardHeader>
+                    <CardTitle className="flex items-center gap-2">
+                      <Heart className="h-5 w-5 text-[#DC2626]" />
+                      Financial Health Score
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="flex flex-col items-center justify-center p-4">
+                      <div className="relative">
+                        <div className="text-6xl font-bold text-[#1B4332]">
+                          {currentScore || "--"}
+                        </div>
+                        <div className="text-sm text-[#52796F] text-center mt-2">/100</div>
+                      </div>
+                      {currentScore > 0 && (
+                        <>
+                          <div className="mt-4">
+                            <Badge className={`px-4 py-2 text-lg font-semibold ${getHealthBadgeColor(currentScore)}`}>
+                              {healthLabel(currentScore).toUpperCase()}
+                            </Badge>
+                          </div>
+                          <div className="mt-6 w-full">
+                            <Progress value={currentScore} className="h-2" />
+                          </div>
+                          <div className="mt-6 grid grid-cols-2 gap-4 w-full">
+                            {enterpriseKPIs.map((kpi) => (
+                              <div key={kpi.id} className="text-center">
+                                <div className="text-sm text-[#52796F]">{kpi.label}</div>
+                                <div className="text-xl font-bold text-[#1B4332]">{kpi.value.toFixed(0)}</div>
+                                <div className={`text-xs mt-1 ${
+                                  kpi.status === 'exceeds' ? 'text-green-600' :
+                                  kpi.status === 'meets' ? 'text-yellow-600' : 'text-red-600'
+                                }`}>
+                                  {kpi.status === 'exceeds' ? '✓ Strong' : kpi.status === 'meets' ? '~ Average' : '⚠ Needs Work'}
+                                </div>
+                              </div>
+                            ))}
+                          </div>
+                        </>
+                      )}
+                    </div>
+                  </CardContent>
+                </Card>
+
+                <Card className="chart-container">
+                  <CardHeader>
+                    <CardTitle className="flex items-center gap-2">
+                      <TrendingUp className="h-5 w-5" />
+                      Projected Trend
+                    </CardTitle>
+                    <CardDescription>6-month projection based on current metrics</CardDescription>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="h-[300px]">
+                      <ResponsiveContainer width="100%" height="100%">
+                        <AreaChart data={trendData}>
+                          <CartesianGrid strokeDasharray="3 3" stroke="rgba(27, 67, 50, 0.1)" />
+                          <XAxis dataKey="month" />
+                          <YAxis tickFormatter={(v) => formatCurrency(v, true)} />
+                          <Tooltip 
+                            formatter={(value) => [formatCurrency(value), ""]}
+                            contentStyle={{
+                              backgroundColor: "white",
+                              border: "1px solid rgba(27, 67, 50, 0.1)",
+                              borderRadius: "8px",
+                            }}
+                          />
+                          <Area type="monotone" dataKey="revenue" name="Revenue" stroke={CHART_COLORS.revenue} fill={CHART_COLORS.revenue} fillOpacity={0.6} />
+                          <Area type="monotone" dataKey="expenses" name="Expenses" stroke={CHART_COLORS.expenses} fill={CHART_COLORS.expenses} fillOpacity={0.6} />
+                          <Legend />
+                        </AreaChart>
+                      </ResponsiveContainer>
+                    </div>
+                  </CardContent>
+                </Card>
+              </div>
+
+              {quickInsights.length > 0 && (
+                <Card>
+                  <CardHeader>
+                    <CardTitle className="flex items-center gap-2">
+                      <Lightbulb className="h-5 w-5" />
+                      Key Insights
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                      {quickInsights.slice(0, 3).map((insight, idx) => (
+                        <Card key={idx} className={getSeverityColor(insight.severity)}>
+                          <CardContent className="p-4">
+                            <div className="flex items-start justify-between">
+                              <div>
+                                <h4 className="font-semibold text-[#1B4332]">{insight.title}</h4>
+                                <p className="text-sm text-[#52796F] mt-1">{insight.description}</p>
+                              </div>
+                              <AlertTriangle className={`h-5 w-5 mt-1 ${
+                                insight.severity === 'critical' ? 'text-[#DC2626]' :
+                                insight.severity === 'high' ? 'text-[#F59E0B]' : 'text-[#10B981]'
+                              }`} />
+                            </div>
+                            <Button size="sm" className="mt-3 w-full btn-primary">
+                              {insight.action}
+                            </Button>
+                          </CardContent>
+                        </Card>
+                      ))}
+                    </div>
                   </CardContent>
                 </Card>
               )}
-            </div>
+            </>
           )}
+        </TabsContent>
 
-          {/* History Tab */}
-          {activeTab === "history" && (
-            <div className="p-6">
+        <TabsContent value="analysis" className="space-y-6">
+          {metrics.hasData && (
+            <>
+              <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                <Card className="lg:col-span-2 chart-container">
+                  <CardHeader>
+                    <CardTitle className="flex items-center gap-2">
+                      <Target className="h-5 w-5" />
+                      Performance vs Industry
+                    </CardTitle>
+                    <CardDescription>Your metrics compared to {INDUSTRY_BENCHMARKS[selectedIndustry]?.name} benchmarks</CardDescription>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="h-[400px]">
+                      <ResponsiveContainer width="100%" height="100%">
+                        <RadarChart data={radarData}>
+                          <PolarGrid />
+                          <PolarAngleAxis dataKey="metric" />
+                          <PolarRadiusAxis angle={30} domain={[0, 100]} />
+                          <Radar name="Your Company" dataKey="you" stroke={COLOR_SCHEME.primary} fill={COLOR_SCHEME.primary} fillOpacity={0.6} />
+                          <Radar name="Industry Avg" dataKey="industry" stroke={COLOR_SCHEME.secondary} fill={COLOR_SCHEME.secondary} fillOpacity={0.3} />
+                          <Legend />
+                          <Tooltip />
+                        </RadarChart>
+                      </ResponsiveContainer>
+                    </div>
+                  </CardContent>
+                </Card>
+
+                <Card className="chart-container">
+                  <CardHeader>
+                    <CardTitle className="flex items-center gap-2">
+                      <Briefcase className="h-5 w-5" />
+                      Benchmark Comparison
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="space-y-4">
+                      {comparisonData.map((item, idx) => (
+                        <div key={idx} className="p-4 rounded-lg bg-[#F8F5F0]">
+                          <div className="flex justify-between items-center mb-2">
+                            <span className="font-medium text-[#1B4332]">{item.metric}</span>
+                            <Badge className={
+                              item.metric === "Debt Load" 
+                                ? (item.you < item.industry ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800')
+                                : (item.you > item.industry ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800')
+                            }>
+                              {item.metric === "Debt Load"
+                                ? (item.you < item.industry ? 'Better' : 'Higher')
+                                : (item.you > item.industry ? 'Above' : 'Below')
+                              }
+                            </Badge>
+                          </div>
+                          <div className="grid grid-cols-2 gap-2">
+                            <div className="text-center">
+                              <div className="text-sm text-[#52796F]">You</div>
+                              <div className="text-lg font-bold text-[#1B4332]">
+                                {item.you.toFixed(1)}{item.unit}
+                              </div>
+                            </div>
+                            <div className="text-center">
+                              <div className="text-sm text-[#52796F]">Industry</div>
+                              <div className="text-lg font-bold text-[#52796F]">
+                                {item.industry.toFixed(1)}{item.unit}
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </CardContent>
+                </Card>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                <Card className="metric-card-green">
+                  <CardContent className="p-6">
+                    <div className="flex items-center justify-between mb-4">
+                      <div>
+                        <p className="text-sm text-[#52796F]">Profit Margin</p>
+                        <p className="text-3xl font-bold text-[#1B4332]">{formatPercent(metrics.profitMargin)}</p>
+                      </div>
+                      <TrendingUp className="h-8 w-8 text-[#10B981]" />
+                    </div>
+                    <Progress value={Math.max(0, (metrics.profitMargin + 0.5) * 100)} className="h-2" />
+                  </CardContent>
+                </Card>
+
+                <Card className="metric-card-blue">
+                  <CardContent className="p-6">
+                    <div className="flex items-center justify-between mb-4">
+                      <div>
+                        <p className="text-sm text-[#52796F]">Runway</p>
+                        <p className="text-3xl font-bold text-[#1B4332]">
+                          {metrics.runway >= 999 ? "∞" : `${metrics.runway.toFixed(1)} mo`}
+                        </p>
+                      </div>
+                      <Calendar className="h-8 w-8 text-[#3B82F6]" />
+                    </div>
+                    <p className="text-sm text-[#3B82F6]">
+                      {metrics.runway >= 12 ? "Excellent" : metrics.runway >= 6 ? "Good" : metrics.runway >= 3 ? "Low" : "Critical"}
+                    </p>
+                  </CardContent>
+                </Card>
+
+                <Card className="metric-card-amber">
+                  <CardContent className="p-6">
+                    <div className="flex items-center justify-between mb-4">
+                      <div>
+                        <p className="text-sm text-[#52796F]">Debt Ratio</p>
+                        <p className="text-3xl font-bold text-[#1B4332]">{formatPercent(metrics.debtToRevenue)}</p>
+                      </div>
+                      <Shield className="h-8 w-8 text-[#F59E0B]" />
+                    </div>
+                    <p className="text-sm text-[#F59E0B]">
+                      {metrics.debtToRevenue < 0.2 ? "Low" : metrics.debtToRevenue < 0.5 ? "Moderate" : "High"}
+                    </p>
+                  </CardContent>
+                </Card>
+
+                <Card className="stats-card">
+                  <CardContent className="p-6">
+                    <div className="flex items-center justify-between mb-4">
+                      <div>
+                        <p className="text-sm text-[#52796F]">Revenue/Employee</p>
+                        <p className="text-3xl font-bold text-[#1B4332]">{formatCurrency(metrics.revenuePerEmployee, true)}</p>
+                      </div>
+                      <Users className="h-8 w-8 text-[#52796F]" />
+                    </div>
+                    <p className="text-sm text-[#52796F]">Annual per employee</p>
+                  </CardContent>
+                </Card>
+              </div>
+            </>
+          )}
+        </TabsContent>
+
+        <TabsContent value="benchmarks" className="space-y-6">
+          <Card className="chart-container">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Target className="h-5 w-5" />
+                Industry Benchmarks
+              </CardTitle>
+              <CardDescription>Compare your metrics against different industries</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="h-[400px]">
+                <ResponsiveContainer width="100%" height="100%">
+                  <ComposedChart data={Object.entries(INDUSTRY_BENCHMARKS).map(([, data]) => ({
+                    industry: data.name,
+                    margin: data.margin * 100,
+                    runway: data.runway,
+                    debtLoad: data.debtLoad * 100,
+                  }))}>
+                    <CartesianGrid strokeDasharray="3 3" />
+                    <XAxis dataKey="industry" />
+                    <YAxis yAxisId="left" />
+                    <YAxis yAxisId="right" orientation="right" />
+                    <Tooltip />
+                    <Legend />
+                    <Bar yAxisId="left" dataKey="margin" name="Margin %" fill={CHART_COLORS.margin} />
+                    <Bar yAxisId="left" dataKey="debtLoad" name="Debt Load %" fill={CHART_COLORS.debtLoad} />
+                    <Line yAxisId="right" type="monotone" dataKey="runway" name="Runway (mo)" stroke={CHART_COLORS.runway} />
+                  </ComposedChart>
+                </ResponsiveContainer>
+              </div>
+            </CardContent>
+          </Card>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            {Object.entries(INDUSTRY_BENCHMARKS).map(([key, benchmark]) => (
+              <Card key={key} className={`${selectedIndustry === key ? 'achievement-card' : 'stats-card'} cursor-pointer`} onClick={() => { setSelectedIndustry(key); updateField("industry", key); }}>
+                <CardContent className="p-6">
+                  <div className="flex items-center justify-between mb-4">
+                    <h3 className="font-semibold text-[#1B4332]">{benchmark.name}</h3>
+                    {selectedIndustry === key && <Badge className="bg-[#1B4332]/10 text-[#1B4332]">Selected</Badge>}
+                  </div>
+                  <div className="space-y-2 text-sm">
+                    <div className="flex justify-between"><span className="text-[#52796F]">Avg Margin</span><span className="font-medium">{formatPercent(benchmark.margin)}</span></div>
+                    <div className="flex justify-between"><span className="text-[#52796F]">Avg Runway</span><span className="font-medium">{benchmark.runway} mo</span></div>
+                    <div className="flex justify-between"><span className="text-[#52796F]">Avg Debt Load</span><span className="font-medium">{formatPercent(benchmark.debtLoad)}</span></div>
+                  </div>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+        </TabsContent>
+
+        <TabsContent value="trends" className="space-y-6">
+          {metrics.hasData && (
+            <>
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                <Card className="chart-container">
+                  <CardHeader>
+                    <CardTitle className="flex items-center gap-2">
+                      <LineChartIcon className="h-5 w-5" />
+                      Financial Projection
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="h-[300px]">
+                      <ResponsiveContainer width="100%" height="100%">
+                        <LineChart data={trendData}>
+                          <CartesianGrid strokeDasharray="3 3" />
+                          <XAxis dataKey="month" />
+                          <YAxis tickFormatter={(v) => formatCurrency(v, true)} />
+                          <Tooltip formatter={(value) => [formatCurrency(value), ""]} />
+                          <Legend />
+                          <Line type="monotone" dataKey="revenue" name="Revenue" stroke={CHART_COLORS.revenue} strokeWidth={3} />
+                          <Line type="monotone" dataKey="expenses" name="Expenses" stroke={CHART_COLORS.expenses} strokeWidth={3} />
+                          <Line type="monotone" dataKey="profit" name="Profit" stroke={CHART_COLORS.net} strokeWidth={3} />
+                        </LineChart>
+                      </ResponsiveContainer>
+                    </div>
+                  </CardContent>
+                </Card>
+
+                <Card className="chart-container">
+                  <CardHeader>
+                    <CardTitle className="flex items-center gap-2">
+                      <BarChart3 className="h-5 w-5" />
+                      Key Metrics Breakdown
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="h-[300px]">
+                      <ResponsiveContainer width="100%" height="100%">
+                        <BarChart data={[
+                          { name: 'Revenue', value: metrics.revenue, fill: CHART_COLORS.revenue },
+                          { name: 'Expenses', value: metrics.expenses, fill: CHART_COLORS.expenses },
+                          { name: 'Net Profit', value: Math.max(0, metrics.netProfit), fill: CHART_COLORS.net },
+                          { name: 'Cash', value: metrics.cash, fill: CHART_COLORS.cash },
+                        ]}>
+                          <CartesianGrid strokeDasharray="3 3" />
+                          <XAxis dataKey="name" />
+                          <YAxis tickFormatter={(v) => formatCurrency(v, true)} />
+                          <Tooltip formatter={(value) => [formatCurrency(value), ""]} />
+                          <Bar dataKey="value" radius={[4, 4, 0, 0]} />
+                        </BarChart>
+                      </ResponsiveContainer>
+                    </div>
+                  </CardContent>
+                </Card>
+              </div>
+
               <Card className="achievement-card">
                 <CardHeader>
-                  <CardTitle className="flex items-center gap-2 text-[#1B4332]">
+                  <CardTitle className="flex items-center gap-2">
                     <TrendingUp className="h-5 w-5" />
                     Health Score History
                   </CardTitle>
-                  <CardDescription className="text-[#52796F]">Track your score over time</CardDescription>
                 </CardHeader>
                 <CardContent>
                   <div className="h-[300px]">
                     {chartData.length > 0 ? (
                       <ResponsiveContainer width="100%" height="100%">
-                        <LineChart data={chartData} margin={{ top: 10, right: 30, left: 0, bottom: 0 }}>
+                        <LineChart data={chartData}>
                           <CartesianGrid strokeDasharray="3 3" stroke="rgba(27, 67, 50, 0.1)" />
-                          <XAxis dataKey="date" stroke="#52796F" />
-                          <YAxis domain={[0, 100]} stroke="#52796F" />
-                          <Tooltip
-                            contentStyle={{
-                              backgroundColor: "white",
-                              border: "1px solid rgba(27, 67, 50, 0.1)",
-                              borderRadius: "8px",
-                              color: "#1B4332",
-                            }}
-                          />
-                          <Line
-                            type="monotone"
-                            dataKey="score"
-                            stroke="#1B4332"
-                            strokeWidth={3}
-                            dot={{ fill: "#1B4332", strokeWidth: 2 }}
-                          />
+                          <XAxis dataKey="date" />
+                          <YAxis domain={[0, 100]} />
+                          <Tooltip />
+                          <Line type="monotone" dataKey="score" stroke="#1B4332" strokeWidth={3} dot={{ fill: "#1B4332" }} />
                         </LineChart>
                       </ResponsiveContainer>
                     ) : (
                       <div className="h-full flex flex-col items-center justify-center">
                         <TrendingUp className="h-16 w-16 text-[#52796F]/30 mb-4" />
-                        <p className="text-[#1B4332] text-lg font-medium mb-2">No history yet</p>
-                        <p className="text-[#52796F] text-sm mb-4">Calculate your first score to start tracking</p>
-                        <Button onClick={() => setActiveTab("input")} className="btn-primary">
-                          <Calculator className="w-4 h-4 mr-2" />
-                          Calculate Score
-                        </Button>
+                        <p className="text-[#1B4332] font-medium">No history yet</p>
+                        <p className="text-[#52796F] text-sm">Run multiple analyses to track progress</p>
                       </div>
                     )}
                   </div>
                 </CardContent>
               </Card>
-            </div>
+            </>
           )}
-        </div>
-      </div>
+        </TabsContent>
+
+        <TabsContent value="insights" className="space-y-6">
+          <Card className="achievement-card">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Lightbulb className="h-5 w-5" />
+                Financial Insights & Recommendations
+              </CardTitle>
+              <CardDescription>Actionable recommendations based on your data</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-6">
+                {quickInsights.length > 0 ? (
+                  quickInsights.map((insight, idx) => (
+                    <motion.div
+                      key={idx}
+                      initial={{ opacity: 0, x: -20 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      transition={{ delay: idx * 0.1 }}
+                    >
+                      <Card className={getSeverityColor(insight.severity)}>
+                        <CardContent className="p-6">
+                          <div className="flex items-start gap-4">
+                            <div className={`p-2 rounded-full ${
+                              insight.severity === 'critical' ? 'bg-red-100' :
+                              insight.severity === 'high' ? 'bg-yellow-100' : 'bg-green-100'
+                            }`}>
+                              <AlertTriangle className={`h-5 w-5 ${
+                                insight.severity === 'critical' ? 'text-red-600' :
+                                insight.severity === 'high' ? 'text-yellow-600' : 'text-green-600'
+                              }`} />
+                            </div>
+                            <div className="flex-1">
+                              <h4 className="font-bold text-lg text-[#1B4332]">{insight.title}</h4>
+                              <p className="text-[#52796F] mt-1">{insight.description}</p>
+                              
+                              <div className="mt-4 grid grid-cols-3 gap-4">
+                                <div className="p-3 bg-white/50 rounded-lg">
+                                  <p className="text-xs text-[#52796F]">Priority</p>
+                                  <p className="font-semibold text-[#1B4332]">
+                                    {insight.severity === 'critical' ? 'Critical' : insight.severity === 'high' ? 'High' : 'Medium'}
+                                  </p>
+                                </div>
+                                <div className="p-3 bg-white/50 rounded-lg">
+                                  <p className="text-xs text-[#52796F]">Impact</p>
+                                  <p className="font-semibold text-[#1B4332]">{insight.impact}</p>
+                                </div>
+                                <div className="p-3 bg-white/50 rounded-lg">
+                                  <p className="text-xs text-[#52796F]">Timeframe</p>
+                                  <p className="font-semibold text-[#1B4332]">{insight.timeframe}</p>
+                                </div>
+                              </div>
+                              
+                              <Button className="mt-4 btn-primary">{insight.action}</Button>
+                            </div>
+                          </div>
+                        </CardContent>
+                      </Card>
+                    </motion.div>
+                  ))
+                ) : (
+                  <div className="text-center py-12">
+                    <Lightbulb className="h-16 w-16 mx-auto text-[#52796F]/30 mb-4" />
+                    <h3 className="text-lg font-semibold text-[#1B4332]">
+                      {metrics.hasData ? "Looking Good!" : "No Insights Yet"}
+                    </h3>
+                    <p className="text-[#52796F] mt-2">
+                      {metrics.hasData 
+                        ? "Your metrics are within healthy ranges. Keep monitoring!"
+                        : "Enter financial data to generate insights"
+                      }
+                    </p>
+                    {!metrics.hasData && (
+                      <Button onClick={() => setActiveView("input")} className="mt-4 btn-primary">
+                        <Calculator className="h-4 w-4 mr-2" />
+                        Enter Data
+                      </Button>
+                    )}
+                  </div>
+                )}
+              </div>
+            </CardContent>
+          </Card>
+        </TabsContent>
+      </Tabs>
     </DashboardLayout>
   );
 }

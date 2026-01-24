@@ -18,11 +18,10 @@ import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 
 export default function Header({ title, subtitle }) {
   const { settings, profileImage } = useData();
-  const { theme, setTheme } = useTheme();
+  // Use currentTheme and setThemeMode from your ThemeContext
+  const { currentTheme, setThemeMode } = useTheme();
   const navigate = useNavigate();
   const [mobileOpen, setMobileOpen] = useState(false);
-
-  const toggleTheme = () => setTheme(theme === "light" ? "dark" : "light");
 
   const initials = useMemo(() => {
     return (
@@ -80,9 +79,9 @@ export default function Header({ title, subtitle }) {
             variant="ghost"
             size="icon"
             className="h-10 w-10 p-0"
-            onClick={toggleTheme}
+            onClick={() => setThemeMode(currentTheme === "light" ? "dark" : "light")}
           >
-            {theme === "light" ? (
+            {currentTheme === "light" ? (
               <Moon className="h-5 w-5" />
             ) : (
               <Sun className="h-5 w-5" />
@@ -132,9 +131,9 @@ export default function Header({ title, subtitle }) {
             variant="ghost"
             size="icon"
             className="h-10 w-10 p-0"
-            onClick={toggleTheme}
+            onClick={() => setThemeMode(currentTheme === "light" ? "dark" : "light")}
           >
-            {theme === "light" ? (
+            {currentTheme === "light" ? (
               <Moon className="h-5 w-5" />
             ) : (
               <Sun className="h-5 w-5" />

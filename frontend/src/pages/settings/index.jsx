@@ -121,7 +121,7 @@ export default function Settings() {
         {/* Section 2 */}
         <Card className="border border-[#52796F]/10 rounded-2xl overflow-hidden bg-white">
           <CardContent className="p-0">
-            <Row icon={User} label="Avatar" onClick={() => go("/settings/avatar")} />
+            <Row icon={User} label="GpsRadius" onClick={() => go("/settings/GpsRadius")} />
             <Divider />
             <Row icon={AtSign} label="Businessname" value={businessHandle} onClick={() => go("/settings/businessname")} />
             <Divider />

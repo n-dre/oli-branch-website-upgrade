@@ -1,5 +1,5 @@
 /* eslint-disable react-refresh/only-export-components */
-import React, { createContext, useContext, useEffect, useMemo, useState } from "react";
+import React, { createContext, useContext, useEffect, useMemo, useState, useCallback } from "react";
 
 export const ThemeContext = createContext(null);
 
@@ -10,6 +10,17 @@ function getSystemTheme() {
   return window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
 }
 
+function applyTheme(mode) {
+  if (typeof window === "undefined") return;
+  
+  const root = document.documentElement;
+  root.classList.remove("light", "dark");
+  
+  const applied = mode === "system" ? getSystemTheme() : mode;
+  root.classList.add(applied);
+  root.setAttribute("data-theme", applied);
+}
+
 export function ThemeProvider({ children }) {
   const [themeMode, setThemeMode] = useState(() => {
     if (typeof window === "undefined") return "light";
@@ -18,48 +29,65 @@ export function ThemeProvider({ children }) {
     return "light";
   });
 
-  // Apply theme to <html>
+  const currentTheme = useMemo(() => {
+    return themeMode === "system" ? getSystemTheme() : themeMode;
+  }, [themeMode]);
+
+  useEffect(() => {
+    applyTheme(themeMode);
+  }, [themeMode]);
+
   useEffect(() => {
     if (typeof window === "undefined") return;
-
-    const root = document.documentElement;
-    root.classList.remove("light", "dark");
-
-    const applied = themeMode === "system" ? getSystemTheme() : themeMode;
-    root.classList.add(applied);
-
+    applyTheme(themeMode);
     localStorage.setItem(STORAGE_KEY, themeMode);
   }, [themeMode]);
 
-  // Listen for OS changes only when mode = system
   useEffect(() => {
-    if (typeof window === "undefined") return;
+    if (typeof window === "undefined" || themeMode !== "system") return;
 
     const mq = window.matchMedia("(prefers-color-scheme: dark)");
-    const handler = () => {
-      if (themeMode !== "system") return;
+    
+    const handler = (e) => {
       const root = document.documentElement;
       root.classList.remove("light", "dark");
-      root.classList.add(getSystemTheme());
+      const newTheme = e.matches ? "dark" : "light";
+      root.classList.add(newTheme);
+      root.setAttribute("data-theme", newTheme);
     };
 
-    if (mq.addEventListener) mq.addEventListener("change", handler);
-    else mq.addListener(handler);
-
-    return () => {
-      if (mq.removeEventListener) mq.removeEventListener("change", handler);
-      else mq.removeListener(handler);
-    };
+    if (mq.addEventListener) {
+      mq.addEventListener("change", handler);
+      return () => mq.removeEventListener("change", handler);
+    } else {
+      mq.addListener(handler);
+      return () => mq.removeListener(handler);
+    }
   }, [themeMode]);
+
+  const toggleTheme = useCallback(() => {
+    setThemeMode((prev) => (prev === "light" ? "dark" : "light"));
+  }, []);
+
+  const cycleThemeMode = useCallback(() => {
+    setThemeMode((prev) => {
+      if (prev === "light") return "dark";
+      if (prev === "dark") return "system";
+      return "light";
+    });
+  }, []);
 
   const value = useMemo(
     () => ({
       themeMode,
       setThemeMode,
-      cycleThemeMode: () =>
-        setThemeMode((prev) => (prev === "system" ? "dark" : prev === "dark" ? "light" : "system")),
+      currentTheme,
+      theme: currentTheme,
+      setTheme: setThemeMode,
+      toggleTheme,
+      cycleThemeMode,
     }),
-    [themeMode]
+    [themeMode, currentTheme, toggleTheme, cycleThemeMode]
   );
 
   return <ThemeContext.Provider value={value}>{children}</ThemeContext.Provider>;
@@ -67,6 +95,8 @@ export function ThemeProvider({ children }) {
 
 export function useTheme() {
   const ctx = useContext(ThemeContext);
-  if (!ctx) throw new Error("useTheme must be used within ThemeProvider");
+  if (!ctx) {
+    throw new Error("useTheme must be used within ThemeProvider");
+  }
   return ctx;
 }

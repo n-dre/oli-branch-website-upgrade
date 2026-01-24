@@ -112,7 +112,6 @@ const NotificationsSounds = safeLazy(
 const Settings = safeLazy(() => import("./pages/settings"), "Settings");
 const Accessibility = safeLazy(() => import("./pages/settings/Accessibility"), "Accessibility");
 const PrivacySafety = safeLazy(() => import("./pages/settings/PrivacySafety"), "PrivacySafety");
-const Avatar = safeLazy(() => import("./pages/settings/Avatar"), "Avatar");
 const Businessname = safeLazy(() => import("./pages/settings/Businessname"), "Businessname");
 const PersonalDetails = safeLazy(() => import("./pages/settings/PersonalDetails"), "PersonalDetails");
 const PasswordSecurity = safeLazy(
@@ -128,6 +127,10 @@ const LanguageIdentification = safeLazy(
 const UnderlinedWords = safeLazy(
   () => import("./pages/settings/UnderlinedWords"),
   "UnderlinedWords"
+);
+const GpsRadius = safeLazy(
+  () => import("./pages/settings/GpsRadius"),
+  "GpsRadius"
 );
 const ReportAProblem = safeLazy(
   () => import("./pages/settings/ReportAProblem"),
@@ -167,7 +170,7 @@ export default function App() {
                 <Route path="/pricing" element={<Pricing />} />
                 <Route path="/terms" element={<Terms />} />
                 <Route path="/privacy" element={<Privacy />} />
-                <Route path="/QuickStartGuide" element={<QuickStartGuide />} />
+                <Route path="/quick" element={<QuickStartGuide />} />
 
                 <Route path="/admin" element={<AdminDashboard />} />
                 <Route path="/dashboard" element={<UserDashboard />} />
@@ -181,7 +184,7 @@ export default function App() {
                 <Route path="/leaks" element={<FinancialLeaks />} />
                 <Route path="/health" element={<FinancialHealth />} />
                 <Route path="/help" element={<Help />} />
-                <Route path="/HowItWorks" element={<HowItWorks />} />
+                <Route path="/how" element={<HowItWorks />} />
                 <Route path="/finder" element={<ResourcesFinder />} />
                 <Route path="/learning" element={<Learning />} />
                 <Route path="/nearby-banks" element={<NearbyBanks />} />
@@ -193,9 +196,9 @@ export default function App() {
                 <Route path="/report/:email" element={<Report />} />
 
                 <Route path="/settings" element={<Settings />} />
+                <Route path="/settings/gps" element={<GpsRadius />} />
                 <Route path="/settings/accessibility" element={<Accessibility />} />
                 <Route path="/settings/privacy-safety" element={<PrivacySafety />} />
-                <Route path="/settings/avatar" element={<Avatar />} />
                 <Route path="/settings/businessname" element={<Businessname />} />
                 <Route path="/settings/personal-details" element={<PersonalDetails />} />
                 <Route path="/settings/password-security" element={<PasswordSecurity />} />

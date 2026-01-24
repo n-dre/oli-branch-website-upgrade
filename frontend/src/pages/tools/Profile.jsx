@@ -2,24 +2,25 @@
 import React, { useMemo, useRef, useState } from "react";
 import { motion } from "framer-motion";
 import { toast } from "sonner";
-import { User, Upload, Lock } from "lucide-react";
+import { User, Upload, Lock, X } from "lucide-react";
 
 import DashboardLayout from "../../components/layout/DashboardLayout";
 import { Card, CardContent, CardHeader, CardTitle } from "../../components/ui/card";
 import { Button } from "../../components/ui/button";
 import { Input } from "../../components/ui/input";
 import { Label } from "../../components/ui/label";
-import { Avatar, AvatarFallback, AvatarImage } from "../../components/ui/avatar";
 import { useData } from "../../context/DataContext";
 
 export default function Profile() {
-  const { settings, updateSettings, profileImage, updateProfileImage } = useData();
+  // ✅ Use the correct functions from DataContext
+  const { settings, setSettings, profileImage, setProfileImage } = useData();
   const fileInputRef = useRef(null);
 
+  // ✅ Initialize from settings.profile
   const [profile, setProfile] = useState(() => ({
-    fullName: settings.profile?.fullName || "",
-    email: settings.profile?.email || "",
-    companyName: settings.profile?.companyName || "",
+    fullName: settings?.profile?.fullName || "",
+    email: settings?.profile?.email || "",
+    companyName: settings?.profile?.companyName || "",
   }));
 
   const [passwords, setPasswords] = useState({
@@ -39,8 +40,9 @@ export default function Profile() {
       .slice(0, 2);
   }, [profile.companyName, profile.fullName]);
 
+  // ✅ Get logo from both places for backward compatibility
+  const currentLogo = settings?.profile?.companyLogo || profileImage || "";
   const headerNamePreview = profile.companyName || "Company Name";
-  const headerLogoPreview = settings.profile?.companyLogo || profileImage || "";
 
   const validateImage = (file) => {
     const allowed = ["image/png", "image/jpeg", "image/webp", "image/gif"];
@@ -67,15 +69,17 @@ export default function Profile() {
     const reader = new FileReader();
     reader.onload = () => {
       const dataUrl = reader.result;
-
-      updateProfileImage(dataUrl);
-
-      updateSettings({
+      
+      // ✅ Update both profileImage AND settings.profile.companyLogo
+      setProfileImage(dataUrl);
+      
+      setSettings(prev => ({
+        ...prev,
         profile: {
-          ...(settings.profile || {}),
+          ...(prev.profile || {}),
           companyLogo: dataUrl,
         },
-      });
+      }));
 
       toast.success("Company logo updated.");
     };
@@ -87,21 +91,24 @@ export default function Profile() {
   const handleUploadClick = (e) => {
     e.preventDefault();
     e.stopPropagation();
-    console.log("Upload button clicked");
     fileInputRef.current?.click();
   };
 
   const handleRemoveLogo = (e) => {
     e.preventDefault();
     e.stopPropagation();
-    console.log("Remove button clicked");
-    updateProfileImage("");
-    updateSettings({
+    
+    // ✅ Remove from both places
+    setProfileImage("");
+    
+    setSettings(prev => ({
+      ...prev,
       profile: {
-        ...(settings.profile || {}),
+        ...(prev.profile || {}),
         companyLogo: "",
       },
-    });
+    }));
+    
     toast.success("Logo removed.");
   };
 
@@ -119,24 +126,27 @@ export default function Profile() {
       return;
     }
 
-    updateSettings({
+    // ✅ Update settings.profile correctly
+    setSettings(prev => ({
+      ...prev,
       profile: {
-        ...(settings.profile || {}),
+        ...(prev.profile || {}),
         companyName,
         email,
         fullName,
-        companyLogo: settings.profile?.companyLogo || profileImage || "",
+        // Preserve existing logo if any
+        companyLogo: prev?.profile?.companyLogo || currentLogo || "",
       },
-    });
+    }));
 
     toast.success("Profile updated.");
   };
 
   const handleReset = () => {
     setProfile({
-      fullName: settings.profile?.fullName || "",
-      email: settings.profile?.email || "",
-      companyName: settings.profile?.companyName || "",
+      fullName: settings?.profile?.fullName || "",
+      email: settings?.profile?.email || "",
+      companyName: settings?.profile?.companyName || "",
     });
     toast.success("Reverted.");
   };
@@ -186,7 +196,7 @@ export default function Profile() {
         <Card className="border-none shadow-none bg-[#f5f5f5]">
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
-              <User className="h-5 w-5 text-primary" />
+              <User className="h-5 w-5 text-[#1B4332]" />
               Profile Information
             </CardTitle>
           </CardHeader>
@@ -195,12 +205,24 @@ export default function Profile() {
             {/* Logo + Header Preview */}
             <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 w-full">
               <div className="shrink-0">
-                <Avatar className="h-20 w-20">
-                  <AvatarImage src={headerLogoPreview} alt="Logo here" />
-                  <AvatarFallback className="bg-primary text-primary-foreground text-xl font-semibold">
-                    {initials}
-                  </AvatarFallback>
-                </Avatar>
+                {/* Round Avatar - fixed aspect ratio */}
+                <div 
+                  className="relative w-20 h-20 rounded-full border-2 border-[#1B4332]/20 shadow-md overflow-hidden bg-[#1B4332]"
+                  data-testid="profile-avatar"
+                  style={{ aspectRatio: '1 / 1' }}
+                >
+                  {currentLogo ? (
+                    <img 
+                      src={currentLogo}
+                      alt="Company Logo"
+                      className="absolute inset-0 w-full h-full object-cover rounded-full"
+                    />
+                  ) : (
+                    <div className="absolute inset-0 w-full h-full flex items-center justify-center text-white text-xl font-semibold">
+                      {initials}
+                    </div>
+                  )}
+                </div>
               </div>
 
               <div className="flex-1 min-w-0 w-full space-y-2">
@@ -210,33 +232,42 @@ export default function Profile() {
                   {headerNamePreview}
                 </div>
 
+                {/* Hidden file input for image upload */}
                 <input
                   ref={fileInputRef}
                   type="file"
-                  accept="image/*"
+                  accept="image/png,image/jpeg,image/webp,image/gif"
                   className="hidden"
                   onChange={handleImageUpload}
+                  data-testid="file-input"
                 />
 
+                {/* Responsive button container */}
                 <div className="flex flex-col sm:flex-row gap-2 w-full">
+                  {/* Upload Button - triggers file input */}
                   <Button
                     type="button"
                     variant="outline"
                     size="sm"
-                    className="w-full sm:w-auto flex items-center justify-center pointer-events-auto cursor-pointer"
+                    className="w-full sm:w-auto flex items-center justify-center gap-2 hover:bg-[#1B4332] hover:text-white transition-colors"
                     onClick={handleUploadClick}
+                    data-testid="upload-logo-btn"
                   >
-                    <Upload className="h-4 w-4 mr-2" />
+                    <Upload className="h-4 w-4" />
                     Upload Logo
                   </Button>
 
+                  {/* Remove Button - disabled when no logo, responsive styling */}
                   <Button
                     type="button"
                     variant="outline"
                     size="sm"
-                    className="w-full sm:w-auto flex items-center justify-center pointer-events-auto cursor-pointer"
+                    className="w-full sm:w-auto flex items-center justify-center gap-2 hover:bg-red-500 hover:text-white hover:border-red-500 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                     onClick={handleRemoveLogo}
+                    disabled={!currentLogo}
+                    data-testid="remove-logo-btn"
                   >
+                    <X className="h-4 w-4" />
                     Remove
                   </Button>
                 </div>
@@ -244,36 +275,53 @@ export default function Profile() {
             </div>
 
             <div className="space-y-2">
-              <Label>Full Name (optional)</Label>
+              <Label htmlFor="fullName">Full Name (optional)</Label>
               <Input
+                id="fullName"
                 value={profile.fullName}
                 onChange={(e) => setProfile((p) => ({ ...p, fullName: e.target.value }))}
+                data-testid="full-name-input"
               />
             </div>
 
             <div className="space-y-2">
-              <Label>Email</Label>
+              <Label htmlFor="email">Email</Label>
               <Input
+                id="email"
+                type="email"
                 value={profile.email}
                 onChange={(e) => setProfile((p) => ({ ...p, email: e.target.value }))}
+                data-testid="email-input"
               />
             </div>
 
             <div className="space-y-2">
-              <Label>Company Name (shown in header)</Label>
+              <Label htmlFor="companyName">Company Name (shown in header)</Label>
               <Input
+                id="companyName"
                 value={profile.companyName}
                 onChange={(e) =>
                   setProfile((p) => ({ ...p, companyName: e.target.value }))
                 }
+                data-testid="company-name-input"
               />
             </div>
 
             <div className="flex flex-col sm:flex-row gap-2">
-              <Button className="btn-primary w-full sm:w-auto" onClick={handleSaveProfile}>
+              <Button 
+                className="btn-primary w-full sm:w-auto" 
+                onClick={handleSaveProfile}
+                data-testid="save-profile-btn"
+              >
                 Update Profile
               </Button>
-              <Button type="button" variant="outline" className="w-full sm:w-auto" onClick={handleReset}>
+              <Button 
+                type="button" 
+                variant="outline" 
+                className="w-full sm:w-auto" 
+                onClick={handleReset}
+                data-testid="cancel-btn"
+              >
                 Cancel
               </Button>
             </div>
@@ -288,43 +336,53 @@ export default function Profile() {
         <Card className="border-none shadow-none bg-[#f5f5f5]">
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
-              <Lock className="h-5 w-5 text-primary" />
+              <Lock className="h-5 w-5 text-[#1B4332]" />
               Account Settings
             </CardTitle>
           </CardHeader>
 
           <CardContent className="space-y-4">
             <div className="space-y-2">
-              <Label>Current Password</Label>
+              <Label htmlFor="currentPassword">Current Password</Label>
               <Input
+                id="currentPassword"
                 type="password"
                 value={passwords.current}
                 onChange={(e) => setPasswords((p) => ({ ...p, current: e.target.value }))}
                 autoComplete="current-password"
+                data-testid="current-password-input"
               />
             </div>
 
             <div className="space-y-2">
-              <Label>New Password</Label>
+              <Label htmlFor="newPassword">New Password</Label>
               <Input
+                id="newPassword"
                 type="password"
                 value={passwords.new}
                 onChange={(e) => setPasswords((p) => ({ ...p, new: e.target.value }))}
                 autoComplete="new-password"
+                data-testid="new-password-input"
               />
             </div>
 
             <div className="space-y-2">
-              <Label>Confirm New Password</Label>
+              <Label htmlFor="confirmPassword">Confirm New Password</Label>
               <Input
+                id="confirmPassword"
                 type="password"
                 value={passwords.confirm}
                 onChange={(e) => setPasswords((p) => ({ ...p, confirm: e.target.value }))}
                 autoComplete="new-password"
+                data-testid="confirm-password-input"
               />
             </div>
 
-            <Button className="btn-primary w-full sm:w-auto" onClick={handleChangePassword}>
+            <Button 
+              className="btn-primary w-full sm:w-auto" 
+              onClick={handleChangePassword}
+              data-testid="change-password-btn"
+            >
               Change Password
             </Button>
           </CardContent>

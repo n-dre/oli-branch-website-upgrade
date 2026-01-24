@@ -252,17 +252,22 @@ export default function Tools() {
               </p>
             </div>
 
-            <div className="flex items-center gap-3">
-              {/* IMPORTANT: these paths must match your router */}
-              <Link to="/HowItWorks">
-                <Button className="btn-secondary bg-white/10 border-white/30 text-white hover:bg-white/20 gap-2">
+            <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 sm:gap-3 w-full sm:w-auto">
+              <Link to="/how" className="w-full sm:w-auto">
+                <Button
+                  type="button"
+                  className="w-full sm:w-auto btn-secondary bg-white/10 border-white/30 text-white hover:bg-white/20 gap-2"
+                >
                   <HelpCircle className="w-4 h-4" />
                   How it Works
                 </Button>
               </Link>
 
-              <Link to="/QuickStartGuide">
-                <Button className="bg-white text-[#1B4332] hover:bg-gray-100 gap-2">
+              <Link to="/quick" className="w-full sm:w-auto">
+                <Button
+                  type="button"
+                  className="w-full sm:w-auto bg-white text-[#1B4332] hover:bg-gray-100 gap-2"
+                >
                   <Zap className="w-4 h-4" />
                   Quick Start Guide
                 </Button>

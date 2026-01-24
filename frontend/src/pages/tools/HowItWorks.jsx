@@ -1,8 +1,8 @@
 // src/pages/HowItWorks.jsx
 import React from "react";
-import DashboardLayout from "../components/layout/DashboardLayout";
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "../components/ui/card";
-import { Badge } from "../components/ui/badge";
+import DashboardLayout from "../../components/layout/DashboardLayout";
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "../../components/ui/card";
+import { Badge } from "../../components/ui/badge";
 import { CheckCircle, FileText, Shield, BarChart3, Zap } from "lucide-react";
 
 export default function HowItWorks() {
