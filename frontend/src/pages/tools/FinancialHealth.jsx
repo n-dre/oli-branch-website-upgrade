@@ -643,7 +643,7 @@ export default function FinancialHealth() {
 
   return (
     <DashboardLayout 
-      title="Financial Health Analysis" 
+      title="FinHealth Analysis" 
       subtitle="Comprehensive financial intelligence for your business"
       className="bg-[#F8F5F0]"
     >

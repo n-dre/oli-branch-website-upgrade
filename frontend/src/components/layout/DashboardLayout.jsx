@@ -25,7 +25,7 @@ export default function DashboardLayout({ children, title, subtitle }) {
             )}
           </button>
           <div className="min-w-0 flex-1">
-            <h1 className="text-lg font-bold text-gray-900 truncate">{title}</h1>
+            <h1 className="text-lg font-bold text-[#2E2E2E] truncate">{title}</h1>
             {subtitle && (
               <p className="text-sm text-gray-500 truncate">{subtitle}</p>
             )}

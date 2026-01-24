@@ -178,7 +178,7 @@ const UserDashboard = () => {
       <Toaster position="top-right" />
       
       <DashboardLayout 
-        title="Financial Control Dashboard" 
+        title="Dashboard" 
         subtitle="Monitor financial health and audit progress"
         actions={
           <div className="flex items-center gap-3">
