@@ -17,7 +17,9 @@ import { Button } from "../ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 
 export default function Header({ title, subtitle }) {
-  const { settings, profileImage } = useData();
+  const data = useData?.() || {};
+  const settings = data.settings || {};
+  const profileImage = data.profileImage || null;
   // Use currentTheme and setThemeMode from your ThemeContext
   const { currentTheme, setThemeMode } = useTheme();
   const navigate = useNavigate();
@@ -82,9 +84,9 @@ export default function Header({ title, subtitle }) {
             onClick={() => setThemeMode(currentTheme === "light" ? "dark" : "light")}
           >
             {currentTheme === "light" ? (
-              <Moon className="h-5 w-5" />
-            ) : (
               <Sun className="h-5 w-5" />
+            ) : (
+              <Moon className="h-5 w-5" />
             )}
           </Button>
 
@@ -134,9 +136,9 @@ export default function Header({ title, subtitle }) {
             onClick={() => setThemeMode(currentTheme === "light" ? "dark" : "light")}
           >
             {currentTheme === "light" ? (
-              <Moon className="h-5 w-5" />
-            ) : (
               <Sun className="h-5 w-5" />
+            ) : (
+              <Moon className="h-5 w-5" />
             )}
           </Button>
 
