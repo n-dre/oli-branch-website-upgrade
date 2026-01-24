@@ -136,7 +136,7 @@ export default function IntakeForm() {
   const progress = (currentStep / 4) * 100;
 
   return (
-    <DashboardLayout title="Business Intake Form" subtitle="Complete this form to analyze your financial mismatch">
+    <DashboardLayout title="Intake Form" subtitle="Complete this form to analyze your financial mismatch">
       <style>{`
         .hero-gradient { background: linear-gradient(135deg, #1B4332 0%, #52796F 100%); }
 

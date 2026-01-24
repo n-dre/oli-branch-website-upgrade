@@ -149,7 +149,7 @@ export default function Tools() {
 
   return (
     <DashboardLayout
-      title="Business Tools Hub"
+      title="Tools Hub"
       subtitle="Powerful tools to grow and manage your business"
     >
       <style>{`

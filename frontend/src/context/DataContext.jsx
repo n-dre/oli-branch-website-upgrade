@@ -224,20 +224,46 @@ export function DataProvider({ children }) {
   );
 
   // --------------------
-  // ✅ NEW: Methods for FinancialHealth.jsx
+  // ✅ REPORTS (ADDED)
   // --------------------
+  const [reports, setReports] = useState(() =>
+    safeJsonParse(isBrowser ? localStorage.getItem("oliBranchReports") : null, [])
+  );
 
-  // Fixes "updateHealthInputs is not a function"
+  const addReport = useCallback((report) => {
+    setReports((prev) => [report, ...prev]);
+  }, []);
+
+  const getReportById = useCallback(
+    (id) => reports.find((r) => r.id === id),
+    [reports]
+  );
+
+  const generateFinancialLeaksReport = useCallback((totalFees) => {
+    const report = {
+      id: crypto.randomUUID(),
+      type: "Financial Leaks",
+      createdAt: new Date().toISOString(),
+      title: "Financial Leaks Assessment",
+      summary: `Detected $${Number(totalFees).toFixed(2)} in monthly fee leaks`,
+      source: "financial-leaks",
+      status: "generated",
+    };
+
+    setReports((prev) => [report, ...prev]);
+    return report;
+  }, []);
+
+  // --------------------
+  // Health helpers
+  // --------------------
   const updateHealthInputs = useCallback((inputs) => {
     setHealthInputs(inputs);
   }, []);
 
   const addHealthHistory = useCallback((score) => {
     const newEntry = { score, t: new Date().getTime() };
-    setHealthHistory((prev) => {
-      const updated = [newEntry, ...prev].slice(0, 10);
-      return updated;
-    });
+    setHealthHistory((prev) => [newEntry, ...prev].slice(0, 10));
   }, []);
 
   const clearHealthData = useCallback(() => {
@@ -246,35 +272,33 @@ export function DataProvider({ children }) {
   }, []);
 
   // --------------------
-  // Persistence Effects
+  // Persistence
   // --------------------
   useEffect(() => {
-    if (!isBrowser) return;
-    localStorage.setItem("oliBranchResponses", JSON.stringify(responses));
+    if (isBrowser) localStorage.setItem("oliBranchReports", JSON.stringify(reports));
+  }, [reports]);
+
+  useEffect(() => {
+    if (isBrowser) localStorage.setItem("oliBranchResponses", JSON.stringify(responses));
   }, [responses]);
 
   useEffect(() => {
-    if (!isBrowser) return;
-    localStorage.setItem("oliBranchSettings", JSON.stringify(settings));
+    if (isBrowser) localStorage.setItem("oliBranchSettings", JSON.stringify(settings));
   }, [settings]);
 
   useEffect(() => {
     if (!isBrowser) return;
-    if (healthInputs) {
-      localStorage.setItem("oliBranchFinancialInputs", JSON.stringify(healthInputs));
-    } else {
-      localStorage.removeItem("oliBranchFinancialInputs");
-    }
+    healthInputs
+      ? localStorage.setItem("oliBranchFinancialInputs", JSON.stringify(healthInputs))
+      : localStorage.removeItem("oliBranchFinancialInputs");
   }, [healthInputs]);
 
   useEffect(() => {
-    if (!isBrowser) return;
-    localStorage.setItem("oliBranchHealthHistory", JSON.stringify(healthHistory));
+    if (isBrowser) localStorage.setItem("oliBranchHealthHistory", JSON.stringify(healthHistory));
   }, [healthHistory]);
 
   useEffect(() => {
-    if (!isBrowser) return;
-    localStorage.setItem("oliBranchPaymentLinks", JSON.stringify(paymentLinks));
+    if (isBrowser) localStorage.setItem("oliBranchPaymentLinks", JSON.stringify(paymentLinks));
   }, [paymentLinks]);
 
   useEffect(() => {
@@ -323,18 +347,24 @@ export function DataProvider({ children }) {
         setSettings,
         healthInputs,
         setHealthInputs,
-        updateHealthInputs, // ✅ Now provided to FinancialHealth.jsx
+        updateHealthInputs,
         healthHistory,
         setHealthHistory,
-        addHealthHistory,    // ✅ Now provided
-        clearHealthData,     // ✅ Now provided
+        addHealthHistory,
+        clearHealthData,
         paymentLinks,
         setPaymentLinks,
         profileImage,
         setProfileImage,
         subscription,
         linkedBanks,
-        
+
+        // reports
+        reports,
+        addReport,
+        getReportById,
+        generateFinancialLeaksReport,
+
         getScoring,
         getChartData,
         calculateMismatchScore,

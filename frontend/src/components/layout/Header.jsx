@@ -38,7 +38,7 @@ export default function Header({ title, subtitle }) {
     <header className="bg-card/80 backdrop-blur-md border-b border-border px-4 sm:px-6 lg:px-8 py-4">
       <div className="flex items-center justify-between gap-3 min-w-0">
         {/* LEFT — Title */}
-        <div className="flex items-center gap-3 min-w-0 flex-1">
+        <div className="flex items-center gap-3 min-w-0 flex-1 pl-8 lg:pl-14">
           <div className="min-w-0">
             <h1 className="font-display text-xl lg:text-2xl font-bold text-foreground truncate">
               {title}
