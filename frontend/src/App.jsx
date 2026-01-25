@@ -112,7 +112,7 @@ const NotificationsSounds = safeLazy(
 const Settings = safeLazy(() => import("./pages/settings"), "Settings");
 const Accessibility = safeLazy(() => import("./pages/settings/Accessibility"), "Accessibility");
 const PrivacySafety = safeLazy(() => import("./pages/settings/PrivacySafety"), "PrivacySafety");
-const Businessname = safeLazy(() => import("./pages/settings/Businessname"), "Businessname");
+const OrganizationSettings = safeLazy(() => import("./pages/settings/OrganizationSettings"), "OrganizationSettings");
 const PersonalDetails = safeLazy(() => import("./pages/settings/PersonalDetails"), "PersonalDetails");
 const PasswordSecurity = safeLazy(
   () => import("./pages/settings/PasswordSecurity"),
@@ -199,7 +199,7 @@ export default function App() {
                 <Route path="/settings/gps" element={<GpsRadius />} />
                 <Route path="/settings/accessibility" element={<Accessibility />} />
                 <Route path="/settings/privacy-safety" element={<PrivacySafety />} />
-                <Route path="/settings/businessname" element={<Businessname />} />
+                <Route path="/settings/organization" element={<OrganizationSettings />} />
                 <Route path="/settings/personal-details" element={<PersonalDetails />} />
                 <Route path="/settings/password-security" element={<PasswordSecurity />} />
                 <Route path="/settings/photos-media" element={<PhotosMedia />} />

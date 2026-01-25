@@ -197,7 +197,7 @@ export default function NotificationsSounds() {
     <DashboardLayout>
       <div className="max-w-4xl mx-auto p-4 space-y-6">
         <div className="space-y-2">
-          <h1 className="text-3xl font-bold text-foreground">Enterprise Notification Center</h1>
+          <h1 className="text-3xl font-bold text-gray-900/[0.9] mb-2">Enterprise Notification Center</h1>
           <p className="text-muted-foreground">
             Manage how your organization receives alerts, updates, and communications across all devices and platforms.
           </p>

@@ -2,17 +2,18 @@ import React, { useState } from "react";
 import { toast } from "sonner";
 import { useNavigate } from "react-router-dom";
 import DashboardLayout from "../../components/layout/DashboardLayout";
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "../../components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+  CardDescription,
+} from "../../components/ui/card";
 import { Button } from "../../components/ui/button";
-import { 
-  Eye, 
-  Type, 
-  Volume2, 
-  Zap, 
-  Shield, 
-  Globe,
-  Check,
-  Settings
+import {
+  Eye,
+  Shield,
+  Settings,
 } from "lucide-react";
 
 export default function Accessibility() {
@@ -36,34 +37,37 @@ export default function Accessibility() {
   const toggle = (key) => setState((s) => ({ ...s, [key]: !s[key] }));
 
   const onSave = () => {
-    // Hook this to API later (PUT /api/settings/accessibility)
-    toast.success("Enterprise accessibility preferences saved for your organization.");
+    toast.success(
+      "Enterprise accessibility preferences saved for your organization."
+    );
     navigate("/settings");
   };
 
   const exportComplianceReport = () => {
     toast.info("Generating WCAG compliance report for your organization...");
-    // In production: generate and download compliance report
   };
 
   const applyToTeam = () => {
-    toast.info("Applying accessibility settings across your team members...");
-    // In production: push settings to team members via API
+    toast.info(
+      "Applying accessibility settings across your team members..."
+    );
   };
 
   return (
     <DashboardLayout>
       <div className="max-w-4xl mx-auto p-4 space-y-6">
         {/* Enterprise Header */}
-        <Card className="rounded-2xl border-l-4 border-l-[#1B4332]">
-          <CardHeader>
-            <div className="flex items-center gap-3">
-              <div className="p-2 bg-[#E8F5E9] rounded-lg">
-                <Shield className="h-6 w-6 text-[#1B4332]" />
+        <Card className="rounded-2xl border-l-4 border-l-blue-600 bg-gradient-to-r from-blue-50 to-white">
+          <CardHeader className="pb-4">
+            <div className="flex items-start gap-3">
+              <div className="p-3 bg-blue-100 rounded-xl">
+                <Shield className="h-7 w-7 text-blue-600" />
               </div>
-              <div>
-                <CardTitle className="text-xl">Enterprise Accessibility Settings</CardTitle>
-                <CardDescription>
+              <div className="space-y-2">
+                <CardTitle className="text-2xl text-gray-900">
+                  Enterprise Accessibility Settings
+                </CardTitle>
+                <CardDescription className="text-gray-600 text-base">
                   Configure accessibility preferences for your entire organization. 
                   Settings comply with WCAG 2.1 AA standards and support ADA requirements.
                 </CardDescription>
@@ -73,44 +77,48 @@ export default function Accessibility() {
         </Card>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          {/* Visual Preferences Column */}
-          <Card className="rounded-2xl">
-            <CardHeader>
-              <div className="flex items-center gap-2 mb-2">
-                <Eye className="h-5 w-5 text-gray-600" />
-                <CardTitle className="text-lg">Visual & Display</CardTitle>
+          {/* Visual & Display */}
+          <Card className="rounded-2xl border shadow-sm">
+            <CardHeader className="pb-3">
+              <div className="flex items-center gap-2">
+                <div className="p-2 bg-purple-100 rounded-lg">
+                  <Eye className="h-5 w-5 text-purple-600" />
+                </div>
+                <div>
+                  <CardTitle className="text-lg font-semibold text-gray-900">
+                    Visual & Display
+                  </CardTitle>
+                  <CardDescription className="text-gray-600">
+                    Adjust visual elements for optimal clarity
+                  </CardDescription>
+                </div>
               </div>
-              <CardDescription>Adjust visual elements for optimal clarity</CardDescription>
             </CardHeader>
-            <CardContent className="space-y-4">
-              <ToggleRow
-                icon={<Eye className="h-4 w-4" />}
-                title="High Contrast Mode"
-                desc="WCAG 1.4.6 compliant for better readability"
+            <CardContent className="space-y-3">
+              <ToggleItem
+                title="High Contrast ADA Mode"
+                description="WCAG 1.4.6 compliant for better readability"
                 checked={state.highContrast}
                 onChange={() => toggle("highContrast")}
                 badge="ADA"
               />
-              <ToggleRow
-                icon={<Type className="h-4 w-4" />}
+              <ToggleItem
                 title="Dyslexia-Friendly Font"
-                desc="OpenDyslexic font for better readability"
+                description="OpenDyslexic font for better readability"
                 checked={state.dyslexiaFont}
                 onChange={() => toggle("dyslexiaFont")}
                 badge="Inclusive"
               />
-              <ToggleRow
-                icon={<Globe className="h-4 w-4" />}
+              <ToggleItem
                 title="Color Blind Mode"
-                desc="Optimized for common color vision deficiencies"
+                description="Optimized for common color vision deficiencies"
                 checked={state.colorBlindMode}
                 onChange={() => toggle("colorBlindMode")}
                 badge="WCAG 1.4.1"
               />
-              <ToggleRow
-                icon={<Zap className="h-4 w-4" />}
+              <ToggleItem
                 title="Reduce Motion"
-                desc="Minimize animations (recommended for vestibular disorders)"
+                description="Minimize animations (vestibular-safe)"
                 checked={state.reduceMotion}
                 onChange={() => toggle("reduceMotion")}
                 badge="WCAG 2.3.3"
@@ -118,44 +126,48 @@ export default function Accessibility() {
             </CardContent>
           </Card>
 
-          {/* Interaction & Navigation Column */}
-          <Card className="rounded-2xl">
-            <CardHeader>
-              <div className="flex items-center gap-2 mb-2">
-                <Settings className="h-5 w-5 text-gray-600" />
-                <CardTitle className="text-lg">Interaction & Navigation</CardTitle>
+          {/* Interaction & Navigation */}
+          <Card className="rounded-2xl border shadow-sm">
+            <CardHeader className="pb-3">
+              <div className="flex items-center gap-2">
+                <div className="p-2 bg-green-100 rounded-lg">
+                  <Settings className="h-5 w-5 text-green-600" />
+                </div>
+                <div>
+                  <CardTitle className="text-lg font-semibold text-gray-900">
+                    Interaction & Navigation
+                  </CardTitle>
+                  <CardDescription className="text-gray-600">
+                    Enhance how users interact with the platform
+                  </CardDescription>
+                </div>
               </div>
-              <CardDescription>Enhance how users interact with the platform</CardDescription>
             </CardHeader>
-            <CardContent className="space-y-4">
-              <ToggleRow
-                icon={<Settings className="h-4 w-4" />}
+            <CardContent className="space-y-3">
+              <ToggleItem
                 title="Keyboard Navigation"
-                desc="Full keyboard support without mouse dependency"
+                description="Full keyboard support"
                 checked={state.keyboardNavigation}
                 onChange={() => toggle("keyboardNavigation")}
                 badge="WCAG 2.1.1"
               />
-              <ToggleRow
-                icon={<Zap className="h-4 w-4" />}
+              <ToggleItem
                 title="Focus Mode"
-                desc="Reduce visual clutter for concentration"
+                description="Reduce visual clutter"
                 checked={state.focusMode}
                 onChange={() => toggle("focusMode")}
                 badge="Productivity"
               />
-              <ToggleRow
-                icon={<Type className="h-4 w-4" />}
+              <ToggleItem
                 title="Larger Text"
-                desc="200% zoom support for low vision users"
+                description="200% zoom support"
                 checked={state.largerText}
                 onChange={() => toggle("largerText")}
                 badge="WCAG 1.4.4"
               />
-              <ToggleRow
-                icon={<Eye className="h-4 w-4" />}
+              <ToggleItem
                 title="Reduce Cognitive Load"
-                desc="Simplify complex interfaces and workflows"
+                description="Simplify workflows"
                 checked={state.cognitiveLoad}
                 onChange={() => toggle("cognitiveLoad")}
                 badge="UX Enhanced"
@@ -163,44 +175,48 @@ export default function Accessibility() {
             </CardContent>
           </Card>
 
-          {/* Enterprise & Compliance Column */}
-          <Card className="rounded-2xl">
-            <CardHeader>
-              <div className="flex items-center gap-2 mb-2">
-                <Shield className="h-5 w-5 text-gray-600" />
-                <CardTitle className="text-lg">Compliance & Team</CardTitle>
+          {/* Compliance & Team */}
+          <Card className="rounded-2xl border shadow-sm">
+            <CardHeader className="pb-3">
+              <div className="flex items-center gap-2">
+                <div className="p-2 bg-orange-100 rounded-lg">
+                  <Shield className="h-5 w-5 text-orange-600" />
+                </div>
+                <div>
+                  <CardTitle className="text-lg font-semibold text-gray-900">
+                    Compliance & Team
+                  </CardTitle>
+                  <CardDescription className="text-gray-600">
+                    Organization-wide accessibility controls
+                  </CardDescription>
+                </div>
               </div>
-              <CardDescription>Organization-wide settings and compliance</CardDescription>
             </CardHeader>
-            <CardContent className="space-y-4">
-              <ToggleRow
-                icon={<Shield className="h-4 w-4" />}
+            <CardContent className="space-y-3">
+              <ToggleItem
                 title="Screen Reader Hints"
-                desc="ARIA labels and semantic HTML for assistive tech"
+                description="ARIA labels and semantic HTML"
                 checked={state.screenReaderHints}
                 onChange={() => toggle("screenReaderHints")}
                 badge="WCAG 4.1.2"
               />
-              <ToggleRow
-                icon={<Volume2 className="h-4 w-4" />}
-                title="Auto-Generated Captions"
-                desc="Automatic captions for multimedia content"
+              <ToggleItem
+                title="Auto Captions"
+                description="Automatic multimedia captions"
                 checked={state.autoCaptions}
                 onChange={() => toggle("autoCaptions")}
                 badge="WCAG 1.2.2"
               />
-              <ToggleRow
-                icon={<Globe className="h-4 w-4" />}
+              <ToggleItem
                 title="Industry Standards"
-                desc="Enforce WCAG 2.1 AA across all interfaces"
+                description="Enforce WCAG 2.1 AA"
                 checked={state.industryStandards}
                 onChange={() => toggle("industryStandards")}
                 badge="Compliant"
               />
-              <ToggleRow
-                icon={<Check className="h-4 w-4" />}
+              <ToggleItem
                 title="Export Settings"
-                desc="Allow exporting accessibility configuration"
+                description="Allow configuration export"
                 checked={state.exportSettings}
                 onChange={() => toggle("exportSettings")}
                 badge="Audit Ready"
@@ -209,125 +225,109 @@ export default function Accessibility() {
           </Card>
         </div>
 
-        {/* Enterprise Action Bar */}
-        <Card className="rounded-2xl">
-          <CardContent className="p-6">
-            <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
-              <div>
-                <h3 className="font-semibold">Organization Settings</h3>
-                <p className="text-sm text-muted-foreground">
-                  Apply these settings to all team members and generate compliance reports
-                </p>
-              </div>
-              <div className="flex flex-col sm:flex-row gap-3 w-full sm:w-auto">
-                <Button 
-                  variant="outline" 
-                  onClick={exportComplianceReport}
-                  className="flex-1 sm:flex-none border-[#1B4332] text-[#1B4332] hover:bg-[#1B4332] hover:text-white"
-                >
-                  Export Compliance Report
-                </Button>
-                <Button 
-                  variant="outline" 
-                  onClick={applyToTeam}
-                  className="flex-1 sm:flex-none border-[#1B4332] text-[#1B4332] hover:bg-[#1B4332] hover:text-white"
-                >
-                  Apply to Team
-                </Button>
-                <Button 
-                  onClick={onSave}
-                  className="flex-1 sm:flex-none bg-[#1B4332] hover:bg-[#2D5A4A] text-white"
-                >
-                  Save Organization Settings
-                </Button>
-              </div>
+        {/* Action Buttons */}
+        <div className="bg-gradient-to-r from-gray-50 to-white border rounded-2xl p-6">
+          <div className="flex flex-col lg:flex-row items-center justify-between gap-6">
+            <div className="space-y-1">
+              <h3 className="text-lg font-semibold text-gray-900">
+                Organization Settings
+              </h3>
+              <p className="text-sm text-gray-600">
+                Apply these settings and generate compliance reports
+              </p>
             </div>
-          </CardContent>
-        </Card>
+            
+            <div className="flex flex-col sm:flex-row gap-3 w-full sm:w-auto">
+              <Button
+                variant="outline"
+                onClick={exportComplianceReport}
+                className="w-full sm:w-auto border-gray-300 hover:bg-gray-50"
+              >
+                Export Compliance Report
+              </Button>
+              
+              <Button
+                variant="outline"
+                onClick={applyToTeam}
+                className="w-full sm:w-auto border-gray-300 hover:bg-gray-50"
+              >
+                Apply to Team
+              </Button>
+              
+              <Button
+                onClick={onSave}
+                className="w-full sm:w-auto bg-blue-600 hover:bg-blue-700 text-white"
+              >
+                Save Organization Settings
+              </Button>
+            </div>
+          </div>
+        </div>
 
         {/* Compliance Status */}
-        <Card className="rounded-2xl">
+        <Card className="rounded-2xl border shadow-sm">
           <CardHeader>
-            <CardTitle>Compliance Status</CardTitle>
-            <CardDescription>Your current accessibility compliance level</CardDescription>
+            <CardTitle className="text-gray-900">Compliance Status</CardTitle>
+            <CardDescription className="text-gray-600">
+              Your current accessibility compliance level
+            </CardDescription>
           </CardHeader>
           <CardContent>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              <div className="border rounded-lg p-4 text-center">
-                <div className="text-2xl font-bold text-[#1B4332]">AA</div>
-                <div className="text-sm font-medium">WCAG 2.1 Level</div>
-                <div className="text-xs text-muted-foreground mt-1">Current Compliance</div>
+              <div className="bg-gradient-to-br from-green-50 to-white border border-green-200 rounded-xl p-5 text-center">
+                <div className="text-3xl font-bold text-green-700 mb-1">AA</div>
+                <div className="text-sm font-medium text-green-800">WCAG 2.1 Level</div>
+                <div className="text-xs text-green-600 mt-1">Target Standard</div>
               </div>
-              <div className="border rounded-lg p-4 text-center">
-                <div className="text-2xl font-bold text-[#2D5A4A]">14/14</div>
-                <div className="text-sm font-medium">Standards Met</div>
-                <div className="text-xs text-muted-foreground mt-1">ADA Requirements</div>
+              <div className="bg-gradient-to-br from-blue-50 to-white border border-blue-200 rounded-xl p-5 text-center">
+                <div className="text-3xl font-bold text-blue-700 mb-1">14/14</div>
+                <div className="text-sm font-medium text-blue-800">Standards Met</div>
+                <div className="text-xs text-blue-600 mt-1">Full Compliance</div>
               </div>
-              <div className="border rounded-lg p-4 text-center">
-                <div className="text-2xl font-bold text-[#52796F]">100%</div>
-                <div className="text-sm font-medium">Team Coverage</div>
-                <div className="text-xs text-muted-foreground mt-1">Settings Applied</div>
+              <div className="bg-gradient-to-br from-purple-50 to-white border border-purple-200 rounded-xl p-5 text-center">
+                <div className="text-3xl font-bold text-purple-700 mb-1">100%</div>
+                <div className="text-sm font-medium text-purple-800">Team Coverage</div>
+                <div className="text-xs text-purple-600 mt-1">All Users</div>
               </div>
             </div>
           </CardContent>
         </Card>
-
-        {/* Forest Green Color Scheme CSS */}
-        <style>{`
-          .toggle-switch:checked {
-            background-color: #1B4332 !important;
-          }
-          .toggle-switch:checked ~ .toggle-dot {
-            transform: translateX(100%);
-            background-color: white;
-          }
-          .forest-green-bg {
-            background-color: #1B4332;
-          }
-          .forest-green-text {
-            color: #1B4332;
-          }
-          .forest-green-border {
-            border-color: #1B4332;
-          }
-          .forest-green-hover:hover {
-            background-color: #2D5A4A;
-          }
-        `}</style>
       </div>
     </DashboardLayout>
   );
 }
 
-function ToggleRow({ icon, title, desc, checked, onChange, badge }) {
+// Updated ToggleItem component - NO button-like styling
+function ToggleItem({ title, description, checked, onChange, badge }) {
   return (
-    <div className="flex items-start justify-between gap-4 border border-border rounded-xl p-4 hover:bg-gray-50 transition-colors">
-      <div className="flex items-start gap-3 flex-1">
-        <div className="p-2 bg-gray-100 rounded-lg mt-0.5">
-          {icon}
+    <div className="flex items-center justify-between py-3 px-1 hover:bg-gray-50 rounded-lg transition-colors">
+      <div className="flex-1 min-w-0">
+        <div className="flex items-center gap-2 mb-1">
+          <span className="font-medium text-gray-900 truncate">{title}</span>
+          {badge && (
+            <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800">
+              {badge}
+            </span>
+          )}
         </div>
-        <div className="space-y-1 flex-1">
-          <div className="flex items-center gap-2">
-            <div className="font-semibold">{title}</div>
-            {badge && (
-              <span className="text-xs px-2 py-0.5 bg-gray-100 text-gray-700 rounded-full">
-                {badge}
-              </span>
-            )}
-          </div>
-          <div className="text-sm text-muted-foreground">{desc}</div>
-        </div>
+        <p className="text-sm text-gray-600">{description}</p>
       </div>
-
-      <label className="inline-flex items-center gap-2 select-none shrink-0">
-        <div className="relative">
-          <input
-            type="checkbox"
-            className="sr-only peer"
-            checked={!!checked}
-            onChange={onChange}
-          />
-          <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[#1B4332]"></div>
+      
+      <label className="relative inline-flex items-center cursor-pointer ml-4 flex-shrink-0">
+        <input
+          type="checkbox"
+          className="sr-only"
+          checked={checked}
+          onChange={onChange}
+        />
+        <div className={`
+          w-12 h-6 rounded-full transition-colors duration-200 ease-in-out
+          ${checked ? 'bg-blue-600' : 'bg-gray-300'}
+        `}>
+          <div className={`
+            absolute top-1 left-1 bg-white w-4 h-4 rounded-full shadow-sm transform transition-transform duration-200 ease-in-out
+            ${checked ? 'translate-x-6' : 'translate-x-0'}
+          `} />
         </div>
       </label>
     </div>

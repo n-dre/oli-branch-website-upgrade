@@ -748,7 +748,7 @@ export default function FinancialHealth() {
       <div className="hero-gradient rounded-2xl p-6 mb-6 text-white">
         <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
           <div>
-            <h1 className="text-2xl md:text-3xl font-bold flex items-center gap-3">
+            <h1 className="text-3xl font-bold text-gray-900/[0.9] mb-2">
               <Building className="h-8 w-8" />
               {formData.companyName || "Financial Health Analysis"}
             </h1>

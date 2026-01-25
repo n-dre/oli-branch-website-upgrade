@@ -125,7 +125,7 @@ const LandingPage = () => {
       <section className="relative min-h-screen flex items-center justify-center pt-24 overflow-hidden">
         <div className="absolute inset-0 hero-gradient opacity-95"></div>
         <div className="relative z-10 text-center text-white px-6 max-w-4xl mx-auto">
-          <h1 className="font-display text-5xl md:text-7xl font-bold mb-6">
+          <h1 className="text-3xl font-bold text-gray-900/[0.9] mb-2">
             Stop the <span style={{ color: colors.gold }}>Silent Leak</span> in Your Business Banking.
           </h1>
           <p className="text-xl md:text-2xl mb-8 opacity-90">

@@ -18,7 +18,6 @@ import {
   Globe,
   Wallet,
   KeyRound,
-  AtSign,
   Image as ImageIcon,
   History,
   Underline,
@@ -81,7 +80,6 @@ function Divider() {
 export default function Settings() {
   const { themeMode, cycleThemeMode } = useTheme();
   const [activeStatus, setActiveStatus] = useState(true);
-  const businessHandle = "@Businessname";
   const navigate = useNavigate();
 
   const darkModeLabel = useMemo(() => {
@@ -108,7 +106,6 @@ export default function Settings() {
               </div>
               <InlineSwitch checked={activeStatus} onChange={setActiveStatus} />
             </div>
-
             <Divider />
             <Row icon={darkModeIcon} label="Dark mode" value={darkModeLabel} onClick={cycleThemeMode} />
             <Divider />
@@ -123,14 +120,11 @@ export default function Settings() {
           <CardContent className="p-0">
             <Row icon={User} label="GpsRadius" onClick={() => go("/settings/GpsRadius")} />
             <Divider />
-            <Row icon={AtSign} label="Businessname" value={businessHandle} onClick={() => go("/settings/businessname")} />
-            <Divider />
             <Row icon={IdCard} label="Personal details" onClick={() => go("/settings/personal-details")} />
             <Divider />
             <Row icon={KeyRound} label="Password & security" onClick={() => go("/settings/password-security")} />
           </CardContent>
         </Card>
-
         {/* Section 3 */}
         <Card className="border border-[#52796F]/10 rounded-2xl overflow-hidden bg-white">
           <CardContent className="p-0">
@@ -151,6 +145,8 @@ export default function Settings() {
         {/* Section 4 */}
         <Card className="border border-[#52796F]/10 rounded-2xl overflow-hidden bg-white">
           <CardContent className="p-0">
+            <Row icon={Flag} label="OrganizationSettings" onClick={() => go("/settings/Organization")} />
+            <Divider />
             <Row icon={Flag} label="Report a problem" onClick={() => go("/settings/report-a-problem")} />
             <Divider />
             <Row icon={FileText} label="Legal & policies" onClick={() => go("/settings/legal-policies")} />

@@ -28,7 +28,7 @@ export default function NotFoundPage() {
         <div className="hero-gradient rounded-3xl p-8 text-white shadow-2xl mb-8">
           <div className="text-9xl font-bold mb-4 opacity-90">404</div>
           <AlertTriangle className="w-24 h-24 mx-auto mb-6 text-white/80" />
-          <h1 className="text-3xl font-bold mb-4">Page Not Found</h1>
+          <h1 className="text-3xl font-bold text-gray-900/[0.9] mb-2">Page Not Found</h1>
           <p className="text-white/90 text-lg">
             The page you're looking for doesn't exist or has been moved.
           </p>

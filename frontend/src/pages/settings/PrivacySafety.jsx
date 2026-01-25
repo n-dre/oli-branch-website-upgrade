@@ -50,7 +50,7 @@ export default function PrivacySafety() {
     <DashboardLayout>
       <div className="max-w-4xl mx-auto p-6 space-y-6">
         <div className="space-y-2">
-          <h1 className="text-3xl font-bold text-gray-900">Privacy & Safety</h1>
+          <h1 className="text-3xl font-bold text-gray-900/[0.9] mb-2">Privacy & Safety</h1>
           <p className="text-gray-600">
             Control how your data is used, who can see your information, and manage your safety preferences to ensure your financial information remains secure.
           </p>

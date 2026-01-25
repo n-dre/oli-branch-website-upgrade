@@ -851,7 +851,7 @@ export default function Learning() {
             <CardContent className="p-6">
               <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
                 <div>
-                  <h1 className="text-2xl font-bold text-gray-900">Financial Intelligence Command Center</h1>
+                  <h1 className="text-3xl font-bold text-gray-900/[0.9] mb-2">Financial Intelligence Command Center</h1>
                   <p className="text-gray-600 mt-1">Master the art of detecting financial leaks, tracing money flows, and capitalizing on distressed assets</p>
                 </div>
                 <div className="flex items-center gap-2">

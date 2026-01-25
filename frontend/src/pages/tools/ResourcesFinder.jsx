@@ -176,7 +176,7 @@ export default function ResourceFinder() {
                 <Landmark className="w-6 h-6 text-white" />
               </div>
               <div>
-                <h1 className="text-2xl font-bold">Find resources near you</h1>
+                <h1 className="text-3xl font-bold text-gray-900/[0.9] mb-2">Find resources near you</h1>
                 <p className="text-white/90 text-sm mt-1">
                   Search by ZIP code to discover government programs and local support.
                 </p>
