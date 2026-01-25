@@ -91,15 +91,66 @@ const CHART_COLORS = {
   debtLoad: COLOR_SCHEME.warning,
 };
 
+// REPLACE your existing INDUSTRY_BENCHMARKS with this (ONLY adds the full category list)
+
 const INDUSTRY_BENCHMARKS = {
-  saas: { margin: 0.25, runway: 18, debtLoad: 0.2, churn: 0.05, name: "SaaS" },
+  // Core Small Business Categories
+  saas: { margin: 0.25, runway: 18, debtLoad: 0.2, churn: 0.05, name: "SaaS / Software" },
   ecommerce: { margin: 0.15, runway: 6, debtLoad: 0.3, churn: 0.15, name: "E-commerce" },
+  retail: { margin: 0.08, runway: 4, debtLoad: 0.35, churn: 0.12, name: "Retail (Brick & Mortar)" },
   manufacturing: { margin: 0.12, runway: 9, debtLoad: 0.4, churn: 0.08, name: "Manufacturing" },
+  wholesale_distribution: { margin: 0.10, runway: 7, debtLoad: 0.35, churn: 0.10, name: "Wholesale / Distribution" },
+  professional_services: { margin: 0.20, runway: 8, debtLoad: 0.15, churn: 0.06, name: "Professional Services" },
   consulting: { margin: 0.35, runway: 12, debtLoad: 0.1, churn: 0.02, name: "Consulting" },
+  marketing_advertising: { margin: 0.22, runway: 10, debtLoad: 0.15, churn: 0.08, name: "Marketing / Advertising" },
+  it_services_managed: { margin: 0.18, runway: 9, debtLoad: 0.2, churn: 0.07, name: "IT Services / Managed Services" },
   fintech: { margin: 0.28, runway: 15, debtLoad: 0.25, churn: 0.03, name: "FinTech" },
   healthtech: { margin: 0.22, runway: 20, debtLoad: 0.15, churn: 0.04, name: "HealthTech" },
-  retail: { margin: 0.08, runway: 4, debtLoad: 0.35, churn: 0.12, name: "Retail" },
-  services: { margin: 0.20, runway: 8, debtLoad: 0.15, churn: 0.06, name: "Professional Services" },
+  healthcare_services: { margin: 0.14, runway: 10, debtLoad: 0.3, churn: 0.05, name: "Healthcare Services (Clinics, Practices)" },
+  construction: { margin: 0.10, runway: 5, debtLoad: 0.45, churn: 0.09, name: "Construction" },
+  real_estate: { margin: 0.16, runway: 8, debtLoad: 0.4, churn: 0.06, name: "Real Estate (Brokerage, Property Management)" },
+  logistics_transportation: { margin: 0.08, runway: 4, debtLoad: 0.5, churn: 0.08, name: "Logistics / Transportation" },
+  trucking: { margin: 0.07, runway: 4, debtLoad: 0.55, churn: 0.08, name: "Trucking" },
+  warehousing_fulfillment: { margin: 0.09, runway: 6, debtLoad: 0.45, churn: 0.07, name: "Warehousing / Fulfillment" },
+
+  // Consumer-Facing Services
+  restaurants_food_service: { margin: 0.06, runway: 3, debtLoad: 0.5, churn: 0.12, name: "Restaurants / Food Service" },
+  cafes_coffee_shops: { margin: 0.08, runway: 3, debtLoad: 0.45, churn: 0.12, name: "Cafés / Coffee Shops" },
+  food_trucks: { margin: 0.07, runway: 3, debtLoad: 0.4, churn: 0.14, name: "Food Trucks" },
+  hospitality: { margin: 0.10, runway: 6, debtLoad: 0.55, churn: 0.08, name: "Hospitality (Hotels, Short-Stay Operators)" },
+  personal_care: { margin: 0.18, runway: 6, debtLoad: 0.25, churn: 0.08, name: "Personal Care (Salon, Barber, Spa)" },
+  fitness_wellness: { margin: 0.16, runway: 6, debtLoad: 0.3, churn: 0.10, name: "Fitness / Wellness" },
+  childcare_education: { margin: 0.12, runway: 7, debtLoad: 0.35, churn: 0.06, name: "Childcare / Education Services" },
+  cleaning_janitorial: { margin: 0.14, runway: 6, debtLoad: 0.2, churn: 0.08, name: "Cleaning / Janitorial Services" },
+  home_services: { margin: 0.15, runway: 6, debtLoad: 0.3, churn: 0.07, name: "Home Services (Plumbing, HVAC, Electrical)" },
+  landscaping_lawn: { margin: 0.12, runway: 5, debtLoad: 0.3, churn: 0.08, name: "Landscaping / Lawn Care" },
+  pest_control: { margin: 0.14, runway: 6, debtLoad: 0.25, churn: 0.07, name: "Pest Control" },
+
+  // Trades & Specialized Operations
+  auto_repair_body: { margin: 0.12, runway: 5, debtLoad: 0.35, churn: 0.07, name: "Auto Repair / Body Shop" },
+  equipment_rental: { margin: 0.14, runway: 7, debtLoad: 0.5, churn: 0.06, name: "Equipment Rental" },
+  printing_signage: { margin: 0.12, runway: 6, debtLoad: 0.35, churn: 0.08, name: "Printing / Signage" },
+  construction_subcontractor: { margin: 0.10, runway: 5, debtLoad: 0.45, churn: 0.09, name: "Construction Subcontractor" },
+  maintenance_repair: { margin: 0.13, runway: 6, debtLoad: 0.3, churn: 0.07, name: "Maintenance & Repair Services" },
+  security_services: { margin: 0.11, runway: 6, debtLoad: 0.3, churn: 0.06, name: "Security Services" },
+
+  // Creative & Digital
+  media_content_creation: { margin: 0.20, runway: 8, debtLoad: 0.2, churn: 0.09, name: "Media / Content Creation" },
+  design_creative_studio: { margin: 0.22, runway: 9, debtLoad: 0.15, churn: 0.08, name: "Design / Creative Studio" },
+  photography_videography: { margin: 0.18, runway: 7, debtLoad: 0.2, churn: 0.10, name: "Photography / Videography" },
+  publishing_education_products: { margin: 0.24, runway: 10, debtLoad: 0.2, churn: 0.08, name: "Publishing / Education Products" },
+
+  // Finance & Advisory
+  accounting_bookkeeping: { margin: 0.28, runway: 10, debtLoad: 0.1, churn: 0.04, name: "Accounting / Bookkeeping" },
+  tax_services: { margin: 0.30, runway: 9, debtLoad: 0.1, churn: 0.05, name: "Tax Services" },
+  financial_advisory_nonbank: { margin: 0.26, runway: 10, debtLoad: 0.12, churn: 0.04, name: "Financial Advisory (Non-Bank)" },
+  insurance_brokerage: { margin: 0.20, runway: 9, debtLoad: 0.15, churn: 0.05, name: "Insurance Brokerage" },
+
+  // Other / Catch-All
+  nonprofit_social: { margin: 0.08, runway: 8, debtLoad: 0.2, churn: 0.03, name: "Nonprofit / Social Enterprise" },
+  franchise_operator: { margin: 0.10, runway: 6, debtLoad: 0.45, churn: 0.08, name: "Franchise Operator" },
+  import_export: { margin: 0.11, runway: 7, debtLoad: 0.4, churn: 0.07, name: "Import / Export" },
+  other: { margin: 0.15, runway: 6, debtLoad: 0.3, churn: 0.08, name: "Other" },
 };
 
 const formatCurrency = (value, compact = false) => {
@@ -643,7 +694,7 @@ export default function FinancialHealth() {
 
   return (
     <DashboardLayout 
-      title="FinHealth Analysis" 
+      title="FinHealth" 
       subtitle="Comprehensive financial intelligence for your business"
       className="bg-[#F8F5F0]"
     >
@@ -748,7 +799,7 @@ export default function FinancialHealth() {
       <div className="hero-gradient rounded-2xl p-6 mb-6 text-white">
         <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
           <div>
-            <h1 className="text-3xl font-bold text-gray-900/[0.9] mb-2">
+            <h1 className="text-3xl font-bold text-white mb-2">
               <Building className="h-8 w-8" />
               {formData.companyName || "Financial Health Analysis"}
             </h1>

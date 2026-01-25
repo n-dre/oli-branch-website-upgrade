@@ -242,7 +242,7 @@ export default function Tools() {
         <div className="hero-gradient rounded-2xl p-6 border border-[#52796F]/30 text-white">
           <div className="flex flex-col md:flex-row items-center justify-between gap-6">
             <div>
-              <h1 className="text-3xl font-bold text-gray-900/[0.9] mb-2">
+              <h1 className="text-3xl font-bold text-white mb-2">
                 Welcome to Your Financial Toolkit
               </h1>
               <p className="text-white/90 text-sm md:text-base max-w-2xl">

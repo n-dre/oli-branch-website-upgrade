@@ -215,7 +215,7 @@ export default function ReportAProblem() {
         {/* Header */}
         <div className="flex items-start justify-between">
           <div>
-            <h1 className="text-3xl font-bold text-gray-800 mb-2">Incident Management</h1>
+            <h1 className="text-3xl font-bold text-white mb-2">Incident Management</h1>
             <p className="text-gray-600 max-w-2xl">
               Report technical issues, request features, or submit security concerns. 
               Our enterprise support team ensures prompt resolution following SLA guidelines.
@@ -703,24 +703,6 @@ export default function ReportAProblem() {
               <Card className="border border-gray-200 shadow-sm">
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2">
-                    <FileText className="w-5 h-5 text-blue-600" />
-                    Documentation
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <p className="text-sm text-gray-600 mb-4">
-                    Access technical documentation and API references
-                  </p>
-                  <Button variant="outline" className="w-full justify-start gap-2">
-                    View Docs
-                    <ExternalLink className="w-4 h-4" />
-                  </Button>
-                </CardContent>
-              </Card>
-
-              <Card className="border border-gray-200 shadow-sm">
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-2">
                     <Users className="w-5 h-5 text-green-600" />
                     Community
                   </CardTitle>
@@ -729,10 +711,19 @@ export default function ReportAProblem() {
                   <p className="text-sm text-gray-600 mb-4">
                     Join discussions with other enterprise users
                   </p>
-                  <Button variant="outline" className="w-full justify-start gap-2">
-                    Visit Forum
-                    <ExternalLink className="w-4 h-4" />
-                  </Button>
+                <Button
+                  variant="outline"
+                  className="w-full justify-start gap-2"
+                  onClick={() =>
+                    window.open(
+                      "https://www.facebook.com/groups/755013229548095/",
+                      "_blank"
+                    )
+                  }
+                >
+                  Visit Forum
+                  <ExternalLink className="w-4 h-4" />
+                </Button>
                 </CardContent>
               </Card>
 
@@ -747,10 +738,14 @@ export default function ReportAProblem() {
                   <p className="text-sm text-gray-600 mb-4">
                     Browse solutions to common issues
                   </p>
-                  <Button variant="outline" className="w-full justify-start gap-2">
-                    Search Articles
-                    <ExternalLink className="w-4 h-4" />
-                  </Button>
+                <Button
+                  variant="outline"
+                  className="w-full justify-start gap-2"
+                  onClick={() => window.open("/education/articles/index.html", "_blank")}
+                >
+                  Search Articles
+                  <ExternalLink className="w-4 h-4" />
+                </Button>
                 </CardContent>
               </Card>
             </div>

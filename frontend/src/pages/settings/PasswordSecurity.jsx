@@ -214,28 +214,6 @@ export default function PasswordSecurity() {
               <CardDescription>Advanced access controls</CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
-              <div className="flex items-start justify-between gap-4 border border-border rounded-xl p-4 hover:bg-gray-50 transition-colors">
-                <div className="space-y-1 flex-1">
-                  <div className="font-semibold flex items-center gap-2">
-                    <Smartphone className="h-4 w-4" />
-                    Multi-factor Authentication
-                    <span className="text-xs px-2 py-0.5 bg-green-100 text-green-700 rounded-full">Required</span>
-                  </div>
-                  <div className="text-sm text-muted-foreground">Enterprise MFA with TOTP, SMS, or biometrics</div>
-                </div>
-                <label className="inline-flex items-center gap-2 select-none shrink-0">
-                  <div className="relative">
-                    <input
-                      type="checkbox"
-                      className="sr-only peer"
-                      checked={!!form.mfaEnabled}
-                      onChange={() => set("mfaEnabled", !form.mfaEnabled)}
-                    />
-                    <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[#1B4332]"></div>
-                  </div>
-                </label>
-              </div>
-
               <Field label="Session Timeout" icon={<Clock className="h-4 w-4" />}>
                 <div className="flex items-center gap-3">
                   <Input
@@ -422,6 +400,7 @@ export default function PasswordSecurity() {
   );
 }
 
+// Make sure the Field component is properly defined
 function Field({ label, children, icon }) {
   return (
     <div className="space-y-2">

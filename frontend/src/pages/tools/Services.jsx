@@ -37,10 +37,6 @@ const ServicesPage = () => {
 
   const handleTabClick = (tabId) => setActiveTab(tabId);
 
-  const talkToOli = () => {
-    alert("Oli AI Assistant - This would open the AI chat interface");
-  };
-
   return (
     <div style={{ backgroundColor: colors.cream, color: colors.charcoal }}>
       {/* CSS Injection */}
@@ -127,29 +123,6 @@ const ServicesPage = () => {
         .tab-button:hover:not(.active) {
           border-color: #52796F;
           color: #52796F;
-        }
-
-        #oli-chat-trigger {
-          position: fixed;
-          bottom: 20px;
-          right: 20px;
-          cursor: pointer;
-          z-index: 1000;
-          width: 60px;
-          height: 60px;
-          border-radius: 50%;
-          box-shadow: 0 0 15px rgba(212, 175, 55, 0.7);
-          animation: vibrate-glow 2s infinite ease-in-out;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-        }
-
-        .oli-avatar-img {
-          width: 100%;
-          height: 100%;
-          border-radius: 50%;
-          border: 2px solid #D4AF37;
         }
 
         @keyframes vibrate-glow {
@@ -816,18 +789,13 @@ const ServicesPage = () => {
             <p> &copy; 2023-2026 Oli-Branch LLC. All Rights Reserved.</p>
           </div>
         </div>
-      </footer>
-
-      {/* Floating AI Button */}
-      <div id="oli-chat-trigger" onClick={talkToOli}>
-        <img
-           src="/images/Gemini_Generated_Image_qt3fakqt3fakqt3f.png"
-          alt="Oli AI"
-          className="oli-avatar-img"
-        />
-      </div>
-    </div>
-  );
-};
+    </footer>
+  </div>
+);
+}
 
 export default ServicesPage;
+
+
+
+

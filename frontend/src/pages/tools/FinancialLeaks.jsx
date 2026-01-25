@@ -369,7 +369,7 @@ export default function FinancialLeaks() {
   const savingsPotential = avoidableFees * 12; // Annual projection
 
   return (
-    <DashboardLayout title="Financial Leaks" subtitle="AI-powered bank fee analysis by Oli Agent" className="bg-[#F8F5F0]">
+    <DashboardLayout title="FinLeaks" subtitle="AI-powered bank fee analysis by Oli Agent" className="bg-[#F8F5F0]">
       <style>{`
         .btn-primary {
           background: #1B4332 !important;
@@ -677,7 +677,10 @@ export default function FinancialLeaks() {
                         <p className="text-[#52796F] mb-4">
                           Contact the recommended banks to compare their business banking packages
                         </p>
-                        <Button className="gap-2 btn-primary">
+                        <Button 
+                        className="gap-2 btn-primary"
+                        onClick={() => navigate("/nearby-banks")}
+                      >
                           View Banks
                           <ChevronRight className="h-4 w-4" />
                         </Button>
@@ -696,7 +699,10 @@ export default function FinancialLeaks() {
                         <p className="text-[#52796F] mb-4">
                           Use our budget dashboard to track fees and optimize your banking costs
                         </p>
-                        <Button className="gap-2 btn-primary">
+                      <Button
+                        className="gap-2 btn-primary"
+                        onClick={() => navigate("/budget")}
+                      >
                           Open Dashboard
                           <ChevronRight className="h-4 w-4" />
                         </Button>
@@ -715,10 +721,13 @@ export default function FinancialLeaks() {
                         <p className="text-[#52796F] mb-4">
                           Research the suggested grant programs and SBA resources for your area
                         </p>
-                        <Button className="gap-2 btn-primary">
-                          View Resources
-                          <ChevronRight className="h-4 w-4" />
-                        </Button>
+                      <Button
+                        className="gap-2 btn-primary"
+                        onClick={() => navigate("/finder")}
+                      >
+                        View Resources
+                        <ChevronRight className="h-4 w-4" />
+                      </Button>
                       </div>
                     </div>
                   </div>

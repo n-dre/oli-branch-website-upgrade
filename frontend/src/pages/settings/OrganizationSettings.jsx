@@ -115,7 +115,7 @@ const OrganizationSettings = () => {
             <Building2 className="w-6 h-6 text-blue-600" />
           </div>
           <div>
-            <h1 className="text-3xl font-bold text-gray-900/[0.9] mb-2">Business Identity</h1>
+            <h1 className="text-3xl font-bold text-white mb-2">Business Identity</h1>
             <p className="text-gray-600">Update your business name and registration details</p>
           </div>
         </div>

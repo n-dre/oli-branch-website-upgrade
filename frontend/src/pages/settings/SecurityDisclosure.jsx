@@ -61,7 +61,7 @@ export default function SecurityDisclosure() {
         {/* Header Section */}
         <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
           <div>
-            <h1 className="text-3xl font-bold text-gray-900/[0.9] mb-2">Security Disclosure</h1>
+            <h1 className="text-3xl font-bold text-white mb-2">Security Disclosure</h1>
             <p className="text-muted-foreground mt-2">
               How we handle security vulnerabilities, responsible disclosure, and reporting procedures
             </p>

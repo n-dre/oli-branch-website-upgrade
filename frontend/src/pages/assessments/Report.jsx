@@ -205,7 +205,7 @@ SSBCI: ${selectedScoring.ssbciLink}
   ];
 
   return (
-    <DashboardLayout title="Financial Reports" subtitle="Detailed mismatch analysis and recommendations">
+    <DashboardLayout title="FinReports" subtitle="Detailed mismatch analysis and recommendations">
       <style>{`
         .hero-gradient {
           background: linear-gradient(135deg, #1B4332 0%, #52796F 100%);

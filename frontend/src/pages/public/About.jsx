@@ -91,10 +91,6 @@ const About = () => {
     return () => document.removeEventListener("keydown", handleEscape);
   }, [showAuditModal]);
 
-  const talkToOli = () => {
-    alert("Hi! I'm Oli. I'm currently analyzing account mismatches. How can I help you?");
-  };
-
   const closeAudit = () => setShowAuditModal(false);
 
   const processAudit = () => {
@@ -161,19 +157,6 @@ const About = () => {
         .form-input { width: 100%; padding: 12px 16px; border: 2px solid #e2e8f0; border-radius: 8px; font-size: 16px; transition: all 0.3s ease; }
         .form-input:focus { outline: none; border-color: #52796F; box-shadow: 0 0 0 3px rgba(82, 121, 111, 0.1); }
 
-        #oli-chat-trigger {
-          position: fixed; bottom: 20px; right: 20px;
-          cursor: pointer; z-index: 1000;
-          width: 60px; height: 60px; border-radius: 50%;
-          box-shadow: 0 0 15px rgba(212, 175, 55, 0.7);
-          animation: vibrate-glow 2s infinite ease-in-out;
-          display: flex; align-items: center; justify-content: center;
-        }
-        .oli-avatar-img {
-          width: 100%; height: 100%;
-          border-radius: 50%;
-          border: 2px solid #D4AF37;
-        }
         @keyframes vibrate-glow {
           0% { transform: scale(1); box-shadow: 0 0 10px rgba(212, 175, 55, 0.6); }
           50% { transform: scale(1.05); box-shadow: 0 0 25px rgba(212, 175, 55, 0.9), 0 0 40px rgba(212, 175, 55, 0.4); }
@@ -729,11 +712,6 @@ const About = () => {
           </div>
         </div>
       )}
-
-      {/* Floating AI Button */}
-      <div id="oli-chat-trigger" onClick={talkToOli} title="Talk to Oli AI">
-        <img src="/images/Gemini_Generated_Image_qt3fakqt3fakqt3f.png" alt="Oli Avatar" className="oli-avatar-img shadow-2xl" />
-      </div>
     </div>
   );
 };

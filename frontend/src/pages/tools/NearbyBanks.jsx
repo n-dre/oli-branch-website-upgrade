@@ -547,7 +547,7 @@ export default function NearbyBanks() {
 
   return (
     <DashboardLayout
-      title="Enterprise Bank Locator"
+      title="Bank Locator"
       subtitle={`Finding business banking locations within ${radiusMiles} miles of your mobile device`}
     >
       <style>{`
@@ -1225,7 +1225,7 @@ export default function NearbyBanks() {
               </div>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
               <div className="text-center p-3 border rounded-lg">
                 <div className="text-sm font-medium text-gray-700">Your Location</div>
                 <div className="text-xs text-muted-foreground">
@@ -1235,10 +1235,6 @@ export default function NearbyBanks() {
               <div className="text-center p-3 border rounded-lg">
                 <div className="text-sm font-medium text-gray-700">Banks Found</div>
                 <div className="text-xs text-muted-foreground">{banks.length} locations</div>
-              </div>
-              <div className="text-center p-3 border rounded-lg">
-                <div className="text-sm font-medium text-gray-700">Map Ready</div>
-                <div className="text-xs text-muted-foreground">Click to explore</div>
               </div>
             </div>
           </CardContent>

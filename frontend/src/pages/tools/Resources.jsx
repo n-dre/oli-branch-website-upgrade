@@ -34,10 +34,6 @@ const ResourcesPage = () => {
     });
   }, []);
 
-  const talkToOli = () => {
-    alert("Hi! I'm Oli. I'm currently analyzing account mismatches. How can I help you?");
-  };
-
   return (
     <div className="font-body" style={{ backgroundColor: colors.cream, color: colors.charcoal }}>
       {/* PRESERVED CUSTOM STYLES */}
@@ -455,11 +451,6 @@ const ResourcesPage = () => {
           </div>
         </div>
       </footer>
-
-      {/* Floating AI Button */}
-      <div id="oli-chat-trigger" onClick={talkToOli} title="Talk to Oli AI">
-        <img src="/images/Gemini_Generated_Image_qt3fakqt3fakqt3f.png" alt="Oli Avatar" className="oli-avatar-img shadow-2xl" />
-      </div>
     </div>
   );
 };

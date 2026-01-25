@@ -129,7 +129,7 @@ export default function PrivacySafety() {
           </div>
           
           <div>
-            <h1 className="text-3xl font-bold text-gray-900/[0.9] mb-2">Privacy & Safety Center</h1>
+            <h1 className="text-3xl font-bold text-white mb-2">Privacy & Safety Center</h1>
             <p className="text-gray-600 mt-2">
               Take control of your data. Manage visibility, security, and communication preferences to protect your financial information.
             </p>
