@@ -65,7 +65,7 @@ const navGroups = [
 function GroupHeader({ children, collapsed }) {
   if (collapsed) return null;
   return (
-    <div className="px-2 pt-4 pb-2 text-[11px] uppercase tracking-wider text-[#F8F5F0]/50">
+    <div className="px-2 pt-4 pb-2 text-[11px] uppercase tracking-wider text-[hsl(var(--sidebar-foreground)/0.5)]">
       {children}
     </div>
   );
@@ -111,16 +111,17 @@ export default function Sidebar({ collapsed = false, onCollapsedChange, onClose 
   return (
     <aside
       className={cn(
-        "flex flex-col h-full transition-all duration-300 bg-[#1B4332]",
+        "flex flex-col h-full transition-all duration-300",
+        "bg-[hsl(var(--sidebar))] text-[hsl(var(--sidebar-foreground))]",
         collapsed ? "w-14" : "w-64"
       )}
     >
       {/* Header */}
-      <div className="flex items-center justify-between p-3 border-b border-white/10">
+      <div className="flex items-center justify-between p-3 border-b border-[hsl(var(--border))]">
         {!collapsed && (
           <div className="flex items-center gap-2 px-1">
             <img src={LOGO_SRC} alt="Oli-Branch" className="h-7 w-7" />
-            <span className="font-bold text-sm text-[#F8F5F0]">Oli-Branch</span>
+            <span className="font-bold text-sm">Oli-Branch</span>
           </div>
         )}
 
@@ -128,7 +129,7 @@ export default function Sidebar({ collapsed = false, onCollapsedChange, onClose 
         {safeClose && (
           <button
             onClick={safeClose}
-            className="lg:hidden p-2 text-[#F8F5F0] hover:bg-white/10 rounded-lg transition-colors"
+            className="lg:hidden p-2 hover:bg-white/10 rounded-lg transition-colors"
             aria-label="Close sidebar"
             type="button"
           >
@@ -138,22 +139,21 @@ export default function Sidebar({ collapsed = false, onCollapsedChange, onClose 
 
         {/* Desktop collapse toggle (only when controlled) */}
         {setCollapsed && (
-<button
-  onClick={toggleCollapsed}
-  className={cn(
-    "hidden lg:flex p-2 text-gray-200 hover:bg-white/10 rounded-lg transition-colors",
-    collapsed && "mx-auto"
-  )}
-  aria-label={collapsed ? "Expand sidebar" : "Collapse sidebar"}
-  type="button"
->
-  {collapsed ? (
-    <PanelLeft className="h-5 w-5" />
-  ) : (
-    <PanelLeftClose className="h-5 w-5" />
-  )}
-</button>
-
+          <button
+            onClick={toggleCollapsed}
+            className={cn(
+              "hidden lg:flex p-2 hover:bg-white/10 rounded-lg transition-colors",
+              collapsed && "mx-auto"
+            )}
+            aria-label={collapsed ? "Expand sidebar" : "Collapse sidebar"}
+            type="button"
+          >
+            {collapsed ? (
+              <PanelLeft className="h-5 w-5" />
+            ) : (
+              <PanelLeftClose className="h-5 w-5" />
+            )}
+          </button>
         )}
       </div>
 
@@ -172,17 +172,19 @@ export default function Sidebar({ collapsed = false, onCollapsedChange, onClose 
                   cn(
                     "flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all",
                     isActive
-                      ? "bg-[#D4AF37] text-[#1B4332] shadow-[0_0_20px_rgba(212,175,55,0.4)]"
-                      : "text-[#F8F5F0]/80 hover:bg-white/10",
+                      ? "bg-[hsl(var(--accent))] text-[hsl(var(--accent-foreground))] shadow-[0_0_20px_hsl(var(--accent)/0.4)]"
+                      : "text-[hsl(var(--sidebar-foreground)/0.8)] hover:bg-white/10",
                     collapsed && "justify-center px-0"
                   )
                 }
               >
-                <item.icon className="h-4 w-4 shrink-0" />
+                <item.icon className="h-4 w-4 shrink-0 text-[#1B4332]" />
                 {!collapsed && (
                   <>
                     <span className="flex-1 whitespace-nowrap">{item.label}</span>
-                    {item.premium && !isPremium && <Crown className="h-3 w-3 text-[#D4AF37]" />}
+                    {item.premium && !isPremium && (
+                      <Crown className="h-3 w-3 text-[#D4AF37]" />
+                    )}
                   </>
                 )}
               </NavLink>
@@ -192,7 +194,7 @@ export default function Sidebar({ collapsed = false, onCollapsedChange, onClose 
       </nav>
 
       {/* Logout */}
-      <div className="p-3 border-t border-white/10">
+      <div className="p-3 border-t border-[hsl(var(--border))]">
         <button
           onClick={handleLogout}
           type="button"

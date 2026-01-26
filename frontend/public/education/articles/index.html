@@ -6,669 +6,7 @@
   <title>Oli-Branch | Knowledge Base</title>
   <meta name="description" content="Mismatch audit briefs for operators. Clear, practical insights linking banking rules to cash-flow behavior." />
   
-  <style>
-    /* ===== RESET & BASE ===== */
-    * { margin: 0; padding: 0; box-sizing: border-box; }
-    html { scroll-behavior: smooth; font-size: 16px; }
-    body {
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
-      line-height: 1.5;
-      color: #111827;
-      background: #f9fafb;
-      -webkit-font-smoothing: antialiased;
-    }
-    
-    /* ===== TYPOGRAPHY ===== */
-    h1, h2, h3, h4 {
-      font-weight: 600;
-      letter-spacing: -0.025em;
-      line-height: 1.2;
-    }
-    
-    h1 { font-size: 2.5rem; }
-    h2 { font-size: 1.875rem; }
-    h3 { font-size: 1.25rem; }
-    
-    p { color: #4b5563; }
-    
-    /* ===== COLOR SYSTEM ===== */
-    :root {
-      --primary: #1b4332;      /* Dark green */
-      --primary-light: #2d6a4f;
-      --secondary: #111827;    /* Near black */
-      --tertiary: #374151;     /* Dark gray */
-      --light: #f3f4f6;
-      --border: #d1d5db;
-      --surface: #ffffff;
-      --accent: #047857;       /* Emerald for CTAs */
-      --accent-hover: #059669;
-      --badge: #ecfdf5;
-      --badge-text: #065f46;
-    }
-    
-    /* ===== UTILITIES ===== */
-    .container {
-      max-width: 1200px;
-      margin: 0 auto;
-      padding: 0 1.5rem;
-    }
-    
-    .sr-only {
-      position: absolute;
-      width: 1px;
-      height: 1px;
-      padding: 0;
-      margin: -1px;
-      overflow: hidden;
-      clip: rect(0, 0, 0, 0);
-      white-space: nowrap;
-      border: 0;
-    }
-    
-    /* ===== HEADER ===== */
-    header {
-      background: var(--surface);
-      border-bottom: 1px solid var(--border);
-      position: sticky;
-      top: 0;
-      z-index: 50;
-    }
-    
-    .nav-container {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      height: 4rem;
-    }
-    
-    .logo {
-      display: flex;
-      align-items: center;
-      gap: 0.75rem;
-      text-decoration: none;
-      color: var(--secondary);
-    }
-    
-    .logo-icon {
-      width: 2rem;
-      height: 2rem;
-      background: var(--primary);
-      border-radius: 0.375rem;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      color: white;
-      font-weight: 700;
-      font-size: 0.875rem;
-    }
-    
-    .logo-text {
-      font-weight: 700;
-      font-size: 1.125rem;
-    }
-    
-    .nav-links {
-      display: flex;
-      gap: 2rem;
-      align-items: center;
-    }
-    
-    .nav-link {
-      color: var(--tertiary);
-      text-decoration: none;
-      font-weight: 500;
-      font-size: 0.875rem;
-      transition: color 0.15s;
-    }
-    
-    .nav-link:hover { color: var(--primary); }
-    .nav-link.active { color: var(--primary); font-weight: 600; }
-    
-    .user-menu {
-      display: flex;
-      align-items: center;
-      gap: 0.75rem;
-      padding: 0.5rem;
-      border-radius: 0.5rem;
-      background: var(--light);
-      cursor: pointer;
-      transition: background 0.15s;
-    }
-    
-    .user-menu:hover { background: #e5e7eb; }
-    
-    .user-avatar {
-      width: 2rem;
-      height: 2rem;
-      border-radius: 50%;
-      background: var(--primary);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      color: white;
-      font-weight: 600;
-      font-size: 0.75rem;
-    }
-    
-    .user-info { line-height: 1.2; }
-    .user-name { font-size: 0.875rem; font-weight: 600; }
-    .user-role { font-size: 0.75rem; color: var(--tertiary); }
-    
-    .mobile-menu-btn {
-      display: none;
-      background: none;
-      border: 1px solid var(--border);
-      border-radius: 0.375rem;
-      padding: 0.5rem;
-      cursor: pointer;
-      color: var(--tertiary);
-    }
-    
-    .mobile-menu-btn svg {
-      width: 20px;
-      height: 20px;
-      fill: currentColor;
-    }
-    
-    /* ===== HERO ===== */
-    .hero {
-      padding: 4rem 0 3rem;
-      text-align: center;
-    }
-    
-    .hero-content {
-      max-width: 48rem;
-      margin: 0 auto;
-    }
-    
-    .hero-badge {
-      display: inline-flex;
-      align-items: center;
-      gap: 0.5rem;
-      background: var(--badge);
-      color: var(--badge-text);
-      padding: 0.5rem 1rem;
-      border-radius: 9999px;
-      font-size: 0.875rem;
-      font-weight: 600;
-      margin-bottom: 1.5rem;
-    }
-    
-    .hero-badge-dot {
-      width: 0.5rem;
-      height: 0.5rem;
-      background: var(--accent);
-      border-radius: 50%;
-    }
-    
-    .hero-title {
-      margin-bottom: 1rem;
-    }
-    
-    .hero-description {
-      font-size: 1.125rem;
-      margin-bottom: 2rem;
-      color: #4b5563;
-    }
-    
-    .hero-actions {
-      display: flex;
-      gap: 1rem;
-      justify-content: center;
-      flex-wrap: wrap;
-    }
-    
-    .btn {
-      padding: 0.75rem 1.5rem;
-      border-radius: 0.5rem;
-      font-weight: 600;
-      font-size: 0.875rem;
-      text-decoration: none;
-      transition: all 0.2s;
-      display: inline-flex;
-      align-items: center;
-      gap: 0.5rem;
-      border: none;
-      cursor: pointer;
-    }
-    
-    .btn-icon {
-      width: 16px;
-      height: 16px;
-      fill: currentColor;
-    }
-    
-    .btn-primary {
-      background: var(--accent);
-      color: white;
-    }
-    
-    .btn-primary:hover {
-      background: var(--accent-hover);
-      transform: translateY(-1px);
-      box-shadow: 0 4px 12px rgba(5, 150, 105, 0.2);
-    }
-    
-    .btn-secondary {
-      background: white;
-      color: var(--primary);
-      border: 1px solid var(--border);
-    }
-    
-    .btn-secondary:hover {
-      background: var(--light);
-      border-color: var(--primary-light);
-      transform: translateY(-1px);
-    }
-    
-    /* ===== STATS ===== */
-    .stats {
-      padding: 3rem 0;
-      background: var(--surface);
-      border-top: 1px solid var(--border);
-      border-bottom: 1px solid var(--border);
-    }
-    
-    .stats-grid {
-      display: grid;
-      grid-template-columns: repeat(4, 1fr);
-      gap: 1.5rem;
-    }
-    
-    .stat-card {
-      text-align: center;
-      padding: 1.5rem;
-    }
-    
-    .stat-value {
-      font-size: 2rem;
-      font-weight: 700;
-      color: var(--primary);
-      margin-bottom: 0.25rem;
-      line-height: 1;
-    }
-    
-    .stat-label {
-      font-size: 0.875rem;
-      color: var(--tertiary);
-      font-weight: 500;
-    }
-    
-    /* ===== MAIN CONTENT ===== */
-    .main-content {
-      padding: 4rem 0;
-    }
-    
-    .content-header {
-      margin-bottom: 2rem;
-      display: flex;
-      justify-content: space-between;
-      align-items: flex-start;
-      flex-wrap: wrap;
-      gap: 1rem;
-    }
-    
-    .section-title { margin-bottom: 0.5rem; }
-    .section-subtitle { color: var(--tertiary); }
-    
-    .filters {
-      display: flex;
-      gap: 0.5rem;
-      flex-wrap: wrap;
-    }
-    
-    .filter-btn {
-      padding: 0.5rem 1rem;
-      border: 1px solid var(--border);
-      border-radius: 9999px;
-      background: white;
-      color: var(--tertiary);
-      font-size: 0.875rem;
-      font-weight: 500;
-      cursor: pointer;
-      transition: all 0.15s;
-    }
-    
-    .filter-btn:hover {
-      border-color: var(--primary);
-      color: var(--primary);
-    }
-    
-    .filter-btn.active {
-      background: var(--primary);
-      color: white;
-      border-color: var(--primary);
-    }
-    
-    /* ===== ARTICLES GRID ===== */
-    .articles-grid {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 1.5rem;
-    }
-    
-    .article-card {
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: 0.75rem;
-      overflow: hidden;
-      transition: all 0.2s;
-    }
-    
-    .article-card:hover {
-      transform: translateY(-4px);
-      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
-      border-color: var(--primary-light);
-    }
-    
-    .article-card.featured {
-      grid-column: span 2;
-      border-left: 4px solid var(--primary);
-    }
-    
-    .article-content {
-      padding: 1.5rem;
-    }
-    
-    .article-category {
-      display: inline-flex;
-      align-items: center;
-      gap: 0.375rem;
-      background: var(--light);
-      color: var(--primary);
-      padding: 0.375rem 0.75rem;
-      border-radius: 9999px;
-      font-size: 0.75rem;
-      font-weight: 600;
-      margin-bottom: 0.75rem;
-    }
-    
-    .article-category svg {
-      width: 12px;
-      height: 12px;
-      fill: currentColor;
-    }
-    
-    .article-title {
-      margin-bottom: 0.75rem;
-      font-size: 1.125rem;
-    }
-    
-    .article-excerpt {
-      font-size: 0.875rem;
-      margin-bottom: 1.25rem;
-      color: var(--tertiary);
-    }
-    
-    .article-meta {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      flex-wrap: wrap;
-      gap: 0.75rem;
-    }
-    
-    .meta-info {
-      display: flex;
-      gap: 1rem;
-      font-size: 0.75rem;
-      color: var(--tertiary);
-      font-weight: 500;
-    }
-    
-    .article-actions {
-      display: flex;
-      gap: 0.5rem;
-    }
-    
-    .action-btn {
-      width: 2rem;
-      height: 2rem;
-      border-radius: 0.375rem;
-      border: 1px solid var(--border);
-      background: white;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      color: var(--tertiary);
-      text-decoration: none;
-      transition: all 0.15s;
-      cursor: pointer;
-    }
-    
-    .action-btn:hover {
-      background: var(--primary);
-      color: white;
-      border-color: var(--primary);
-    }
-    
-    .action-btn svg {
-      width: 16px;
-      height: 16px;
-      fill: currentColor;
-    }
-    
-    /* ===== NEWSLETTER ===== */
-    .newsletter {
-      padding: 4rem 0;
-      background: var(--surface);
-      border-top: 1px solid var(--border);
-    }
-    
-    .newsletter-card {
-      max-width: 48rem;
-      margin: 0 auto;
-      text-align: center;
-      padding: 3rem;
-      background: var(--light);
-      border-radius: 1rem;
-    }
-    
-    .newsletter-title {
-      margin-bottom: 0.5rem;
-    }
-    
-    .newsletter-description {
-      margin-bottom: 1.5rem;
-      color: var(--tertiary);
-    }
-    
-    .newsletter-form {
-      display: flex;
-      max-width: 28rem;
-      margin: 0 auto;
-      gap: 0.75rem;
-      flex-wrap: wrap;
-      justify-content: center;
-    }
-    
-    .form-input {
-      flex: 1;
-      min-width: 16rem;
-      padding: 0.75rem 1rem;
-      border: 1px solid var(--border);
-      border-radius: 0.5rem;
-      font-size: 0.875rem;
-    }
-    
-    .form-input:focus {
-      outline: none;
-      border-color: var(--primary);
-      box-shadow: 0 0 0 3px rgba(27, 67, 50, 0.1);
-    }
-    
-    /* ===== FOOTER ===== */
-    footer {
-      background: var(--secondary);
-      color: white;
-      padding: 3rem 0 2rem;
-    }
-    
-    .footer-content {
-      display: grid;
-      grid-template-columns: repeat(4, 1fr);
-      gap: 2rem;
-      margin-bottom: 2rem;
-    }
-    
-    .footer-column h3 {
-      font-size: 0.875rem;
-      font-weight: 600;
-      text-transform: uppercase;
-      letter-spacing: 0.05em;
-      margin-bottom: 1rem;
-      color: #d1d5db;
-    }
-    
-    .footer-links {
-      list-style: none;
-    }
-    
-    .footer-links li { margin-bottom: 0.5rem; }
-    
-    .footer-links a {
-      color: #9ca3af;
-      text-decoration: none;
-      font-size: 0.875rem;
-      transition: color 0.15s;
-    }
-    
-    .footer-links a:hover { color: white; }
-    
-    .footer-bottom {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding-top: 2rem;
-      border-top: 1px solid #374151;
-      flex-wrap: wrap;
-      gap: 1rem;
-    }
-    
-    .copyright {
-      font-size: 0.875rem;
-      color: #9ca3af;
-    }
-    
-    .social-links {
-      display: flex;
-      gap: 0.75rem;
-    }
-    
-    .social-link {
-      width: 2rem;
-      height: 2rem;
-      border-radius: 50%;
-      background: #374151;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      color: white;
-      text-decoration: none;
-      font-size: 0.75rem;
-      font-weight: 600;
-      transition: background 0.15s;
-    }
-    
-    .social-link:hover { background: var(--primary); }
-    
-    /* ===== RESPONSIVE ===== */
-    @media (max-width: 1024px) {
-      .stats-grid,
-      .articles-grid,
-      .footer-content {
-        grid-template-columns: repeat(2, 1fr);
-      }
-      
-      .article-card.featured {
-        grid-column: span 2;
-      }
-    }
-    
-    @media (max-width: 768px) {
-      h1 { font-size: 2rem; }
-      h2 { font-size: 1.5rem; }
-      
-      .nav-links { display: none; }
-      .mobile-menu-btn { display: block; }
-      
-      .hero-actions {
-        flex-direction: column;
-        align-items: stretch;
-      }
-      
-      .btn { justify-content: center; }
-      
-      .stats-grid,
-      .articles-grid,
-      .footer-content {
-        grid-template-columns: 1fr;
-      }
-      
-      .article-card.featured {
-        grid-column: 1;
-      }
-      
-      .content-header {
-        flex-direction: column;
-        align-items: flex-start;
-      }
-      
-      .filters { align-self: stretch; }
-      .filter-btn { flex: 1; text-align: center; }
-      
-      .nav-links.mobile-open {
-        display: flex;
-        position: absolute;
-        top: 4rem;
-        left: 0;
-        right: 0;
-        background: var(--surface);
-        border-bottom: 1px solid var(--border);
-        padding: 1rem 1.5rem;
-        flex-direction: column;
-        align-items: center;
-        gap: 1rem;
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-      }
-    }
-    
-    @media (max-width: 640px) {
-      .container { padding: 0 1rem; }
-      
-      .hero { padding: 3rem 0 2rem; }
-      .main-content { padding: 3rem 0; }
-      .newsletter { padding: 3rem 0; }
-      
-      .newsletter-card { padding: 2rem 1.5rem; }
-      .newsletter-form { flex-direction: column; }
-      .form-input { min-width: 100%; }
-      
-      .footer-bottom {
-        flex-direction: column;
-        align-items: flex-start;
-      }
-    }
-    
-    /* ===== PRINT STYLES ===== */
-    @media print {
-      .nav-actions,
-      .hero-actions,
-      .filters,
-      .action-btn:not([href$=".pdf"]),
-      .newsletter,
-      footer {
-        display: none !important;
-      }
-      
-      .article-card {
-        break-inside: avoid;
-        box-shadow: none !important;
-        border: 1px solid #ccc !important;
-      }
-    }
-  </style>
-</head>
+ </head>
 
 <body>
   <!-- Header -->
@@ -676,13 +14,7 @@
   <div class="container nav-container">
     <!-- Logo -->
     <a href="./index.html" class="logo" aria-label="Oli-Branch Knowledge Base">
-      <img
-        src="/images/oli-branch00.png"
-        alt="Oli-Branch"
-        class="logo-img"
-        width="48"
-        height="48"
-      />
+      <div class="logo-img">OB</div>
       <div class="logo-text">
         <span class="logo-title">Oli-Branch</span>
         <span class="logo-subtitle">Mismatch Audit Knowledge Base</span>
@@ -692,19 +24,24 @@
     <!-- Nav -->
     <nav class="nav-links" id="primaryNav" aria-label="Primary navigation">
       <a href="./index.html" class="nav-link active" aria-current="page">Knowledge Base</a>
-      <a href="#" class="nav-link">Audit Tools</a>
+      <a href="./education/articles/settings-page.html" class="nav-link">Settings</a>
       <a href="#" class="nav-link">Case Studies</a>
       <a href="#" class="nav-link">Research</a>
     </nav>
 
-    <!-- Business Name (User Input) -->
-            <Avatar className="h-10 w-10 ring-2 ring-transparent shrink-0">
-              {profileImage && <AvatarImage src={profileImage} alt="Profile" />}
-              <AvatarFallback className="bg-primary text-primary-foreground font-semibold">
-                {initials}
-              </AvatarFallback>
-            </Avatar>
-          </div>
+    <!-- Business Name Input -->
+    <div class="user-menu" id="businessNameContainer">
+      <div class="user-avatar" id="businessAvatar">OB</div>
+      <div class="user-info">
+        <div class="user-name">
+        <input type="text" 
+              id="businessNameInput" 
+              placeholder="Business Name" 
+              class="business-name-input"
+              aria-label="Enter business name">
+        </div>
+        <div class="user-role" id="userRole">Operator</div>
+      </div>
     </div>
 
     <!-- Mobile menu button -->
@@ -749,7 +86,7 @@
           </svg>
           Explore Articles
         </a>
-        <a href="./financial-leaks-001.html" class="btn btn-secondary">Start with Financial Leaks</a>
+        <a href="./education/articles/financial-leak-001.html" class="btn btn-secondary">Start with Financial Leaks</a>
       </div>
     </div>
   </section>
@@ -823,13 +160,13 @@
               </div>
               
               <div class="article-actions">
-                <a href="./financial-leaks-001.html" class="action-btn" aria-label="Read article">
+                <a href="./education/articles/financial-leak-001.html" class="action-btn" aria-label="Read article">
                   <svg viewBox="0 0 16 16">
                     <path d="M10.5 8a2.5 2.5 0 1 1-5 0 2.5 2.5 0 0 1 5 0z"/>
                     <path d="M0 8s3-5.5 8-5.5S16 8 16 8s-3 5.5-8 5.5S0 8 0 8zm8 3.5a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7z"/>
                   </svg>
                 </a>
-                <a href="./financial-leaks-001.pdf" class="action-btn" aria-label="Download PDF" download>
+                <a href="./education/articles/financial-leak-001.pdf" class="action-btn" aria-label="Download PDF" download>
                   <svg viewBox="0 0 16 16">
                     <path d="M.5 9.9a.5.5 0 0 1 .5.5v2.5a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-2.5a.5.5 0 0 1 1 0v2.5a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2v-2.5a.5.5 0 0 1 .5-.5z"/>
                     <path d="M7.646 11.854a.5.5 0 0 0 .708 0l3-3a.5.5 0 0 0-.708-.708L8.5 10.293V1.5a.5.5 0 0 0-1 0v8.793L5.354 8.146a.5.5 0 1 0-.708.708l3 3z"/>
@@ -863,13 +200,13 @@
               </div>
               
               <div class="article-actions">
-                <a href="./banking-fees-002.html" class="action-btn" aria-label="Read article">
+                <a href="./education/articles/banking-fees-002.html" class="action-btn" aria-label="Read article">
                   <svg viewBox="0 0 16 16">
                     <path d="M10.5 8a2.5 2.5 0 1 1-5 0 2.5 2.5 0 0 1 5 0z"/>
                     <path d="M0 8s3-5.5 8-5.5S16 8 16 8s-3 5.5-8 5.5S0 8 0 8zm8 3.5a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7z"/>
                   </svg>
                 </a>
-                <a href="./banking-fees-002.pdf" class="action-btn" aria-label="Download PDF" download>
+                <a href="./education/articles/banking-fees-002.pdf" class="action-btn" aria-label="Download PDF" download>
                   <svg viewBox="0 0 16 16">
                     <path d="M.5 9.9a.5.5 0 0 1 .5.5v2.5a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-2.5a.5.5 0 0 1 1 0v2.5a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2v-2.5a.5.5 0 0 1 .5-.5z"/>
                     <path d="M7.646 11.854a.5.5 0 0 0 .708 0l3-3a.5.5 0 0 0-.708-.708L8.5 10.293V1.5a.5.5 0 0 0-1 0v8.793L5.354 8.146a.5.5 0 1 0-.708.708l3 3z"/>
@@ -903,13 +240,13 @@
               </div>
               
               <div class="article-actions">
-                <a href="./sba-update-003.html" class="action-btn" aria-label="Read article">
+                <a href="./education/articles/sba-update-003.html" class="action-btn" aria-label="Read article">
                   <svg viewBox="0 0 16 16">
                     <path d="M10.5 8a2.5 2.5 0 1 1-5 0 2.5 2.5 0 0 1 5 0z"/>
                     <path d="M0 8s3-5.5 8-5.5S16 8 16 8s-3 5.5-8 5.5S0 8 0 8zm8 3.5a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7z"/>
                   </svg>
                 </a>
-                <a href="./sba-update-003.pdf" class="action-btn" aria-label="Download PDF" download>
+                <a href="./education/articles/sba-update-003.pdf" class="action-btn" aria-label="Download PDF" download>
                   <svg viewBox="0 0 16 16">
                     <path d="M.5 9.9a.5.5 0 0 1 .5.5v2.5a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-2.5a.5.5 0 0 1 1 0v2.5a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2v-2.5a.5.5 0 0 1 .5-.5z"/>
                     <path d="M7.646 11.854a.5.5 0 0 0 .708 0l3-3a.5.5 0 0 0-.708-.708L8.5 10.293V1.5a.5.5 0 0 0-1 0v8.793L5.354 8.146a.5.5 0 1 0-.708.708l3 3z"/>
@@ -958,7 +295,7 @@
           <ul class="footer-links">
             <li><a href="#">Mismatch Audit</a></li>
             <li><a href="#">Reports</a></li>
-            <li><a href="#">Tools</a></li>
+            <li><a href="./education/articles/settings-page.html">Settings</a></li>
           </ul>
         </div>
         
@@ -994,21 +331,58 @@
       </div>
     </div>
   </footer>
+
+  <!-- Dark Mode Toggle Button -->
+  <button class="theme-toggle" id="themeToggle" aria-label="Toggle dark mode">
+    <span class="sun">☀️</span>
+    <span class="moon">🌙</span>
+  </button>
   
 <script>
   (function () {
-    // -----------------------------
-    // Business name (header input)
-    // -----------------------------
+    // ==================== DARK MODE SYSTEM ====================
+    const THEME_KEY = 'oli-branch-theme';
+    const themeToggle = document.getElementById('themeToggle');
+    const body = document.body;
+    
+    // Load saved theme
+    function loadTheme() {
+      try {
+        const savedTheme = localStorage.getItem(THEME_KEY);
+        if (savedTheme === 'dark') {
+          body.classList.add('dark-mode');
+        }
+      } catch (e) {
+        console.log('Could not load theme:', e);
+      }
+    }
+    
+    // Toggle theme
+    function toggleTheme() {
+      body.classList.toggle('dark-mode');
+      const isDark = body.classList.contains('dark-mode');
+      try {
+        localStorage.setItem(THEME_KEY, isDark ? 'dark' : 'light');
+      } catch (e) {
+        console.log('Could not save theme:', e);
+      }
+    }
+    
+    // Initialize dark mode
+    loadTheme();
+    
+    if (themeToggle) {
+      themeToggle.addEventListener('click', toggleTheme);
+    }
+    
+    // ==================== BUSINESS NAME SYSTEM ====================
     const BUSINESS_KEY = "oliBranchBusinessName";
-
     const businessInput = document.getElementById("businessNameInput");
-    const saveBusinessBtn = document.getElementById("saveBusinessBtn");
     const businessAvatar = document.getElementById("businessAvatar");
 
     function initials(name) {
       const clean = String(name || "").trim();
-      if (!clean) return "B";
+      if (!clean) return "OB";
       const parts = clean.split(/\s+/).filter(Boolean);
       const first = parts[0]?.[0] || "B";
       const second = parts.length > 1 ? (parts[1]?.[0] || "") : (parts[0]?.[1] || "");
@@ -1038,41 +412,52 @@
       businessAvatar.textContent = initials(value);
     }
 
-    if (saveBusinessBtn) saveBusinessBtn.addEventListener("click", saveBusiness);
+    // Auto-save on blur
     if (businessInput) {
+      businessInput.addEventListener("blur", saveBusiness);
       businessInput.addEventListener("keydown", (e) => {
-        if (e.key === "Enter") saveBusiness();
+        if (e.key === "Enter") {
+          e.preventDefault();
+          saveBusiness();
+          businessInput.blur();
+        }
       });
       businessInput.addEventListener("input", () => {
         if (businessAvatar) businessAvatar.textContent = initials(businessInput.value);
       });
     }
 
-    // -----------------------------
-    // Mobile menu toggle (ONE place)
-    // -----------------------------
-    const mobileBtn =
-      document.getElementById("mobileMenuBtn") || document.querySelector(".mobile-menu-btn");
-
-    const nav =
-      document.getElementById("primaryNav") || document.querySelector(".nav-links");
+    // ==================== MOBILE MENU ====================
+    const mobileBtn = document.getElementById("mobileMenuBtn");
+    const nav = document.getElementById("primaryNav");
 
     if (mobileBtn && nav) {
-      // ensure aria-expanded exists
-      if (!mobileBtn.hasAttribute("aria-expanded")) {
-        mobileBtn.setAttribute("aria-expanded", "false");
-      }
+      mobileBtn.setAttribute("aria-expanded", "false");
 
       mobileBtn.addEventListener("click", () => {
-        const isOpen = nav.classList.toggle("open"); // use ONE class name: "open"
-        mobileBtn.setAttribute("aria-expanded", String(isOpen));
-        mobileBtn.setAttribute("aria-label", isOpen ? "Close menu" : "Open menu");
+        const isOpen = nav.classList.contains("mobile-open");
+        if (isOpen) {
+          nav.classList.remove("mobile-open");
+          mobileBtn.setAttribute("aria-expanded", "false");
+          mobileBtn.setAttribute("aria-label", "Open menu");
+        } else {
+          nav.classList.add("mobile-open");
+          mobileBtn.setAttribute("aria-expanded", "true");
+          mobileBtn.setAttribute("aria-label", "Close menu");
+        }
+      });
+
+      // Close menu when clicking outside
+      document.addEventListener("click", (e) => {
+        if (!nav.contains(e.target) && !mobileBtn.contains(e.target)) {
+          nav.classList.remove("mobile-open");
+          mobileBtn.setAttribute("aria-expanded", "false");
+          mobileBtn.setAttribute("aria-label", "Open menu");
+        }
       });
     }
 
-    // -----------------------------
-    // Filter buttons
-    // -----------------------------
+    // ==================== FILTER BUTTONS ====================
     document.querySelectorAll(".filter-btn").forEach((button) => {
       button.addEventListener("click", () => {
         document.querySelectorAll(".filter-btn").forEach((btn) => btn.classList.remove("active"));
@@ -1080,9 +465,7 @@
       });
     });
 
-    // -----------------------------
-    // Newsletter form (no demo alert)
-    // -----------------------------
+    // ==================== NEWSLETTER FORM ====================
     const newsletterForm = document.getElementById("newsletterForm");
     if (newsletterForm) {
       newsletterForm.addEventListener("submit", (e) => {
@@ -1092,42 +475,16 @@
 
         if (!email || !email.includes("@")) return;
 
-        // Production behavior: store locally (or replace with your API call)
         try {
           localStorage.setItem("oliBranchNewsletterEmail", email);
+          alert("Thanks for subscribing! You'll be notified of new articles.");
         } catch {
-          // ignore
+          alert("Subscription saved!");
         }
 
         newsletterForm.reset();
       });
     }
-
-    // -----------------------------
-    // If you STILL have old "userName/userRole/userAvatar" elements,
-    // only run this block if those IDs exist (no hardcoded John Doe).
-    // -----------------------------
-    document.addEventListener("DOMContentLoaded", () => {
-      const userNameEl = document.getElementById("userName");
-      const userRoleEl = document.getElementById("userRole");
-      const userAvatarEl = document.getElementById("userAvatar");
-
-      if (userNameEl && userRoleEl && userAvatarEl) {
-        let userName = "";
-        let userRole = "";
-        try {
-          userName = localStorage.getItem("oliBranchUserName") || "";
-          userRole = localStorage.getItem("oliBranchUserRole") || "";
-        } catch {
-          // ignore
-        }
-
-        // Don't inject demo values.
-        userNameEl.textContent = userName || " ";
-        userRoleEl.textContent = userRole || " ";
-        userAvatarEl.textContent = initials(userName) || " ";
-      }
-    });
 
     // Load business name immediately
     loadBusiness();

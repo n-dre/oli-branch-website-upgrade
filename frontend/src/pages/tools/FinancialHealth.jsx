@@ -69,14 +69,15 @@ import { Switch } from "../../components/ui/switch";
 import { useData } from "../../context/DataContext";
 
 const COLOR_SCHEME = {
-  primary: "#1B4332",
-  secondary: "#52796F",
-  accent: "#84A98C",
-  light: "#F8F5F0",
-  success: "#10B981",
-  warning: "#F59E0B",
-  danger: "#DC2626",
-  info: "#3B82F6",
+  primary: "hsl(var(--primary))",
+  primaryLight: "hsl(var(--primary-light))",
+  secondary: "hsl(var(--secondary))",
+  tertiary: "hsl(var(--tertiary))",
+  light: "hsl(var(--light))",
+  success: "hsl(var(--success))",
+  warning: "hsl(var(--warning))",
+  danger: "hsl(var(--danger))",
+  info: "hsl(var(--info))",
   gold: "#D4AF37",
 };
 
@@ -175,10 +176,9 @@ export default function FinancialHealth() {
     addHealthHistory,
     computeHealthScore,
     healthLabel,
-    clearHealthData, // Added: function to clear all saved data
+    clearHealthData,
   } = useData();
 
-  // Initialize formData with empty values, NOT from healthInputs
   const [formData, setFormData] = useState({
     revenue: "",
     expenses: "",
@@ -389,7 +389,6 @@ export default function FinancialHealth() {
     setFormData(prev => ({ ...prev, [field]: value }));
   };
 
-  // NEW: Explicit save function
   const handleSave = () => {
     const inputs = {
       revenue: Number(formData.revenue || 0),
@@ -416,7 +415,6 @@ export default function FinancialHealth() {
     });
   };
 
-  // NEW: Clear unsaved inputs only
   const handleClearInputs = () => {
     setFormData({
       revenue: "",
@@ -434,9 +432,8 @@ export default function FinancialHealth() {
     });
   };
 
-  // NEW: Delete all saved data
   const handleDeleteSavedData = () => {
-    clearHealthData(); // This should wipe healthInputs and healthHistory
+    clearHealthData();
     setFormData({
       revenue: "",
       expenses: "",
@@ -481,8 +478,6 @@ export default function FinancialHealth() {
     setIsCalculating(true);
     calcTimerRef.current = setTimeout(() => {
       try {
-        // Note: We're NOT calling updateHealthInputs here anymore
-        // Data only gets saved when user explicitly clicks Save
         const result = computeHealthScore(inputs);
         addHealthHistory(result.score);
 
@@ -678,17 +673,17 @@ export default function FinancialHealth() {
   }, [metrics, computeHealthScore]);
 
   const getHealthBadgeColor = (score) => {
-    if (score >= 80) return "bg-green-100 text-green-800 border-green-200";
-    if (score >= 60) return "bg-yellow-100 text-yellow-800 border-yellow-200";
-    return "bg-red-100 text-red-800 border-red-200";
+    if (score >= 80) return "bg-success/20 text-success border-success/30";
+    if (score >= 60) return "bg-warning/20 text-warning border-warning/30";
+    return "bg-destructive/20 text-destructive border-destructive/30";
   };
 
   const getSeverityColor = (severity) => {
     switch (severity) {
-      case 'critical': return 'leak-card-high';
-      case 'high': return 'leak-card-medium';
-      case 'positive': return 'leak-card-low';
-      default: return 'leak-card-low';
+      case 'critical': return 'bg-destructive/10 border-destructive/20';
+      case 'high': return 'bg-warning/10 border-warning/20';
+      case 'positive': return 'bg-success/10 border-success/20';
+      default: return 'bg-success/10 border-success/20';
     }
   };
 
@@ -696,114 +691,105 @@ export default function FinancialHealth() {
     <DashboardLayout 
       title="FinHealth" 
       subtitle="Comprehensive financial intelligence for your business"
-      className="bg-[#F8F5F0]"
     >
       <style>{`
         .hero-gradient {
-          background: linear-gradient(135deg, #1B4332 0%, #52796F 100%);
+          background: linear-gradient(135deg, hsl(var(--primary)) 0%, hsl(var(--primary-light)) 100%);
         }
 
         .btn-primary {
-          background: #1B4332 !important;
-          color: #F8F5F0 !important;
+          background: hsl(var(--primary)) !important;
+          color: hsl(var(--light)) !important;
           transition: all 0.3s ease;
         }
 
         .btn-primary:hover {
-          background: #52796F !important;
+          background: hsl(var(--primary-light)) !important;
           transform: translateY(-2px);
-          box-shadow: 0 10px 20px rgba(27, 67, 50, 0.3);
+          box-shadow: 0 10px 20px rgba(var(--primary-rgb), 0.3);
         }
 
         .btn-secondary {
-          border: 2px solid #1B4332 !important;
-          color: #1B4332 !important;
+          border: 2px solid hsl(var(--primary)) !important;
+          color: hsl(var(--primary)) !important;
           background: transparent !important;
           transition: all 0.3s ease;
         }
 
         .btn-secondary:hover {
-          background: #1B4332 !important;
-          color: #F8F5F0 !important;
+          background: hsl(var(--primary)) !important;
+          color: hsl(var(--light)) !important;
         }
 
         .achievement-card {
-          border-left: 4px solid #1B4332 !important;
+          border-left: 4px solid hsl(var(--primary)) !important;
           transition: all 0.3s ease;
-          background: linear-gradient(135deg, rgba(27, 67, 50, 0.05) 0%, rgba(82, 121, 111, 0.05) 100%);
+          background: linear-gradient(135deg, rgba(var(--primary-rgb), 0.05) 0%, rgba(var(--primary-light-rgb), 0.05) 100%);
         }
 
         .stats-card {
-          background: linear-gradient(135deg, rgba(27, 67, 50, 0.05) 0%, rgba(82, 121, 111, 0.05) 100%);
-          border: 1px solid rgba(82, 121, 111, 0.1);
+          background: hsl(var(--card-bg)) !important;
+          color: hsl(var(--card-text)) !important;
+          border: 1px solid hsl(var(--border)) !important;
           transition: all 0.3s ease;
         }
 
         .stats-card:hover {
           transform: translateY(-2px);
-          box-shadow: 0 8px 16px rgba(27, 67, 50, 0.1);
+          box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
         }
 
         .progress-gradient {
-          background: linear-gradient(90deg, #1B4332 0%, #52796F 100%);
-        }
-
-        .leak-card-high {
-          background: linear-gradient(135deg, rgba(220, 38, 38, 0.05) 0%, rgba(239, 68, 68, 0.05) 100%);
-          border: 1px solid rgba(220, 38, 38, 0.2);
-        }
-
-        .leak-card-medium {
-          background: linear-gradient(135deg, rgba(245, 158, 11, 0.05) 0%, rgba(251, 191, 36, 0.05) 100%);
-          border: 1px solid rgba(245, 158, 11, 0.2);
-        }
-
-        .leak-card-low {
-          background: linear-gradient(135deg, rgba(16, 185, 129, 0.05) 0%, rgba(52, 211, 153, 0.05) 100%);
-          border: 1px solid rgba(16, 185, 129, 0.2);
+          background: linear-gradient(90deg, hsl(var(--primary)) 0%, hsl(var(--primary-light)) 100%);
         }
 
         .chart-container {
-          background: white;
+          background: hsl(var(--card-bg)) !important;
+          color: hsl(var(--card-text)) !important;
           border-radius: 12px;
           padding: 20px;
-          box-shadow: 0 4px 12px rgba(27, 67, 50, 0.08);
+          box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
         }
 
         .health-score-card {
-          background: linear-gradient(135deg, rgba(27, 67, 50, 0.1) 0%, rgba(82, 121, 111, 0.1) 100%);
-          border: 2px solid rgba(27, 67, 50, 0.2);
+          background: linear-gradient(135deg, rgba(var(--primary-rgb), 0.1) 0%, rgba(var(--primary-light-rgb), 0.1) 100%);
+          border: 2px solid rgba(var(--primary-rgb), 0.2);
+          color: hsl(var(--card-text));
         }
 
         .metric-card-green {
-          background: linear-gradient(135deg, rgba(16, 185, 129, 0.05) 0%, rgba(52, 211, 153, 0.05) 100%);
-          border: 1px solid rgba(16, 185, 129, 0.2);
+          background: linear-gradient(135deg, rgba(var(--success-rgb), 0.1) 0%, rgba(var(--success-light-rgb), 0.1) 100%);
+          border: 1px solid rgba(var(--success-rgb), 0.2);
+          color: hsl(var(--card-text));
         }
 
         .metric-card-blue {
-          background: linear-gradient(135deg, rgba(59, 130, 246, 0.05) 0%, rgba(96, 165, 250, 0.05) 100%);
-          border: 1px solid rgba(59, 130, 246, 0.2);
+          background: linear-gradient(135deg, rgba(var(--info-rgb), 0.1) 0%, rgba(var(--info-light-rgb), 0.1) 100%);
+          border: 1px solid rgba(var(--info-rgb), 0.2);
+          color: hsl(var(--card-text));
         }
 
         .metric-card-amber {
-          background: linear-gradient(135deg, rgba(245, 158, 11, 0.05) 0%, rgba(251, 191, 36, 0.05) 100%);
-          border: 1px solid rgba(245, 158, 11, 0.2);
+          background: linear-gradient(135deg, rgba(var(--warning-rgb), 0.1) 0%, rgba(var(--warning-light-rgb), 0.1) 100%);
+          border: 1px solid rgba(var(--warning-rgb), 0.2);
+          color: hsl(var(--card-text));
         }
 
         .empty-state {
-          background: linear-gradient(135deg, rgba(27, 67, 50, 0.02) 0%, rgba(82, 121, 111, 0.02) 100%);
-          border: 2px dashed rgba(82, 121, 111, 0.3);
+          background: linear-gradient(135deg, rgba(var(--primary-rgb), 0.02) 0%, rgba(var(--primary-light-rgb), 0.02) 100%);
+          border: 2px dashed rgba(var(--primary-light-rgb), 0.3);
+          color: hsl(var(--card-text));
         }
       `}</style>
 
-      <div className="hero-gradient rounded-2xl p-6 mb-6 text-white">
+      <div className="hero-gradient rounded-2xl p-6 mb-6 text-light">
         <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
           <div>
-            <h1 className="text-3xl font-bold text-white mb-2">
+            <h1 className="text-3xl font-bold text-light mb-2">
               <Building className="h-8 w-8" />
               {formData.companyName || "Financial Health Analysis"}
             </h1>
-            <p className="text-white/90 mt-2">
+            <p className="text-light/90 mt-2">
               {metrics.hasData 
                 ? `${INDUSTRY_BENCHMARKS[formData.industry]?.name || 'Business'} • Last updated: ${new Date().toLocaleDateString()}`
                 : "Enter your financial data to get started"
@@ -813,7 +799,7 @@ export default function FinancialHealth() {
           <div className="flex gap-3">
             <Button 
               variant="outline" 
-              className="bg-white/10 border-white/20 text-white hover:bg-white/20"
+              className="bg-light/10 border-light/20 text-light hover:bg-light/20"
               onClick={handleShareAnalysis}
               disabled={!metrics.hasData}
             >
@@ -822,7 +808,7 @@ export default function FinancialHealth() {
             </Button>
             <Button 
               variant="outline" 
-              className="bg-white/10 border-white/20 text-white hover:bg-white/20"
+              className="bg-light/10 border-light/20 text-light hover:bg-light/20"
               onClick={() => handleExportReport("pdf")}
               disabled={!metrics.hasData}
             >
@@ -830,7 +816,7 @@ export default function FinancialHealth() {
               Export
             </Button>
             <Button 
-              className="bg-white text-[#1B4332] hover:bg-white/90"
+              className="bg-light text-primary hover:bg-light/90"
               onClick={() => setActiveView("input")}
             >
               <Calculator className="h-4 w-4 mr-2" />
@@ -840,14 +826,14 @@ export default function FinancialHealth() {
         </div>
       </div>
 
-      <div className="flex flex-col md:flex-row gap-4 mb-6 p-4 bg-white rounded-xl shadow-sm border border-[#52796F]/20">
+      <div className="flex flex-col md:flex-row gap-4 mb-6 p-4 bg-card text-card border-border rounded-xl shadow-sm">
         <div className="flex-1 flex flex-wrap gap-3">
           <Select value={timeframe} onValueChange={setTimeframe}>
-            <SelectTrigger className="w-[180px]">
-              <Clock className="h-4 w-4 mr-2" />
+            <SelectTrigger className="w-[180px] bg-surface text-text">
+              <Clock className="h-4 w-4 mr-2 text-tertiary" />
               <SelectValue placeholder="Timeframe" />
             </SelectTrigger>
-            <SelectContent className="bg-white">
+            <SelectContent className="bg-surface text-text">
               <SelectItem value="monthly">Monthly</SelectItem>
               <SelectItem value="quarterly">Quarterly</SelectItem>
               <SelectItem value="yearly">Yearly</SelectItem>
@@ -855,22 +841,22 @@ export default function FinancialHealth() {
           </Select>
 
           <Select value={comparisonMode} onValueChange={setComparisonMode}>
-            <SelectTrigger className="w-[180px]">
-              <Globe className="h-4 w-4 mr-2" />
+            <SelectTrigger className="w-[180px] bg-surface text-text">
+              <Globe className="h-4 w-4 mr-2 text-tertiary" />
               <SelectValue placeholder="Compare With" />
             </SelectTrigger>
-            <SelectContent className="bg-white">
+            <SelectContent className="bg-surface text-text">
               <SelectItem value="industry">Industry Benchmark</SelectItem>
               <SelectItem value="past">Past Performance</SelectItem>
             </SelectContent>
           </Select>
 
           <Select value={selectedIndustry} onValueChange={(v) => { setSelectedIndustry(v); updateField("industry", v); }}>
-            <SelectTrigger className="w-[200px]">
-              <Briefcase className="h-4 w-4 mr-2" />
+            <SelectTrigger className="w-[200px] bg-surface text-text">
+              <Briefcase className="h-4 w-4 mr-2 text-tertiary" />
               <SelectValue placeholder="Industry" />
             </SelectTrigger>
-            <SelectContent className="bg-white">
+            <SelectContent className="bg-surface text-text">
               {Object.entries(INDUSTRY_BENCHMARKS).map(([key, value]) => (
                 <SelectItem key={key} value={key}>{value.name}</SelectItem>
               ))}
@@ -881,7 +867,7 @@ export default function FinancialHealth() {
         <div className="flex items-center gap-4">
           <div className="flex items-center gap-2">
             <Switch checked={alertsEnabled} onCheckedChange={handleSetAlert} />
-            <Label className="text-sm">Alerts</Label>
+            <Label className="text-sm text-text">Alerts</Label>
           </div>
           <Button variant="outline" size="sm" className="btn-secondary">
             <Filter className="h-4 w-4 mr-2" />
@@ -891,43 +877,43 @@ export default function FinancialHealth() {
       </div>
 
       <Tabs value={activeView} onValueChange={setActiveView} className="space-y-6">
-        <TabsList className="grid w-full grid-cols-4 lg:grid-cols-6">
-          <TabsTrigger value="input" className="flex items-center gap-2">
+        <TabsList className="grid w-full grid-cols-4 lg:grid-cols-6 bg-surface border-border">
+          <TabsTrigger value="input" className="flex items-center gap-2 text-text data-[state=active]:bg-primary data-[state=active]:text-light">
             <Calculator className="h-4 w-4" />
             <span className="hidden sm:inline">Input</span>
           </TabsTrigger>
-          <TabsTrigger value="dashboard" className="flex items-center gap-2" disabled={!metrics.hasData}>
+          <TabsTrigger value="dashboard" className="flex items-center gap-2 text-text data-[state=active]:bg-primary data-[state=active]:text-light" disabled={!metrics.hasData}>
             <BarChartIcon className="h-4 w-4" />
             <span className="hidden sm:inline">Dashboard</span>
           </TabsTrigger>
-          <TabsTrigger value="analysis" className="flex items-center gap-2" disabled={!metrics.hasData}>
+          <TabsTrigger value="analysis" className="flex items-center gap-2 text-text data-[state=active]:bg-primary data-[state=active]:text-light" disabled={!metrics.hasData}>
             <LineChartIcon className="h-4 w-4" />
             <span className="hidden sm:inline">Analysis</span>
           </TabsTrigger>
-          <TabsTrigger value="benchmarks" className="flex items-center gap-2" disabled={!metrics.hasData}>
+          <TabsTrigger value="benchmarks" className="flex items-center gap-2 text-text data-[state=active]:bg-primary data-[state=active]:text-light" disabled={!metrics.hasData}>
             <Target className="h-4 w-4" />
             <span className="hidden sm:inline">Benchmarks</span>
           </TabsTrigger>
-          <TabsTrigger value="trends" className="flex items-center gap-2" disabled={!metrics.hasData}>
+          <TabsTrigger value="trends" className="flex items-center gap-2 text-text data-[state=active]:bg-primary data-[state=active]:text-light" disabled={!metrics.hasData}>
             <TrendingUp className="h-4 w-4" />
             <span className="hidden sm:inline">Trends</span>
           </TabsTrigger>
-          <TabsTrigger value="insights" className="flex items-center gap-2" disabled={!metrics.hasData}>
+          <TabsTrigger value="insights" className="flex items-center gap-2 text-text data-[state=active]:bg-primary data-[state=active]:text-light" disabled={!metrics.hasData}>
             <Lightbulb className="h-4 w-4" />
             <span className="hidden sm:inline">Insights</span>
           </TabsTrigger>
         </TabsList>
 
         <TabsContent value="input" className="space-y-6">
-          <Card className="achievement-card">
+          <Card className="achievement-card bg-surface text-text border-border">
             <CardHeader>
               <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
                 <div>
-                  <CardTitle className="flex items-center gap-2 text-lg">
-                    <Database className="h-5 w-5" />
+                  <CardTitle className="flex items-center gap-2 text-lg text-text">
+                    <Database className="h-5 w-5 text-primary" />
                     Enter Your Financial Data
                   </CardTitle>
-                  <CardDescription>
+                  <CardDescription className="text-text-muted">
                     All calculations are performed locally. Your data never leaves your browser.
                   </CardDescription>
                 </div>
@@ -935,7 +921,7 @@ export default function FinancialHealth() {
                   <Button
                     variant="outline"
                     onClick={handleDeleteSavedData}
-                    className="btn-secondary text-destructive border-destructive hover:bg-destructive hover:text-white"
+                    className="border-destructive text-destructive hover:bg-destructive hover:text-light"
                     disabled={!healthInputs && (!healthHistory || healthHistory.length === 0)}
                   >
                     <Trash2 className="h-4 w-4 mr-2" />
@@ -950,116 +936,117 @@ export default function FinancialHealth() {
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div className="space-y-4">
                       <div className="space-y-2">
-                        <Label className="text-sm font-medium">Monthly Revenue *</Label>
+                        <Label className="text-sm font-medium text-text">Monthly Revenue *</Label>
                         <div className="relative">
-                          <DollarSign className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-[#52796F]" />
+                          <DollarSign className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-tertiary" />
                           <Input
                             type="number"
                             placeholder="e.g., 50000"
                             value={formData.revenue}
                             onChange={(e) => updateField("revenue", e.target.value)}
-                            className="pl-10"
+                            className="pl-10 bg-surface text-text border-border"
                           />
                         </div>
-                        <p className="text-xs text-muted-foreground">Total monthly revenue</p>
+                        <p className="text-xs text-text-muted">Total monthly revenue</p>
                       </div>
 
                       <div className="space-y-2">
-                        <Label className="text-sm font-medium">Monthly Expenses *</Label>
+                        <Label className="text-sm font-medium text-text">Monthly Expenses *</Label>
                         <div className="relative">
-                          <TrendingDown className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-[#DC2626]" />
+                          <TrendingDown className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-destructive" />
                           <Input
                             type="number"
                             placeholder="e.g., 40000"
                             value={formData.expenses}
                             onChange={(e) => updateField("expenses", e.target.value)}
-                            className="pl-10"
+                            className="pl-10 bg-surface text-text border-border"
                           />
                         </div>
-                        <p className="text-xs text-muted-foreground">Total monthly operating expenses</p>
+                        <p className="text-xs text-text-muted">Total monthly operating expenses</p>
                       </div>
 
                       <div className="space-y-2">
-                        <Label className="text-sm font-medium">Total Debt</Label>
+                        <Label className="text-sm font-medium text-text">Total Debt</Label>
                         <div className="relative">
-                          <Wallet className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-[#F59E0B]" />
+                          <Wallet className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-warning" />
                           <Input
                             type="number"
                             placeholder="e.g., 100000"
                             value={formData.debt}
                             onChange={(e) => updateField("debt", e.target.value)}
-                            className="pl-10"
+                            className="pl-10 bg-surface text-text border-border"
                           />
                         </div>
-                        <p className="text-xs text-muted-foreground">Outstanding loans and liabilities</p>
+                        <p className="text-xs text-text-muted">Outstanding loans and liabilities</p>
                       </div>
                     </div>
 
                     <div className="space-y-4">
                       <div className="space-y-2">
-                        <Label className="text-sm font-medium">Cash on Hand *</Label>
+                        <Label className="text-sm font-medium text-text">Cash on Hand *</Label>
                         <div className="relative">
-                          <DollarSign className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-[#10B981]" />
+                          <DollarSign className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-success" />
                           <Input
                             type="number"
                             placeholder="e.g., 150000"
                             value={formData.cash}
                             onChange={(e) => updateField("cash", e.target.value)}
-                            className="pl-10"
+                            className="pl-10 bg-surface text-text border-border"
                           />
                         </div>
-                        <p className="text-xs text-muted-foreground">Available cash and equivalents</p>
+                        <p className="text-xs text-text-muted">Available cash and equivalents</p>
                       </div>
 
                       <div className="space-y-2">
-                        <Label className="text-sm font-medium">Team Size</Label>
+                        <Label className="text-sm font-medium text-text">Team Size</Label>
                         <div className="relative">
-                          <Users className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-[#52796F]" />
+                          <Users className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-tertiary" />
                           <Input
                             type="number"
                             placeholder="e.g., 10"
                             value={formData.teamSize}
                             onChange={(e) => updateField("teamSize", e.target.value)}
-                            className="pl-10"
+                            className="pl-10 bg-surface text-text border-border"
                           />
                         </div>
-                        <p className="text-xs text-muted-foreground">Number of employees</p>
+                        <p className="text-xs text-text-muted">Number of employees</p>
                       </div>
 
                       <div className="space-y-2">
-                        <Label className="text-sm font-medium">Active Customers</Label>
+                        <Label className="text-sm font-medium text-text">Active Customers</Label>
                         <div className="relative">
-                          <UsersIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-[#3B82F6]" />
+                          <UsersIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-info" />
                           <Input
                             type="number"
                             placeholder="e.g., 100"
                             value={formData.customers}
                             onChange={(e) => updateField("customers", e.target.value)}
-                            className="pl-10"
+                            className="pl-10 bg-surface text-text border-border"
                           />
                         </div>
-                        <p className="text-xs text-muted-foreground">Current paying customers</p>
+                        <p className="text-xs text-text-muted">Current paying customers</p>
                       </div>
                     </div>
                   </div>
 
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div className="space-y-2">
-                      <Label className="text-sm font-medium">Company Name</Label>
+                      <Label className="text-sm font-medium text-text">Company Name</Label>
                       <Input
                         placeholder="e.g., Acme Inc."
                         value={formData.companyName}
                         onChange={(e) => updateField("companyName", e.target.value)}
+                        className="bg-surface text-text border-border"
                       />
                     </div>
 
                     <div className="space-y-2">
-                      <Label className="text-sm font-medium">Industry</Label>
+                      <Label className="text-sm font-medium text-text">Industry</Label>
                       <Select value={formData.industry} onValueChange={(value) => { updateField("industry", value); setSelectedIndustry(value); }}>
-                        <SelectTrigger>
+                        <SelectTrigger className="bg-surface text-text border-border">
                           <SelectValue placeholder="Select industry" />
                         </SelectTrigger>
-                        <SelectContent className="bg-white">
+                        <SelectContent className="bg-surface text-text">
                           {Object.entries(INDUSTRY_BENCHMARKS).map(([key, value]) => (
                             <SelectItem key={key} value={key}>{value.name}</SelectItem>
                           ))}
@@ -1071,41 +1058,41 @@ export default function FinancialHealth() {
 
                 <Card className="stats-card h-fit">
                   <CardHeader>
-                    <CardTitle className="text-sm flex items-center gap-2">
-                      <Cpu className="h-4 w-4" />
+                    <CardTitle className="text-sm flex items-center gap-2 text-text">
+                      <Cpu className="h-4 w-4 text-primary" />
                       Live Preview
                     </CardTitle>
                   </CardHeader>
                   <CardContent className="space-y-4">
                     <div>
-                      <div className="text-xs text-[#52796F]">Net Profit/Loss</div>
-                      <div className={`text-xl font-bold ${metrics.netProfit >= 0 ? 'text-[#10B981]' : 'text-[#DC2626]'}`}>
+                      <div className="text-xs text-text-muted">Net Profit/Loss</div>
+                      <div className={`text-xl font-bold ${metrics.netProfit >= 0 ? 'text-success' : 'text-destructive'}`}>
                         {formatCurrency(metrics.netProfit)}
                       </div>
                     </div>
                     <div>
-                      <div className="text-xs text-[#52796F]">Profit Margin</div>
-                      <div className={`text-xl font-bold ${metrics.profitMargin >= 0.1 ? 'text-[#1B4332]' : 'text-[#DC2626]'}`}>
+                      <div className="text-xs text-text-muted">Profit Margin</div>
+                      <div className={`text-xl font-bold ${metrics.profitMargin >= 0.1 ? 'text-primary' : 'text-destructive'}`}>
                         {formatPercent(metrics.profitMargin)}
                       </div>
                     </div>
                     <div>
-                      <div className="text-xs text-[#52796F]">Runway</div>
-                      <div className={`text-xl font-bold ${metrics.runway >= 6 ? 'text-[#1B4332]' : 'text-[#F59E0B]'}`}>
+                      <div className="text-xs text-text-muted">Runway</div>
+                      <div className={`text-xl font-bold ${metrics.runway >= 6 ? 'text-primary' : 'text-warning'}`}>
                         {metrics.runway >= 999 ? "∞" : `${metrics.runway.toFixed(1)} months`}
                       </div>
                     </div>
                     {metrics.customers > 0 && (
                       <>
                         <div>
-                          <div className="text-xs text-[#52796F]">ARPU</div>
-                          <div className="text-xl font-bold text-[#1B4332]">
+                          <div className="text-xs text-text-muted">ARPU</div>
+                          <div className="text-xl font-bold text-primary">
                             {formatCurrency(metrics.arpu)}
                           </div>
                         </div>
                         <div>
-                          <div className="text-xs text-[#52796F]">LTV:CAC Ratio</div>
-                          <div className={`text-xl font-bold ${metrics.ltvCacRatio >= 3 ? 'text-[#10B981]' : 'text-[#F59E0B]'}`}>
+                          <div className="text-xs text-text-muted">LTV:CAC Ratio</div>
+                          <div className={`text-xl font-bold ${metrics.ltvCacRatio >= 3 ? 'text-success' : 'text-warning'}`}>
                             {metrics.ltvCacRatio > 0 ? `${metrics.ltvCacRatio.toFixed(1)}x` : "N/A"}
                           </div>
                         </div>
@@ -1115,7 +1102,7 @@ export default function FinancialHealth() {
                 </Card>
               </div>
 
-              <div className="flex flex-col sm:flex-row gap-4 mt-8 pt-6 border-t">
+              <div className="flex flex-col sm:flex-row gap-4 mt-8 pt-6 border-t border-border">
                 <Button
                   onClick={handleCalculate}
                   disabled={isCalculating || (!formData.revenue && !formData.expenses && !formData.cash)}
@@ -1154,15 +1141,15 @@ export default function FinancialHealth() {
                 </div>
               </div>
 
-              <div className="mt-6 p-4 bg-[#1B4332]/5 rounded-lg border border-[#1B4332]/10">
+              <div className="mt-6 p-4 bg-primary/5 rounded-lg border border-primary/10">
                 <div className="flex items-start gap-3">
-                  <Lock className="h-5 w-5 text-[#1B4332] mt-0.5" />
+                  <Lock className="h-5 w-5 text-primary mt-0.5" />
                   <div>
-                    <p className="font-medium text-[#1B4332]">Privacy First</p>
-                    <p className="text-sm text-[#52796F] mt-1">
+                    <p className="font-medium text-primary">Privacy First</p>
+                    <p className="text-sm text-text-muted mt-1">
                       All calculations happen in your browser. Your financial data is never sent to any server.
                     </p>
-                    <p className="text-sm text-[#52796F] mt-2">
+                    <p className="text-sm text-text-muted mt-2">
                       <strong>Note:</strong> Data is only saved when you explicitly click "Save Data".
                     </p>
                   </div>
@@ -1175,9 +1162,9 @@ export default function FinancialHealth() {
         <TabsContent value="dashboard" className="space-y-6">
           {!metrics.hasData ? (
             <Card className="empty-state p-12 text-center">
-              <Calculator className="h-16 w-16 mx-auto text-[#52796F]/30 mb-4" />
-              <h3 className="text-lg font-semibold text-[#1B4332]">No Data Yet</h3>
-              <p className="text-[#52796F] mt-2">Enter your financial data to see your dashboard</p>
+              <Calculator className="h-16 w-16 mx-auto text-tertiary/30 mb-4" />
+              <h3 className="text-lg font-semibold text-primary">No Data Yet</h3>
+              <p className="text-text-muted mt-2">Enter your financial data to see your dashboard</p>
               <Button onClick={() => setActiveView("input")} className="mt-4 btn-primary">
                 Enter Data
               </Button>
@@ -1192,9 +1179,9 @@ export default function FinancialHealth() {
                       <CardContent className="p-4">
                         <div className="flex justify-between items-start">
                           <div>
-                            <p className="text-xs text-[#52796F] font-medium">{metric.label}</p>
-                            <p className="text-2xl font-bold text-[#1B4332] mt-2">{metric.value}</p>
-                            <p className="text-xs text-[#52796F] mt-1">{metric.description}</p>
+                            <p className="text-xs text-text-muted font-medium">{metric.label}</p>
+                            <p className="text-2xl font-bold text-text mt-2">{metric.value}</p>
+                            <p className="text-xs text-text-muted mt-1">{metric.description}</p>
                           </div>
                           <Icon className="h-8 w-8" style={{ color: metric.color }} />
                         </div>
@@ -1207,18 +1194,18 @@ export default function FinancialHealth() {
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                 <Card className="health-score-card">
                   <CardHeader>
-                    <CardTitle className="flex items-center gap-2">
-                      <Heart className="h-5 w-5 text-[#DC2626]" />
+                    <CardTitle className="flex items-center gap-2 text-text">
+                      <Heart className="h-5 w-5 text-destructive" />
                       Financial Health Score
                     </CardTitle>
                   </CardHeader>
                   <CardContent>
                     <div className="flex flex-col items-center justify-center p-4">
                       <div className="relative">
-                        <div className="text-6xl font-bold text-[#1B4332]">
+                        <div className="text-6xl font-bold text-primary">
                           {currentScore || "--"}
                         </div>
-                        <div className="text-sm text-[#52796F] text-center mt-2">/100</div>
+                        <div className="text-sm text-text-muted text-center mt-2">/100</div>
                       </div>
                       {currentScore > 0 && (
                         <>
@@ -1228,16 +1215,16 @@ export default function FinancialHealth() {
                             </Badge>
                           </div>
                           <div className="mt-6 w-full">
-                            <Progress value={currentScore} className="h-2" />
+                            <Progress value={currentScore} className="h-2 bg-surface" />
                           </div>
                           <div className="mt-6 grid grid-cols-2 gap-4 w-full">
                             {enterpriseKPIs.map((kpi) => (
                               <div key={kpi.id} className="text-center">
-                                <div className="text-sm text-[#52796F]">{kpi.label}</div>
-                                <div className="text-xl font-bold text-[#1B4332]">{kpi.value.toFixed(0)}</div>
+                                <div className="text-sm text-text-muted">{kpi.label}</div>
+                                <div className="text-xl font-bold text-primary">{kpi.value.toFixed(0)}</div>
                                 <div className={`text-xs mt-1 ${
-                                  kpi.status === 'exceeds' ? 'text-green-600' :
-                                  kpi.status === 'meets' ? 'text-yellow-600' : 'text-red-600'
+                                  kpi.status === 'exceeds' ? 'text-success' :
+                                  kpi.status === 'meets' ? 'text-warning' : 'text-destructive'
                                 }`}>
                                   {kpi.status === 'exceeds' ? '✓ Strong' : kpi.status === 'meets' ? '~ Average' : '⚠ Needs Work'}
                                 </div>
@@ -1252,25 +1239,26 @@ export default function FinancialHealth() {
 
                 <Card className="chart-container">
                   <CardHeader>
-                    <CardTitle className="flex items-center gap-2">
-                      <TrendingUp className="h-5 w-5" />
+                    <CardTitle className="flex items-center gap-2 text-text">
+                      <TrendingUp className="h-5 w-5 text-primary" />
                       Projected Trend
                     </CardTitle>
-                    <CardDescription>6-month projection based on current metrics</CardDescription>
+                    <CardDescription className="text-text-muted">6-month projection based on current metrics</CardDescription>
                   </CardHeader>
                   <CardContent>
                     <div className="h-[300px]">
                       <ResponsiveContainer width="100%" height="100%">
                         <AreaChart data={trendData}>
-                          <CartesianGrid strokeDasharray="3 3" stroke="rgba(27, 67, 50, 0.1)" />
-                          <XAxis dataKey="month" />
-                          <YAxis tickFormatter={(v) => formatCurrency(v, true)} />
+                          <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
+                          <XAxis dataKey="month" stroke="hsl(var(--text))" />
+                          <YAxis tickFormatter={(v) => formatCurrency(v, true)} stroke="hsl(var(--text))" />
                           <Tooltip 
                             formatter={(value) => [formatCurrency(value), ""]}
                             contentStyle={{
-                              backgroundColor: "white",
-                              border: "1px solid rgba(27, 67, 50, 0.1)",
+                              backgroundColor: "hsl(var(--surface))",
+                              border: "1px solid hsl(var(--border))",
                               borderRadius: "8px",
+                              color: "hsl(var(--text))",
                             }}
                           />
                           <Area type="monotone" dataKey="revenue" name="Revenue" stroke={CHART_COLORS.revenue} fill={CHART_COLORS.revenue} fillOpacity={0.6} />
@@ -1284,26 +1272,26 @@ export default function FinancialHealth() {
               </div>
 
               {quickInsights.length > 0 && (
-                <Card>
+                <Card className="bg-surface text-text border-border">
                   <CardHeader>
-                    <CardTitle className="flex items-center gap-2">
-                      <Lightbulb className="h-5 w-5" />
+                    <CardTitle className="flex items-center gap-2 text-text">
+                      <Lightbulb className="h-5 w-5 text-primary" />
                       Key Insights
                     </CardTitle>
                   </CardHeader>
                   <CardContent>
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                       {quickInsights.slice(0, 3).map((insight, idx) => (
-                        <Card key={idx} className={getSeverityColor(insight.severity)}>
+                        <Card key={idx} className={`${getSeverityColor(insight.severity)} text-text`}>
                           <CardContent className="p-4">
                             <div className="flex items-start justify-between">
                               <div>
-                                <h4 className="font-semibold text-[#1B4332]">{insight.title}</h4>
-                                <p className="text-sm text-[#52796F] mt-1">{insight.description}</p>
+                                <h4 className="font-semibold text-text">{insight.title}</h4>
+                                <p className="text-sm text-text-muted mt-1">{insight.description}</p>
                               </div>
                               <AlertTriangle className={`h-5 w-5 mt-1 ${
-                                insight.severity === 'critical' ? 'text-[#DC2626]' :
-                                insight.severity === 'high' ? 'text-[#F59E0B]' : 'text-[#10B981]'
+                                insight.severity === 'critical' ? 'text-destructive' :
+                                insight.severity === 'high' ? 'text-warning' : 'text-success'
                               }`} />
                             </div>
                             <Button size="sm" className="mt-3 w-full btn-primary">
@@ -1326,23 +1314,29 @@ export default function FinancialHealth() {
               <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
                 <Card className="lg:col-span-2 chart-container">
                   <CardHeader>
-                    <CardTitle className="flex items-center gap-2">
-                      <Target className="h-5 w-5" />
+                    <CardTitle className="flex items-center gap-2 text-text">
+                      <Target className="h-5 w-5 text-primary" />
                       Performance vs Industry
                     </CardTitle>
-                    <CardDescription>Your metrics compared to {INDUSTRY_BENCHMARKS[selectedIndustry]?.name} benchmarks</CardDescription>
+                    <CardDescription className="text-text-muted">Your metrics compared to {INDUSTRY_BENCHMARKS[selectedIndustry]?.name} benchmarks</CardDescription>
                   </CardHeader>
                   <CardContent>
                     <div className="h-[400px]">
                       <ResponsiveContainer width="100%" height="100%">
                         <RadarChart data={radarData}>
-                          <PolarGrid />
-                          <PolarAngleAxis dataKey="metric" />
-                          <PolarRadiusAxis angle={30} domain={[0, 100]} />
+                          <PolarGrid stroke="hsl(var(--border))" />
+                          <PolarAngleAxis dataKey="metric" stroke="hsl(var(--text))" />
+                          <PolarRadiusAxis angle={30} domain={[0, 100]} stroke="hsl(var(--text))" />
                           <Radar name="Your Company" dataKey="you" stroke={COLOR_SCHEME.primary} fill={COLOR_SCHEME.primary} fillOpacity={0.6} />
                           <Radar name="Industry Avg" dataKey="industry" stroke={COLOR_SCHEME.secondary} fill={COLOR_SCHEME.secondary} fillOpacity={0.3} />
                           <Legend />
-                          <Tooltip />
+                          <Tooltip 
+                            contentStyle={{
+                              backgroundColor: "hsl(var(--surface))",
+                              border: "1px solid hsl(var(--border))",
+                              color: "hsl(var(--text))",
+                            }}
+                          />
                         </RadarChart>
                       </ResponsiveContainer>
                     </div>
@@ -1351,21 +1345,21 @@ export default function FinancialHealth() {
 
                 <Card className="chart-container">
                   <CardHeader>
-                    <CardTitle className="flex items-center gap-2">
-                      <Briefcase className="h-5 w-5" />
+                    <CardTitle className="flex items-center gap-2 text-text">
+                      <Briefcase className="h-5 w-5 text-primary" />
                       Benchmark Comparison
                     </CardTitle>
                   </CardHeader>
                   <CardContent>
                     <div className="space-y-4">
                       {comparisonData.map((item, idx) => (
-                        <div key={idx} className="p-4 rounded-lg bg-[#F8F5F0]">
+                        <div key={idx} className="p-4 rounded-lg bg-surface/50">
                           <div className="flex justify-between items-center mb-2">
-                            <span className="font-medium text-[#1B4332]">{item.metric}</span>
+                            <span className="font-medium text-text">{item.metric}</span>
                             <Badge className={
                               item.metric === "Debt Load" 
-                                ? (item.you < item.industry ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800')
-                                : (item.you > item.industry ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800')
+                                ? (item.you < item.industry ? 'bg-success/20 text-success' : 'bg-destructive/20 text-destructive')
+                                : (item.you > item.industry ? 'bg-success/20 text-success' : 'bg-destructive/20 text-destructive')
                             }>
                               {item.metric === "Debt Load"
                                 ? (item.you < item.industry ? 'Better' : 'Higher')
@@ -1375,14 +1369,14 @@ export default function FinancialHealth() {
                           </div>
                           <div className="grid grid-cols-2 gap-2">
                             <div className="text-center">
-                              <div className="text-sm text-[#52796F]">You</div>
-                              <div className="text-lg font-bold text-[#1B4332]">
+                              <div className="text-sm text-text-muted">You</div>
+                              <div className="text-lg font-bold text-text">
                                 {item.you.toFixed(1)}{item.unit}
                               </div>
                             </div>
                             <div className="text-center">
-                              <div className="text-sm text-[#52796F]">Industry</div>
-                              <div className="text-lg font-bold text-[#52796F]">
+                              <div className="text-sm text-text-muted">Industry</div>
+                              <div className="text-lg font-bold text-text-muted">
                                 {item.industry.toFixed(1)}{item.unit}
                               </div>
                             </div>
@@ -1399,12 +1393,12 @@ export default function FinancialHealth() {
                   <CardContent className="p-6">
                     <div className="flex items-center justify-between mb-4">
                       <div>
-                        <p className="text-sm text-[#52796F]">Profit Margin</p>
-                        <p className="text-3xl font-bold text-[#1B4332]">{formatPercent(metrics.profitMargin)}</p>
+                        <p className="text-sm text-text-muted">Profit Margin</p>
+                        <p className="text-3xl font-bold text-text">{formatPercent(metrics.profitMargin)}</p>
                       </div>
-                      <TrendingUp className="h-8 w-8 text-[#10B981]" />
+                      <TrendingUp className="h-8 w-8 text-success" />
                     </div>
-                    <Progress value={Math.max(0, (metrics.profitMargin + 0.5) * 100)} className="h-2" />
+                    <Progress value={Math.max(0, (metrics.profitMargin + 0.5) * 100)} className="h-2 bg-surface" />
                   </CardContent>
                 </Card>
 
@@ -1412,14 +1406,14 @@ export default function FinancialHealth() {
                   <CardContent className="p-6">
                     <div className="flex items-center justify-between mb-4">
                       <div>
-                        <p className="text-sm text-[#52796F]">Runway</p>
-                        <p className="text-3xl font-bold text-[#1B4332]">
+                        <p className="text-sm text-text-muted">Runway</p>
+                        <p className="text-3xl font-bold text-text">
                           {metrics.runway >= 999 ? "∞" : `${metrics.runway.toFixed(1)} mo`}
                         </p>
                       </div>
-                      <Calendar className="h-8 w-8 text-[#3B82F6]" />
+                      <Calendar className="h-8 w-8 text-info" />
                     </div>
-                    <p className="text-sm text-[#3B82F6]">
+                    <p className="text-sm text-info">
                       {metrics.runway >= 12 ? "Excellent" : metrics.runway >= 6 ? "Good" : metrics.runway >= 3 ? "Low" : "Critical"}
                     </p>
                   </CardContent>
@@ -1429,12 +1423,12 @@ export default function FinancialHealth() {
                   <CardContent className="p-6">
                     <div className="flex items-center justify-between mb-4">
                       <div>
-                        <p className="text-sm text-[#52796F]">Debt Ratio</p>
-                        <p className="text-3xl font-bold text-[#1B4332]">{formatPercent(metrics.debtToRevenue)}</p>
+                        <p className="text-sm text-text-muted">Debt Ratio</p>
+                        <p className="text-3xl font-bold text-text">{formatPercent(metrics.debtToRevenue)}</p>
                       </div>
-                      <Shield className="h-8 w-8 text-[#F59E0B]" />
+                      <Shield className="h-8 w-8 text-warning" />
                     </div>
-                    <p className="text-sm text-[#F59E0B]">
+                    <p className="text-sm text-warning">
                       {metrics.debtToRevenue < 0.2 ? "Low" : metrics.debtToRevenue < 0.5 ? "Moderate" : "High"}
                     </p>
                   </CardContent>
@@ -1444,12 +1438,12 @@ export default function FinancialHealth() {
                   <CardContent className="p-6">
                     <div className="flex items-center justify-between mb-4">
                       <div>
-                        <p className="text-sm text-[#52796F]">Revenue/Employee</p>
-                        <p className="text-3xl font-bold text-[#1B4332]">{formatCurrency(metrics.revenuePerEmployee, true)}</p>
+                        <p className="text-sm text-text-muted">Revenue/Employee</p>
+                        <p className="text-3xl font-bold text-text">{formatCurrency(metrics.revenuePerEmployee, true)}</p>
                       </div>
-                      <Users className="h-8 w-8 text-[#52796F]" />
+                      <Users className="h-8 w-8 text-tertiary" />
                     </div>
-                    <p className="text-sm text-[#52796F]">Annual per employee</p>
+                    <p className="text-sm text-text-muted">Annual per employee</p>
                   </CardContent>
                 </Card>
               </div>
@@ -1460,11 +1454,11 @@ export default function FinancialHealth() {
         <TabsContent value="benchmarks" className="space-y-6">
           <Card className="chart-container">
             <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Target className="h-5 w-5" />
+              <CardTitle className="flex items-center gap-2 text-text">
+                <Target className="h-5 w-5 text-primary" />
                 Industry Benchmarks
               </CardTitle>
-              <CardDescription>Compare your metrics against different industries</CardDescription>
+              <CardDescription className="text-text-muted">Compare your metrics against different industries</CardDescription>
             </CardHeader>
             <CardContent>
               <div className="h-[400px]">
@@ -1475,11 +1469,17 @@ export default function FinancialHealth() {
                     runway: data.runway,
                     debtLoad: data.debtLoad * 100,
                   }))}>
-                    <CartesianGrid strokeDasharray="3 3" />
-                    <XAxis dataKey="industry" />
-                    <YAxis yAxisId="left" />
-                    <YAxis yAxisId="right" orientation="right" />
-                    <Tooltip />
+                    <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
+                    <XAxis dataKey="industry" stroke="hsl(var(--text))" />
+                    <YAxis yAxisId="left" stroke="hsl(var(--text))" />
+                    <YAxis yAxisId="right" orientation="right" stroke="hsl(var(--text))" />
+                    <Tooltip 
+                      contentStyle={{
+                        backgroundColor: "hsl(var(--surface))",
+                        border: "1px solid hsl(var(--border))",
+                        color: "hsl(var(--text))",
+                      }}
+                    />
                     <Legend />
                     <Bar yAxisId="left" dataKey="margin" name="Margin %" fill={CHART_COLORS.margin} />
                     <Bar yAxisId="left" dataKey="debtLoad" name="Debt Load %" fill={CHART_COLORS.debtLoad} />
@@ -1492,16 +1492,16 @@ export default function FinancialHealth() {
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
             {Object.entries(INDUSTRY_BENCHMARKS).map(([key, benchmark]) => (
-              <Card key={key} className={`${selectedIndustry === key ? 'achievement-card' : 'stats-card'} cursor-pointer`} onClick={() => { setSelectedIndustry(key); updateField("industry", key); }}>
+              <Card key={key} className={`${selectedIndustry === key ? 'achievement-card' : 'stats-card'} cursor-pointer text-text`} onClick={() => { setSelectedIndustry(key); updateField("industry", key); }}>
                 <CardContent className="p-6">
                   <div className="flex items-center justify-between mb-4">
-                    <h3 className="font-semibold text-[#1B4332]">{benchmark.name}</h3>
-                    {selectedIndustry === key && <Badge className="bg-[#1B4332]/10 text-[#1B4332]">Selected</Badge>}
+                    <h3 className="font-semibold text-text">{benchmark.name}</h3>
+                    {selectedIndustry === key && <Badge className="bg-primary/10 text-primary">Selected</Badge>}
                   </div>
                   <div className="space-y-2 text-sm">
-                    <div className="flex justify-between"><span className="text-[#52796F]">Avg Margin</span><span className="font-medium">{formatPercent(benchmark.margin)}</span></div>
-                    <div className="flex justify-between"><span className="text-[#52796F]">Avg Runway</span><span className="font-medium">{benchmark.runway} mo</span></div>
-                    <div className="flex justify-between"><span className="text-[#52796F]">Avg Debt Load</span><span className="font-medium">{formatPercent(benchmark.debtLoad)}</span></div>
+                    <div className="flex justify-between"><span className="text-text-muted">Avg Margin</span><span className="font-medium text-text">{formatPercent(benchmark.margin)}</span></div>
+                    <div className="flex justify-between"><span className="text-text-muted">Avg Runway</span><span className="font-medium text-text">{benchmark.runway} mo</span></div>
+                    <div className="flex justify-between"><span className="text-text-muted">Avg Debt Load</span><span className="font-medium text-text">{formatPercent(benchmark.debtLoad)}</span></div>
                   </div>
                 </CardContent>
               </Card>
@@ -1515,8 +1515,8 @@ export default function FinancialHealth() {
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                 <Card className="chart-container">
                   <CardHeader>
-                    <CardTitle className="flex items-center gap-2">
-                      <LineChartIcon className="h-5 w-5" />
+                    <CardTitle className="flex items-center gap-2 text-text">
+                      <LineChartIcon className="h-5 w-5 text-primary" />
                       Financial Projection
                     </CardTitle>
                   </CardHeader>
@@ -1524,10 +1524,17 @@ export default function FinancialHealth() {
                     <div className="h-[300px]">
                       <ResponsiveContainer width="100%" height="100%">
                         <LineChart data={trendData}>
-                          <CartesianGrid strokeDasharray="3 3" />
-                          <XAxis dataKey="month" />
-                          <YAxis tickFormatter={(v) => formatCurrency(v, true)} />
-                          <Tooltip formatter={(value) => [formatCurrency(value), ""]} />
+                          <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
+                          <XAxis dataKey="month" stroke="hsl(var(--text))" />
+                          <YAxis tickFormatter={(v) => formatCurrency(v, true)} stroke="hsl(var(--text))" />
+                          <Tooltip 
+                            formatter={(value) => [formatCurrency(value), ""]}
+                            contentStyle={{
+                              backgroundColor: "hsl(var(--surface))",
+                              border: "1px solid hsl(var(--border))",
+                              color: "hsl(var(--text))",
+                            }}
+                          />
                           <Legend />
                           <Line type="monotone" dataKey="revenue" name="Revenue" stroke={CHART_COLORS.revenue} strokeWidth={3} />
                           <Line type="monotone" dataKey="expenses" name="Expenses" stroke={CHART_COLORS.expenses} strokeWidth={3} />
@@ -1540,8 +1547,8 @@ export default function FinancialHealth() {
 
                 <Card className="chart-container">
                   <CardHeader>
-                    <CardTitle className="flex items-center gap-2">
-                      <BarChart3 className="h-5 w-5" />
+                    <CardTitle className="flex items-center gap-2 text-text">
+                      <BarChart3 className="h-5 w-5 text-primary" />
                       Key Metrics Breakdown
                     </CardTitle>
                   </CardHeader>
@@ -1554,10 +1561,17 @@ export default function FinancialHealth() {
                           { name: 'Net Profit', value: Math.max(0, metrics.netProfit), fill: CHART_COLORS.net },
                           { name: 'Cash', value: metrics.cash, fill: CHART_COLORS.cash },
                         ]}>
-                          <CartesianGrid strokeDasharray="3 3" />
-                          <XAxis dataKey="name" />
-                          <YAxis tickFormatter={(v) => formatCurrency(v, true)} />
-                          <Tooltip formatter={(value) => [formatCurrency(value), ""]} />
+                          <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
+                          <XAxis dataKey="name" stroke="hsl(var(--text))" />
+                          <YAxis tickFormatter={(v) => formatCurrency(v, true)} stroke="hsl(var(--text))" />
+                          <Tooltip 
+                            formatter={(value) => [formatCurrency(value), ""]}
+                            contentStyle={{
+                              backgroundColor: "hsl(var(--surface))",
+                              border: "1px solid hsl(var(--border))",
+                              color: "hsl(var(--text))",
+                            }}
+                          />
                           <Bar dataKey="value" radius={[4, 4, 0, 0]} />
                         </BarChart>
                       </ResponsiveContainer>
@@ -1568,8 +1582,8 @@ export default function FinancialHealth() {
 
               <Card className="achievement-card">
                 <CardHeader>
-                  <CardTitle className="flex items-center gap-2">
-                    <TrendingUp className="h-5 w-5" />
+                  <CardTitle className="flex items-center gap-2 text-text">
+                    <TrendingUp className="h-5 w-5 text-primary" />
                     Health Score History
                   </CardTitle>
                 </CardHeader>
@@ -1578,18 +1592,24 @@ export default function FinancialHealth() {
                     {chartData.length > 0 ? (
                       <ResponsiveContainer width="100%" height="100%">
                         <LineChart data={chartData}>
-                          <CartesianGrid strokeDasharray="3 3" stroke="rgba(27, 67, 50, 0.1)" />
-                          <XAxis dataKey="date" />
-                          <YAxis domain={[0, 100]} />
-                          <Tooltip />
-                          <Line type="monotone" dataKey="score" stroke="#1B4332" strokeWidth={3} dot={{ fill: "#1B4332" }} />
+                          <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
+                          <XAxis dataKey="date" stroke="hsl(var(--text))" />
+                          <YAxis domain={[0, 100]} stroke="hsl(var(--text))" />
+                          <Tooltip 
+                            contentStyle={{
+                              backgroundColor: "hsl(var(--surface))",
+                              border: "1px solid hsl(var(--border))",
+                              color: "hsl(var(--text))",
+                            }}
+                          />
+                          <Line type="monotone" dataKey="score" stroke="hsl(var(--primary))" strokeWidth={3} dot={{ fill: "hsl(var(--primary))" }} />
                         </LineChart>
                       </ResponsiveContainer>
                     ) : (
                       <div className="h-full flex flex-col items-center justify-center">
-                        <TrendingUp className="h-16 w-16 text-[#52796F]/30 mb-4" />
-                        <p className="text-[#1B4332] font-medium">No history yet</p>
-                        <p className="text-[#52796F] text-sm">Save data to track progress over time</p>
+                        <TrendingUp className="h-16 w-16 text-tertiary/30 mb-4" />
+                        <p className="text-primary font-medium">No history yet</p>
+                        <p className="text-text-muted text-sm">Save data to track progress over time</p>
                       </div>
                     )}
                   </div>
@@ -1602,11 +1622,11 @@ export default function FinancialHealth() {
         <TabsContent value="insights" className="space-y-6">
           <Card className="achievement-card">
             <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Lightbulb className="h-5 w-5" />
+              <CardTitle className="flex items-center gap-2 text-text">
+                <Lightbulb className="h-5 w-5 text-primary" />
                 Financial Insights & Recommendations
               </CardTitle>
-              <CardDescription>Actionable recommendations based on your data</CardDescription>
+              <CardDescription className="text-text-muted">Actionable recommendations based on your data</CardDescription>
             </CardHeader>
             <CardContent>
               <div className="space-y-6">
@@ -1618,36 +1638,36 @@ export default function FinancialHealth() {
                       animate={{ opacity: 1, x: 0 }}
                       transition={{ delay: idx * 0.1 }}
                     >
-                      <Card className={getSeverityColor(insight.severity)}>
+                      <Card className={`${getSeverityColor(insight.severity)} text-text`}>
                         <CardContent className="p-6">
                           <div className="flex items-start gap-4">
                             <div className={`p-2 rounded-full ${
-                              insight.severity === 'critical' ? 'bg-red-100' :
-                              insight.severity === 'high' ? 'bg-yellow-100' : 'bg-green-100'
+                              insight.severity === 'critical' ? 'bg-destructive/20' :
+                              insight.severity === 'high' ? 'bg-warning/20' : 'bg-success/20'
                             }`}>
                               <AlertTriangle className={`h-5 w-5 ${
-                                insight.severity === 'critical' ? 'text-red-600' :
-                                insight.severity === 'high' ? 'text-yellow-600' : 'text-green-600'
+                                insight.severity === 'critical' ? 'text-destructive' :
+                                insight.severity === 'high' ? 'text-warning' : 'text-success'
                               }`} />
                             </div>
                             <div className="flex-1">
-                              <h4 className="font-bold text-lg text-[#1B4332]">{insight.title}</h4>
-                              <p className="text-[#52796F] mt-1">{insight.description}</p>
+                              <h4 className="font-bold text-lg text-text">{insight.title}</h4>
+                              <p className="text-text-muted mt-1">{insight.description}</p>
                               
                               <div className="mt-4 grid grid-cols-3 gap-4">
-                                <div className="p-3 bg-white/50 rounded-lg">
-                                  <p className="text-xs text-[#52796F]">Priority</p>
-                                  <p className="font-semibold text-[#1B4332]">
+                                <div className="p-3 bg-surface/50 rounded-lg">
+                                  <p className="text-xs text-text-muted">Priority</p>
+                                  <p className="font-semibold text-text">
                                     {insight.severity === 'critical' ? 'Critical' : insight.severity === 'high' ? 'High' : 'Medium'}
                                   </p>
                                 </div>
-                                <div className="p-3 bg-white/50 rounded-lg">
-                                  <p className="text-xs text-[#52796F]">Impact</p>
-                                  <p className="font-semibold text-[#1B4332]">{insight.impact}</p>
+                                <div className="p-3 bg-surface/50 rounded-lg">
+                                  <p className="text-xs text-text-muted">Impact</p>
+                                  <p className="font-semibold text-text">{insight.impact}</p>
                                 </div>
-                                <div className="p-3 bg-white/50 rounded-lg">
-                                  <p className="text-xs text-[#52796F]">Timeframe</p>
-                                  <p className="font-semibold text-[#1B4332]">{insight.timeframe}</p>
+                                <div className="p-3 bg-surface/50 rounded-lg">
+                                  <p className="text-xs text-text-muted">Timeframe</p>
+                                  <p className="font-semibold text-text">{insight.timeframe}</p>
                                 </div>
                               </div>
                               
@@ -1660,11 +1680,11 @@ export default function FinancialHealth() {
                   ))
                 ) : (
                   <div className="text-center py-12">
-                    <Lightbulb className="h-16 w-16 mx-auto text-[#52796F]/30 mb-4" />
-                    <h3 className="text-lg font-semibold text-[#1B4332]">
+                    <Lightbulb className="h-16 w-16 mx-auto text-tertiary/30 mb-4" />
+                    <h3 className="text-lg font-semibold text-primary">
                       {metrics.hasData ? "Looking Good!" : "No Insights Yet"}
                     </h3>
-                    <p className="text-[#52796F] mt-2">
+                    <p className="text-text-muted mt-2">
                       {metrics.hasData 
                         ? "Your metrics are within healthy ranges. Keep monitoring!"
                         : "Enter financial data to generate insights"

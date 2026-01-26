@@ -10,6 +10,7 @@
   />
 
   <style>
+/* DARK MODE VARIABLES - MUST MATCH index.html */
     :root {
       --ink: #0f172a;
       --muted: #475569;
@@ -18,8 +19,21 @@
       --brand: #1B4332;
       --gold: #D4AF37;
       --bg: #f8fafc;
-      --accent: #dc2626;
-      --success: #059669;
+    }
+
+    .dark-mode {
+      --ink: #f8fafc;
+      --muted: #94a3b8;
+      --paper: #1e293b;
+      --rule: #334155;
+      --brand: #2D6A4F;
+      --bg: #0f172a;
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--ink);
+      transition: background-color 0.3s, color 0.3s;
     }
 
     * {
