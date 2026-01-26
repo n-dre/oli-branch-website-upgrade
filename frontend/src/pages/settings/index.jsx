@@ -118,7 +118,7 @@ export default function Settings() {
         {/* Section 2 */}
         <Card className="border border-[#52796F]/10 rounded-2xl overflow-hidden bg-white">
           <CardContent className="p-0">
-            <Row icon={User} label="GpsRadius" onClick={() => go("/settings/GpsRadius")} />
+            <Row icon={User} label="GpsRadius" onClick={() => go("/settings/Gps")} />
             <Divider />
             <Row icon={IdCard} label="Personal details" onClick={() => go("/settings/personal-details")} />
             <Divider />
@@ -128,7 +128,7 @@ export default function Settings() {
         {/* Section 3 */}
         <Card className="border border-[#52796F]/10 rounded-2xl overflow-hidden bg-white">
           <CardContent className="p-0">
-            <Row icon={Bell} label="Notifications & sounds" onClick={() => go("/settings/notifications-sounds")} />
+            <Row icon={Bell} label="Notifications & sounds" onClick={() => go("/notifications")} />
             <Divider />
             <Row icon={Wallet} label="Payments" onClick={() => go("/payment")} />
             <Divider />
