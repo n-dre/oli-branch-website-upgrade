@@ -1,4 +1,4 @@
-// src/pages/settings/PrivacySafety.jsx
+// src/pages/settings/LegalPolicies.jsx
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
@@ -11,7 +11,7 @@ import {
   UserCheck, Calendar, FileText, HelpCircle, ArrowLeft
 } from "lucide-react";
 
-export default function PrivacySafety() {
+export default function LegalPolicies() {
   const navigate = useNavigate();
   
   const [state, setState] = useState({
@@ -129,7 +129,7 @@ export default function PrivacySafety() {
           </div>
           
           <div>
-            <h1 className="text-3xl font-bold text-white mb-2">Privacy & Safety Center</h1>
+            <h1 className="text-3xl font-bold text-charcoal mb-2">Privacy & Safety Center</h1>
             <p className="text-gray-600 mt-2">
               Take control of your data. Manage visibility, security, and communication preferences to protect your financial information.
             </p>
@@ -343,7 +343,7 @@ export default function PrivacySafety() {
           />
           
           <div className="space-y-4 pt-4">
-            <div className="p-4 border border-gray-200 rounded-lg bg-white">
+            <div className="p-4 border border-gray-300 rounded-lg bg-gray-100">
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                 <div className="space-y-1">
                   <h3 className="font-semibold text-gray-900 flex items-center gap-2">
@@ -361,14 +361,14 @@ export default function PrivacySafety() {
                   variant="outline" 
                   onClick={handleExportData}
                   disabled={!state.allowDataExport}
-                  className="whitespace-nowrap"
+                  className="whitespace-nowrap bg-white"
                 >
                   Request Export
                 </Button>
               </div>
             </div>
 
-            <div className="p-4 border border-red-200 rounded-lg bg-red-50">
+            <div className="p-4 border border-red-300 rounded-lg bg-red-100">
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                 <div className="space-y-1">
                   <h3 className="font-semibold text-red-900 flex items-center gap-2">
@@ -384,7 +384,7 @@ export default function PrivacySafety() {
                 </div>
                 <Button 
                   variant="outline"
-                  className="border-red-300 text-red-600 hover:bg-red-100 hover:text-red-700"
+                  className="border-red-400 text-red-600 hover:bg-red-200 hover:text-red-700 bg-white"
                   onClick={handleDeleteAccount}
                 >
                   Delete Account
@@ -395,7 +395,7 @@ export default function PrivacySafety() {
         </SectionCard>
 
         {/* Legal Documents */}
-        <Card className="rounded-xl border border-gray-200 shadow-sm">
+        <Card className="rounded-xl border border-gray-300 shadow-sm bg-gray-100">
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <FileText className="h-5 w-5" />
@@ -418,15 +418,14 @@ export default function PrivacySafety() {
                   icon: UserCheck,
                   external: true
                 },
-
               ].map((doc) => (
                 <a
                   key={doc.name}
                   href={doc.href}
-                  className="group p-4 border border-gray-200 rounded-lg hover:border-gray-300 hover:bg-gray-50 transition-all duration-200"
+                  className="group p-4 border border-gray-300 rounded-lg hover:border-gray-400 hover:bg-gray-200 transition-all duration-200 bg-white"
                 >
                   <div className="flex items-center gap-3">
-                    <div className="p-2 bg-gray-100 rounded-lg group-hover:bg-gray-200 transition-colors">
+                    <div className="p-2 bg-gray-200 rounded-lg group-hover:bg-gray-300 transition-colors">
                       <doc.icon className="h-4 w-4 text-gray-600" />
                     </div>
                     <div>
@@ -443,7 +442,7 @@ export default function PrivacySafety() {
         </Card>
 
         {/* Footer Actions */}
-        <div className="sticky bottom-6 bg-white/90 backdrop-blur-sm border border-gray-200 rounded-xl p-6 shadow-lg">
+        <div className="sticky bottom-6 bg-gray-100 backdrop-blur-sm border border-gray-300 rounded-xl p-6 shadow-lg">
           <div className="flex flex-col md:flex-row justify-between items-center gap-4">
             <div className="space-y-1 text-center md:text-left">
               <p className="font-medium text-gray-900">Need help with privacy settings?</p>
@@ -459,7 +458,7 @@ export default function PrivacySafety() {
               <Button
                 variant="outline"
                 onClick={handleResetSettings}
-                className="gap-2"
+                className="gap-2 bg-white"
               >
                 <HelpCircle className="h-4 w-4" />
                 Reset to Defaults
@@ -475,7 +474,7 @@ export default function PrivacySafety() {
             </div>
           </div>
           
-          <div className="text-xs text-gray-500 mt-4 pt-4 border-t border-gray-200">
+          <div className="text-xs text-gray-500 mt-4 pt-4 border-t border-gray-300">
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
               <div>
                 <p>
@@ -504,7 +503,7 @@ export default function PrivacySafety() {
 // Helper Components
 function SectionCard({ title, description, icon, children }) {
   return (
-    <Card className="rounded-xl border border-gray-200 shadow-sm">
+    <Card className="rounded-xl border border-gray-300 shadow-sm bg-gray-100">
       <CardHeader>
         <CardTitle className="flex items-center gap-2 text-lg">
           {icon}
@@ -521,7 +520,7 @@ function SectionCard({ title, description, icon, children }) {
 
 function ToggleRow({ title, description, details, icon: Icon, checked, onChange }) {
   return (
-    <div className="group flex items-start justify-between gap-4 p-4 border border-gray-200 rounded-lg hover:border-gray-300 hover:bg-gray-50 transition-all duration-200">
+    <div className="group flex items-start justify-between gap-4 p-4 border border-gray-200 rounded-lg hover:border-gray-300 hover:bg-gray-50 transition-all duration-200 bg-gray-100">
       <div className="space-y-2 flex-1">
         <div className="flex items-center gap-3">
           <div className="p-1.5 bg-gray-100 rounded-md group-hover:bg-gray-200 transition-colors">

@@ -696,6 +696,7 @@ SSBCI: ${selectedScoring.ssbciLink}
                           <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-primary/20 to-primary/10 flex items-center justify-center">
                             <Building2 className="h-6 w-6 text-primary" />
                           </div>
+
                           <div>
                             <CardTitle className="text-2xl flex items-center gap-2">
                               {selectedResponse.businessName}
@@ -703,15 +704,18 @@ SSBCI: ${selectedScoring.ssbciLink}
                                 {selectedResponse.entityType}
                               </Badge>
                             </CardTitle>
+
                             <CardDescription className="mt-1 flex flex-wrap items-center gap-3">
                               <span className="flex items-center gap-1">
                                 <Calendar className="h-3 w-3" />
                                 {new Date(selectedResponse.timestamp).toLocaleDateString()}
                               </span>
+
                               <span className="flex items-center gap-1">
                                 <Clock className="h-3 w-3" />
                                 {getTimeSinceSubmission(selectedResponse.timestamp)}
                               </span>
+
                               <span>{selectedResponse.email}</span>
                             </CardDescription>
                           </div>
@@ -725,7 +729,12 @@ SSBCI: ${selectedScoring.ssbciLink}
                           onClick={() => handleShare("link")}
                           className="relative btn-secondary"
                         >
-                          {copiedLink ? <Check className="h-4 w-4" /> : <Share2 className="h-4 w-4" />}
+                          {copiedLink ? (
+                            <Check className="h-4 w-4" />
+                          ) : (
+                            <Share2 className="h-4 w-4" />
+                          )}
+
                           {copiedLink && (
                             <span className="absolute -top-2 -right-2 text-xs bg-primary text-primary-foreground rounded-full px-1.5 py-0.5">
                               Copied!
@@ -733,11 +742,21 @@ SSBCI: ${selectedScoring.ssbciLink}
                           )}
                         </Button>
 
-                        <Button variant="outline" size="sm" onClick={handleDownload} className="btn-secondary">
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={handleDownload}
+                          className="btn-secondary"
+                        >
                           <Download className="h-4 w-4" />
                         </Button>
 
-                        <Button variant="default" size="sm" onClick={handleExportPDF} className="gap-2 btn-primary">
+                        <Button
+                          variant="default"
+                          size="sm"
+                          onClick={handleExportPDF}
+                          className="gap-2 btn-primary"
+                        >
                           <FileText className="h-4 w-4" />
                           Export
                         </Button>
@@ -746,10 +765,21 @@ SSBCI: ${selectedScoring.ssbciLink}
                   </CardHeader>
                 </Card>
 
-                {/* Enhanced Score Overview */}
+                {/* Oli Summary */}
+                <Card className="hover-card">
+                  <CardContent className="pt-4">
+                    <Badge className="mb-2">Oli Summary</Badge>
+
+                    <p className="text-sm text-muted-foreground leading-relaxed">
+                      {selectedScoring?.oliSummary ||
+                        "Oli analyzed your financial structure and identified areas where banking mismatches and operational friction are creating unnecessary financial leaks. Addressing these issues can significantly improve your financial stability and growth potential."}
+                    </p>
+                  </CardContent>
+                </Card>
+
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                  {/* Animated Score Circle */}
-                  <Card className="md:col-span-1 hover-card">
+                  {/* Mismatch Score */}
+                  <Card className="hover-card">
                     <CardContent className="pt-6 flex flex-col items-center">
                       <div className="relative w-32 h-32 mb-4">
                         <svg className="w-full h-full -rotate-90" viewBox="0 0 100 100">
@@ -760,7 +790,6 @@ SSBCI: ${selectedScoring.ssbciLink}
                             fill="none"
                             stroke="hsl(var(--muted))"
                             strokeWidth="8"
-                            strokeLinecap="round"
                           />
                           <motion.circle
                             cx="50"
@@ -772,32 +801,24 @@ SSBCI: ${selectedScoring.ssbciLink}
                             strokeDasharray="283"
                             strokeLinecap="round"
                             initial={{ strokeDashoffset: 283 }}
-                            animate={{ strokeDashoffset: 283 - selectedScoring.mismatchScore * 2.83 }}
-                            transition={{ duration: 1, ease: "easeOut" }}
+                            animate={{
+                              strokeDashoffset: 283 - selectedScoring.mismatchScore * 2.83,
+                            }}
+                            transition={{ duration: 1 }}
                           />
                         </svg>
+
                         <div className="absolute inset-0 flex flex-col items-center justify-center">
-                          <motion.span
-                            className="text-3xl font-bold"
-                            initial={{ scale: 0 }}
-                            animate={{ scale: 1 }}
-                            transition={{ delay: 0.5, type: "spring" }}
-                          >
+                          <span className="text-3xl font-bold">
                             {selectedScoring.mismatchScore}
-                          </motion.span>
-                          <span className="text-xs text-muted-foreground">Mismatch Score</span>
+                          </span>
+                          <span className="text-xs text-muted-foreground">
+                            Mismatch Score
+                          </span>
                         </div>
                       </div>
 
                       <Badge
-                        variant={
-                          selectedScoring.riskLabel === "High"
-                            ? "destructive"
-                            : selectedScoring.riskLabel === "Medium"
-                            ? "warning"
-                            : "success"
-                        }
-                        className="text-sm px-4 py-1.5 mb-2"
                         style={{
                           background: RISK_GRADIENTS[selectedScoring.riskLabel],
                           color: "white",
@@ -805,111 +826,159 @@ SSBCI: ${selectedScoring.ssbciLink}
                       >
                         {selectedScoring.riskLabel} Risk
                       </Badge>
+                    </CardContent>
+                  </Card>
 
-                      <p className="text-xs text-muted-foreground text-center">
-                        {selectedScoring.riskLabel === "High"
-                          ? "Immediate attention recommended"
-                          : selectedScoring.riskLabel === "Medium"
-                          ? "Review recommended"
-                          : "Good match with current banking"}
+                  {/* Financial Health Score */}
+                  <Card className="hover-card">
+                    <CardContent className="pt-6 flex flex-col items-center">
+                      <div className="relative w-32 h-32 mb-4">
+                        <svg className="w-full h-full -rotate-90" viewBox="0 0 100 100">
+                          <circle
+                            cx="50"
+                            cy="50"
+                            r="45"
+                            fill="none"
+                            stroke="hsl(var(--muted))"
+                            strokeWidth="8"
+                          />
+                          <motion.circle
+                            cx="50"
+                            cy="50"
+                            r="45"
+                            fill="none"
+                            stroke="#10B981"
+                            strokeWidth="8"
+                            strokeDasharray="283"
+                            strokeLinecap="round"
+                            initial={{ strokeDashoffset: 283 }}
+                            animate={{
+                              strokeDashoffset:
+                                283 - selectedScoring.financialHealthScore * 2.83,
+                            }}
+                            transition={{ duration: 1 }}
+                          />
+                        </svg>
+
+                        <div className="absolute inset-0 flex flex-col items-center justify-center">
+                          <span className="text-3xl font-bold">
+                            {selectedScoring.financialHealthScore}
+                          </span>
+                          <span className="text-xs text-muted-foreground">
+                            Health Score
+                          </span>
+                        </div>
+                      </div>
+
+                      <Badge className="bg-green-600 text-white">
+                        Financial Health
+                      </Badge>
+                    </CardContent>
+                  </Card>
+
+                  {/* Financial Overview */}
+                  <Card className="hover-card">
+                    <CardContent className="pt-6 text-center">
+                      <p className="text-sm text-muted-foreground">
+                        Financial overview metrics appear here.
                       </p>
                     </CardContent>
                   </Card>
-
-                  {/* Enhanced Key Metrics */}
-                  <Card className="md:col-span-2 hover-card">
-                    <CardHeader className="pb-3">
-                      <CardTitle className="text-lg flex items-center gap-2">
-                        <BarChart3 className="h-5 w-5 text-accent" />
-                        Financial Overview
-                        <button
-                          type="button"
-                          className="ml-1 text-muted-foreground hover:text-foreground transition-colors"
-                          onClick={() => toast.info("Monthly revenue and fee analysis")}
-                        >
-                          <Info className="h-4 w-4" />
-                        </button>
-                      </CardTitle>
-                    </CardHeader>
-
-                    <CardContent className="space-y-4">
-                      <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-                        <div className="p-3 rounded-lg bg-gradient-to-br from-blue-500/10 to-blue-600/5 border border-blue-200/50">
-                          <p className="text-xs text-muted-foreground mb-1">Monthly Revenue</p>
-                          <p className="text-xl font-bold text-foreground">
-                            ${Number(selectedResponse.monthlyRevenue || 0).toLocaleString()}
-                          </p>
-                        </div>
-
-                        <div className="p-3 rounded-lg bg-gradient-to-br from-amber-500/10 to-amber-600/5 border border-amber-200/50">
-                          <p className="text-xs text-muted-foreground mb-1">Monthly Fees</p>
-                          <p className="text-xl font-bold text-foreground">${selectedResponse.monthlyFees}</p>
-                        </div>
-
-                        <div className="p-3 rounded-lg bg-gradient-to-br from-red-500/10 to-red-600/5 border border-red-200/50">
-                          <p className="text-xs text-muted-foreground mb-1">Fee Waste</p>
-                          <p className="text-xl font-bold text-foreground">{selectedScoring.feeWastePercent.toFixed(2)}%</p>
-                          <p className="text-xs text-muted-foreground">of revenue</p>
-                        </div>
-
-                        <div className="p-3 rounded-lg bg-gradient-to-br from-green-500/10 to-green-600/5 border border-green-200/50">
-                          <p className="text-xs text-muted-foreground mb-1">Potential Savings</p>
-                          <p className="text-xl font-bold text-foreground">
-                            $
-                            {Math.round(
-                              Number(selectedResponse.monthlyRevenue || 0) *
-                                (Number(selectedScoring.feeWastePercent || 0) / 100)
-                            ).toLocaleString()}
-                          </p>
-                          <p className="text-xs text-muted-foreground">per month</p>
-                        </div>
-                      </div>
-
-                      <div className="space-y-2">
-                        <div className="flex justify-between text-sm">
-                          <span className="text-muted-foreground">Fee Waste Percentage</span>
-                          <span className="font-medium">{selectedScoring.feeWastePercent.toFixed(2)}%</span>
-                        </div>
-                        <Progress
-                          value={Math.min(selectedScoring.feeWastePercent * 10, 100)}
-                          className="h-2 progress-gradient"
-                          indicatorClassName={cn(
-                            selectedScoring.feeWastePercent > 10
-                              ? "risk-high-progress"
-                              : selectedScoring.feeWastePercent > 5
-                              ? "risk-medium-progress"
-                              : "risk-low-progress"
-                          )}
-                        />
-                      </div>
-
-                      <div className="flex flex-wrap gap-2 pt-2">
-                        <Badge variant="outline" className="gap-1 category-badge">
-                          <Building2 className="h-3 w-3" />
-                          {selectedResponse.accountType} account
-                        </Badge>
-                        {selectedResponse.cashDeposits && (
-                          <Badge variant="secondary" className="gap-1 tag-badge">
-                            <DollarSign className="h-3 w-3" />
-                            Cash deposits
-                          </Badge>
-                        )}
-                        {selectedResponse.veteranOwned && (
-                          <Badge variant="success" className="gap-1 tag-badge">
-                            <Award className="h-3 w-3" />
-                            Veteran Owned
-                          </Badge>
-                        )}
-                        {selectedResponse.immigrantFounder && (
-                          <Badge variant="success" className="gap-1 tag-badge">
-                            <Users className="h-3 w-3" />
-                            Immigrant Founder
-                          </Badge>
-                        )}
-                      </div>
-                    </CardContent>
-                  </Card>
                 </div>
+
+                {/* Enhanced Key Metrics */}
+                <Card className="md:col-span-2 hover-card">
+                  <CardHeader className="pb-3">
+                    <CardTitle className="text-lg flex items-center gap-2">
+                      <BarChart3 className="h-5 w-5 text-accent" />
+                      Financial Overview
+                      <button
+                        type="button"
+                        className="ml-1 text-muted-foreground hover:text-foreground transition-colors"
+                        onClick={() => toast.info("Monthly revenue and fee analysis")}
+                      >
+                        <Info className="h-4 w-4" />
+                      </button>
+                    </CardTitle>
+                  </CardHeader>
+
+                  <CardContent className="space-y-4">
+                    <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+                      <div className="p-3 rounded-lg bg-gradient-to-br from-blue-500/10 to-blue-600/5 border border-blue-200/50">
+                        <p className="text-xs text-muted-foreground mb-1">Monthly Revenue</p>
+                        <p className="text-xl font-bold text-foreground">
+                          ${Number(selectedResponse.monthlyRevenue || 0).toLocaleString()}
+                        </p>
+                      </div>
+
+                      <div className="p-3 rounded-lg bg-gradient-to-br from-amber-500/10 to-amber-600/5 border border-amber-200/50">
+                        <p className="text-xs text-muted-foreground mb-1">Monthly Fees</p>
+                        <p className="text-xl font-bold text-foreground">${selectedResponse.monthlyFees}</p>
+                      </div>
+
+                      <div className="p-3 rounded-lg bg-gradient-to-br from-red-500/10 to-red-600/5 border border-red-200/50">
+                        <p className="text-xs text-muted-foreground mb-1">Fee Waste</p>
+                        <p className="text-xl font-bold text-foreground">{selectedScoring.feeWastePercent.toFixed(2)}%</p>
+                        <p className="text-xs text-muted-foreground">of revenue</p>
+                      </div>
+
+                      <div className="p-3 rounded-lg bg-gradient-to-br from-green-500/10 to-green-600/5 border border-green-200/50">
+                        <p className="text-xs text-muted-foreground mb-1">Potential Savings</p>
+                        <p className="text-xl font-bold text-foreground">
+                          $
+                          {Math.round(
+                            Number(selectedResponse.monthlyRevenue || 0) *
+                              (Number(selectedScoring.feeWastePercent || 0) / 100)
+                          ).toLocaleString()}
+                        </p>
+                        <p className="text-xs text-muted-foreground">per month</p>
+                      </div>
+                    </div>
+
+                    <div className="space-y-2">
+                      <div className="flex justify-between text-sm">
+                        <span className="text-muted-foreground">Fee Waste Percentage</span>
+                        <span className="font-medium">{selectedScoring.feeWastePercent.toFixed(2)}%</span>
+                      </div>
+                      <Progress
+                        value={Math.min(selectedScoring.feeWastePercent * 10, 100)}
+                        className="h-2 progress-gradient"
+                        indicatorClassName={cn(
+                          selectedScoring.feeWastePercent > 10
+                            ? "risk-high-progress"
+                            : selectedScoring.feeWastePercent > 5
+                            ? "risk-medium-progress"
+                            : "risk-low-progress"
+                        )}
+                      />
+                    </div>
+
+                    <div className="flex flex-wrap gap-2 pt-2">
+                      <Badge variant="outline" className="gap-1 category-badge">
+                        <Building2 className="h-3 w-3" />
+                        {selectedResponse.accountType} account
+                      </Badge>
+                      {selectedResponse.cashDeposits && (
+                        <Badge variant="secondary" className="gap-1 tag-badge">
+                          <DollarSign className="h-3 w-3" />
+                          Cash deposits
+                        </Badge>
+                      )}
+                      {selectedResponse.veteranOwned && (
+                        <Badge variant="success" className="gap-1 tag-badge">
+                          <Award className="h-3 w-3" />
+                          Veteran Owned
+                        </Badge>
+                      )}
+                      {selectedResponse.immigrantFounder && (
+                        <Badge variant="success" className="gap-1 tag-badge">
+                          <Users className="h-3 w-3" />
+                          Immigrant Founder
+                        </Badge>
+                      )}
+                    </div>
+                  </CardContent>
+                </Card>
 
                 {/* Enhanced Tabs for Details */}
                 <Tabs defaultValue="issues" className="w-full">
@@ -1317,3 +1386,4 @@ SSBCI: ${selectedScoring.ssbciLink}
     </DashboardLayout>
   );
 }
+

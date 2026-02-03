@@ -37,7 +37,7 @@ function InlineSwitch({ checked, onChange, disabled }) {
       onClick={() => !disabled && onChange(!checked)}
       className={[
         "relative inline-flex h-6 w-11 items-center rounded-full transition-colors",
-        checked ? "bg-[#1B4332]" : "bg-gray-300",
+        checked ? "bg-[#1B4332]" : "bg-gray-300 dark:bg-gray-600",
         disabled ? "opacity-50 cursor-not-allowed" : "cursor-pointer",
       ].join(" ")}
     >
@@ -51,30 +51,56 @@ function InlineSwitch({ checked, onChange, disabled }) {
   );
 }
 
-function Row({ icon: Icon, label, value, onClick, dot, rightNode }) {
+function Row({ icon: Icon, label, value, onClick, dot, }) {
+  const { themeMode } = useTheme();
+  
   return (
     <button
       type="button"
       onClick={onClick}
-      className="w-full flex items-center justify-between gap-3 px-4 py-3 text-left hover:bg-[#52796F]/5 active:bg-[#52796F]/10 transition-colors"
+      className="w-full flex items-center justify-between gap-3 px-4 py-3 text-left hover:bg-[#52796F]/5 dark:hover:bg-white/5 active:bg-[#52796F]/10 dark:active:bg-white/10 transition-colors"
     >
       <div className="flex items-center gap-3 min-w-0">
-        <div className="w-10 h-10 rounded-xl bg-white flex items-center justify-center border border-[#52796F]/15">
-          <Icon className="w-5 h-5 text-[#1B4332]" />
+        <div className={`w-10 h-10 rounded-xl flex items-center justify-center border ${
+          themeMode === 'dark' 
+            ? 'bg-gray-800 border-gray-700' 
+            : 'bg-white border-[#52796F]/15'
+        }`}>
+          <Icon className={`w-5 h-5 ${
+            themeMode === 'dark' ? 'text-white' : 'text-[#1B4332]'
+          }`} />
         </div>
-        <p className="font-medium text-[#1B4332] truncate">{label}</p>
+        <p className={`font-medium truncate ${
+          themeMode === 'dark' ? 'text-white' : 'text-[#1B4332]'
+        }`}>
+          {label}
+        </p>
       </div>
       <div className="flex items-center gap-2 shrink-0">
         {dot && <span className="w-2 h-2 rounded-full bg-blue-500" />}
-        {value && <span className="text-sm text-[#52796F]">{value}</span>}
-        {rightNode || <ChevronRight className="w-4 h-4 text-[#52796F]" />}
+        {value && (
+          <span className={`text-sm ${
+            themeMode === 'dark' ? 'text-gray-400' : 'text-[#52796F]'
+          }`}>
+            {value}
+          </span>
+        )}
+        <ChevronRight className={`w-4 h-4 ${
+          themeMode === 'dark' ? 'text-gray-400' : 'text-[#52796F]'
+        }`} />
       </div>
     </button>
   );
 }
 
 function Divider() {
-  return <div className="h-px bg-[#52796F]/10 mx-4" />;
+  const { themeMode } = useTheme();
+  
+  return (
+    <div className={`h-px mx-4 ${
+      themeMode === 'dark' ? 'bg-gray-700' : 'bg-[#52796F]/10'
+    }`} />
+  );
 }
 
 export default function Settings() {
@@ -93,16 +119,36 @@ export default function Settings() {
   const go = (path) => navigate(path);
 
   return (
-    <DashboardLayout title="Settings" subtitle="Manage your account, privacy, notifications, and preferences">
-      <motion.div initial={{ opacity: 0, y: 14 }} animate={{ opacity: 1, y: 0 }} className="space-y-5">
-
+    <DashboardLayout 
+      title="Settings" 
+      subtitle="Manage your account, privacy, notifications, and preferences"
+    >
+      <motion.div 
+        initial={{ opacity: 0, y: 14 }} 
+        animate={{ opacity: 1, y: 0 }} 
+        className="space-y-5"
+      >
         {/* Section 1 */}
-        <Card className="border border-[#52796F]/10 rounded-2xl overflow-hidden bg-white">
+        <Card className={`
+          border rounded-2xl overflow-hidden
+          ${themeMode === 'dark' 
+            ? 'border-gray-700 bg-gray-800' 
+            : 'border-[#52796F]/10 bg-white'
+          }
+        `}>
           <CardContent className="p-0">
-            <div className="flex items-center justify-between px-4 py-3">
+            <div className={`flex items-center justify-between px-4 py-3 ${
+              themeMode === 'dark' ? 'bg-gray-800' : 'bg-white'
+            }`}>
               <div className="flex items-center gap-3">
-                <Users className="w-5 h-5 text-[#1B4332]" />
-                <p className="font-medium text-[#1B4332]">Active status</p>
+                <Users className={`w-5 h-5 ${
+                  themeMode === 'dark' ? 'text-white' : 'text-[#1B4332]'
+                }`} />
+                <p className={`font-medium ${
+                  themeMode === 'dark' ? 'text-white' : 'text-[#1B4332]'
+                }`}>
+                  Active status
+                </p>
               </div>
               <InlineSwitch checked={activeStatus} onChange={setActiveStatus} />
             </div>
@@ -116,7 +162,13 @@ export default function Settings() {
         </Card>
 
         {/* Section 2 */}
-        <Card className="border border-[#52796F]/10 rounded-2xl overflow-hidden bg-white">
+        <Card className={`
+          border rounded-2xl overflow-hidden
+          ${themeMode === 'dark' 
+            ? 'border-gray-700 bg-gray-800' 
+            : 'border-[#52796F]/10 bg-white'
+          }
+        `}>
           <CardContent className="p-0">
             <Row icon={User} label="GpsRadius" onClick={() => go("/settings/Gps")} />
             <Divider />
@@ -125,8 +177,15 @@ export default function Settings() {
             <Row icon={KeyRound} label="Password & security" onClick={() => go("/settings/password-security")} />
           </CardContent>
         </Card>
+
         {/* Section 3 */}
-        <Card className="border border-[#52796F]/10 rounded-2xl overflow-hidden bg-white">
+        <Card className={`
+          border rounded-2xl overflow-hidden
+          ${themeMode === 'dark' 
+            ? 'border-gray-700 bg-gray-800' 
+            : 'border-[#52796F]/10 bg-white'
+          }
+        `}>
           <CardContent className="p-0">
             <Row icon={Bell} label="Notifications & sounds" onClick={() => go("/notifications")} />
             <Divider />
@@ -143,7 +202,13 @@ export default function Settings() {
         </Card>
 
         {/* Section 4 */}
-        <Card className="border border-[#52796F]/10 rounded-2xl overflow-hidden bg-white">
+        <Card className={`
+          border rounded-2xl overflow-hidden
+          ${themeMode === 'dark' 
+            ? 'border-gray-700 bg-gray-800' 
+            : 'border-[#52796F]/10 bg-white'
+          }
+        `}>
           <CardContent className="p-0">
             <Row icon={Flag} label="OrganizationSettings" onClick={() => go("/settings/Organization")} />
             <Divider />
@@ -156,4 +221,3 @@ export default function Settings() {
     </DashboardLayout>
   );
 }
-

@@ -208,7 +208,7 @@ const About = () => {
                 rel="noopener noreferrer"
                 className="btn-primary px-6 py-2 rounded-lg font-medium inline-flex items-center justify-center"
               >
-                Free Demo Audit
+                Run an Audit
               </a>
             </div>
             </div>
@@ -235,7 +235,7 @@ const About = () => {
                 className="px-8 py-4 rounded-lg text-lg font-bold hover:opacity-90 transition-all"
                 style={{ backgroundColor: colors.gold, color: colors.forest }}
               >
-                Start a Free 14-Day Trial
+                Start a Free 7-Day Trial
               </Link>
               <a href="#story" className="btn-secondary px-8 py-4 rounded-lg text-lg font-semibold">
                 Our Story

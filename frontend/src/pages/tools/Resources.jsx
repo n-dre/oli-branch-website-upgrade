@@ -101,7 +101,7 @@ const ResourcesPage = () => {
                 rel="noopener noreferrer"
                 className="btn-primary px-6 py-2 rounded-lg font-medium inline-flex items-center justify-center"
               >
-               Free Demo Audit
+               Run an Audit
               </a>
             </div>
           </div>

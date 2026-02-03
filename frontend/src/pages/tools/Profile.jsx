@@ -182,6 +182,15 @@ export default function Profile() {
           transform: translateY(-2px);
           box-shadow: 0 10px 20px rgba(27, 67, 50, 0.3);
         }
+        
+        /* Dark mode overrides */
+        .dark .btn-primary {
+          background: #2D5548 !important;
+        }
+        .dark .btn-primary:hover {
+          background: #3A6B5D !important;
+        }
+        
         @media (max-width: 1024px) {
           .profile-grid { grid-template-columns: 1fr !important; }
         }
@@ -193,10 +202,10 @@ export default function Profile() {
         className="grid profile-grid grid-cols-1 lg:grid-cols-2 gap-6"
       >
         {/* PROFILE */}
-        <Card className="border-none shadow-none bg-[#f5f5f5]">
+        <Card className="border-none shadow-none bg-white dark:bg-gray-900">
           <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <User className="h-5 w-5 text-[#1B4332]" />
+            <CardTitle className="flex items-center gap-2 text-gray-900 dark:text-gray-100">
+              <User className="h-5 w-5 text-[#1B4332] dark:text-emerald-400" />
               Profile Information
             </CardTitle>
           </CardHeader>
@@ -207,7 +216,7 @@ export default function Profile() {
               <div className="shrink-0">
                 {/* Round Avatar - fixed aspect ratio */}
                 <div 
-                  className="relative w-20 h-20 rounded-full border-2 border-[#1B4332]/20 shadow-md overflow-hidden bg-[#1B4332]"
+                  className="relative w-20 h-20 rounded-full border-2 border-[#1B4332]/20 dark:border-emerald-400/30 shadow-md overflow-hidden bg-[#1B4332] dark:bg-emerald-900"
                   data-testid="profile-avatar"
                   style={{ aspectRatio: '1 / 1' }}
                 >
@@ -218,7 +227,7 @@ export default function Profile() {
                       className="absolute inset-0 w-full h-full object-cover rounded-full"
                     />
                   ) : (
-                    <div className="absolute inset-0 w-full h-full flex items-center justify-center text-white text-xl font-semibold">
+                    <div className="absolute inset-0 w-full h-full flex items-center justify-center text-white dark:text-emerald-100 text-xl font-semibold">
                       {initials}
                     </div>
                   )}
@@ -226,9 +235,9 @@ export default function Profile() {
               </div>
 
               <div className="flex-1 min-w-0 w-full space-y-2">
-                <div className="text-xs text-muted-foreground">Header preview</div>
+                <div className="text-xs text-muted-foreground dark:text-gray-400">Header preview</div>
 
-                <div className="font-semibold text-[#1B4332] truncate">
+                <div className="font-semibold text-[#1B4332] dark:text-emerald-300 truncate">
                   {headerNamePreview}
                 </div>
 
@@ -249,7 +258,7 @@ export default function Profile() {
                     type="button"
                     variant="outline"
                     size="sm"
-                    className="w-full sm:w-auto flex items-center justify-center gap-2 hover:bg-[#1B4332] hover:text-white transition-colors"
+                    className="w-full sm:w-auto flex items-center justify-center gap-2 hover:bg-[#1B4332] hover:text-white dark:hover:bg-emerald-600 dark:hover:text-white transition-colors border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300"
                     onClick={handleUploadClick}
                     data-testid="upload-logo-btn"
                   >
@@ -262,7 +271,7 @@ export default function Profile() {
                     type="button"
                     variant="outline"
                     size="sm"
-                    className="w-full sm:w-auto flex items-center justify-center gap-2 hover:bg-red-500 hover:text-white hover:border-red-500 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                    className="w-full sm:w-auto flex items-center justify-center gap-2 hover:bg-red-500 hover:text-white hover:border-red-500 dark:hover:bg-red-600 dark:hover:border-red-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300"
                     onClick={handleRemoveLogo}
                     disabled={!currentLogo}
                     data-testid="remove-logo-btn"
@@ -275,34 +284,37 @@ export default function Profile() {
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="fullName">Full Name (optional)</Label>
+              <Label htmlFor="fullName" className="text-gray-700 dark:text-gray-300">Full Name (optional)</Label>
               <Input
                 id="fullName"
                 value={profile.fullName}
                 onChange={(e) => setProfile((p) => ({ ...p, fullName: e.target.value }))}
+                className="bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600 text-gray-900 dark:text-gray-100"
                 data-testid="full-name-input"
               />
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="email">Email</Label>
+              <Label htmlFor="email" className="text-gray-700 dark:text-gray-300">Email</Label>
               <Input
                 id="email"
                 type="email"
                 value={profile.email}
                 onChange={(e) => setProfile((p) => ({ ...p, email: e.target.value }))}
+                className="bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600 text-gray-900 dark:text-gray-100"
                 data-testid="email-input"
               />
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="companyName">Company Name (shown in header)</Label>
+              <Label htmlFor="companyName" className="text-gray-700 dark:text-gray-300">Company Name (shown in header)</Label>
               <Input
                 id="companyName"
                 value={profile.companyName}
                 onChange={(e) =>
                   setProfile((p) => ({ ...p, companyName: e.target.value }))
                 }
+                className="bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600 text-gray-900 dark:text-gray-100"
                 data-testid="company-name-input"
               />
             </div>
@@ -318,7 +330,7 @@ export default function Profile() {
               <Button 
                 type="button" 
                 variant="outline" 
-                className="w-full sm:w-auto" 
+                className="w-full sm:w-auto border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800" 
                 onClick={handleReset}
                 data-testid="cancel-btn"
               >
@@ -326,54 +338,57 @@ export default function Profile() {
               </Button>
             </div>
 
-            <div className="text-xs text-muted-foreground">
-              This saves <b>companyName</b> + <b>companyLogo</b> for the header.
+            <div className="text-xs text-muted-foreground dark:text-gray-400">
+              This saves <b className="text-gray-900 dark:text-gray-200">companyName</b> + <b className="text-gray-900 dark:text-gray-200">companyLogo</b> for the header.
             </div>
           </CardContent>
         </Card>
 
         {/* SECURITY */}
-        <Card className="border-none shadow-none bg-[#f5f5f5]">
+        <Card className="border-none shadow-none bg-white dark:bg-gray-900">
           <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <Lock className="h-5 w-5 text-[#1B4332]" />
+            <CardTitle className="flex items-center gap-2 text-gray-900 dark:text-gray-100">
+              <Lock className="h-5 w-5 text-[#1B4332] dark:text-emerald-400" />
               Account Settings
             </CardTitle>
           </CardHeader>
 
           <CardContent className="space-y-4">
             <div className="space-y-2">
-              <Label htmlFor="currentPassword">Current Password</Label>
+              <Label htmlFor="currentPassword" className="text-gray-700 dark:text-gray-300">Current Password</Label>
               <Input
                 id="currentPassword"
                 type="password"
                 value={passwords.current}
                 onChange={(e) => setPasswords((p) => ({ ...p, current: e.target.value }))}
                 autoComplete="current-password"
+                className="bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600 text-gray-900 dark:text-gray-100"
                 data-testid="current-password-input"
               />
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="newPassword">New Password</Label>
+              <Label htmlFor="newPassword" className="text-gray-700 dark:text-gray-300">New Password</Label>
               <Input
                 id="newPassword"
                 type="password"
                 value={passwords.new}
                 onChange={(e) => setPasswords((p) => ({ ...p, new: e.target.value }))}
                 autoComplete="new-password"
+                className="bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600 text-gray-900 dark:text-gray-100"
                 data-testid="new-password-input"
               />
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="confirmPassword">Confirm New Password</Label>
+              <Label htmlFor="confirmPassword" className="text-gray-700 dark:text-gray-300">Confirm New Password</Label>
               <Input
                 id="confirmPassword"
                 type="password"
                 value={passwords.confirm}
                 onChange={(e) => setPasswords((p) => ({ ...p, confirm: e.target.value }))}
                 autoComplete="new-password"
+                className="bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600 text-gray-900 dark:text-gray-100"
                 data-testid="confirm-password-input"
               />
             </div>

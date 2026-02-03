@@ -82,7 +82,6 @@ const QuickStartGuide = safeLazy(
 );
 
 // ---------------- DASHBOARD ----------------
-const AdminDashboard = safeLazy(() => import("./pages/dashboard/AdminDashboard"), "AdminDashboard");
 const UserDashboard = safeLazy(() => import("./pages/dashboard/UserDashboard"), "UserDashboard");
 
 // ---------------- TOOLS ----------------
@@ -172,7 +171,6 @@ export default function App() {
                 <Route path="/privacy" element={<Privacy />} />
                 <Route path="/quick" element={<QuickStartGuide />} />
 
-                <Route path="/admin" element={<AdminDashboard />} />
                 <Route path="/dashboard" element={<UserDashboard />} />
 
                 <Route path="/tools" element={<Tools />} />
@@ -223,5 +221,3 @@ export default function App() {
     </ThemeProvider>
   );
 }
-
-

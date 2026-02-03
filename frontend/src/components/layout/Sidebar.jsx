@@ -178,7 +178,15 @@ export default function Sidebar({ collapsed = false, onCollapsedChange, onClose 
                   )
                 }
               >
-                <item.icon className="h-4 w-4 shrink-0 text-[#1B4332]" />
+                <item.icon
+                  className="
+                    h-4 w-4 shrink-0
+                    text-white
+                    group-[.active]:text-white
+                    dark:group-[.active]:text-[#1B4332]
+                  "
+                />
+
                 {!collapsed && (
                   <>
                     <span className="flex-1 whitespace-nowrap">{item.label}</span>

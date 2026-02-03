@@ -1,4 +1,4 @@
-// src/pages/LoginPage.jsx
+// src/pages/auth/LoginPage.jsx
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 

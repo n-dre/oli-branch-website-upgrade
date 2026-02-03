@@ -785,43 +785,53 @@ export default function FinancialHealth() {
       <div className="hero-gradient rounded-2xl p-6 mb-6 text-light">
         <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
           <div>
-            <h1 className="text-3xl font-bold text-light mb-2">
-              <Building className="h-8 w-8" />
+            <h1 className="text-2xl md:text-3xl font-bold text-light mb-2 flex items-center gap-2">
+              <Building className="h-6 w-6 md:h-8 md:w-8" />
               {formData.companyName || "Financial Health Analysis"}
             </h1>
-            <p className="text-light/90 mt-2">
+            <p className="text-light/90 mt-2 text-sm md:text-base">
               {metrics.hasData 
                 ? `${INDUSTRY_BENCHMARKS[formData.industry]?.name || 'Business'} • Last updated: ${new Date().toLocaleDateString()}`
                 : "Enter your financial data to get started"
               }
             </p>
           </div>
-          <div className="flex gap-3">
-            <Button 
-              variant="outline" 
-              className="bg-light/10 border-light/20 text-light hover:bg-light/20"
-              onClick={handleShareAnalysis}
-              disabled={!metrics.hasData}
-            >
-              <Share2 className="h-4 w-4 mr-2" />
-              Share
-            </Button>
-            <Button 
-              variant="outline" 
-              className="bg-light/10 border-light/20 text-light hover:bg-light/20"
-              onClick={() => handleExportReport("pdf")}
-              disabled={!metrics.hasData}
-            >
-              <FileText className="h-4 w-4 mr-2" />
-              Export
-            </Button>
-            <Button 
-              className="bg-light text-primary hover:bg-light/90"
-              onClick={() => setActiveView("input")}
-            >
-              <Calculator className="h-4 w-4 mr-2" />
-              {metrics.hasData ? "Update Data" : "Enter Data"}
-            </Button>
+          
+{/* Responsive Action Buttons */}
+          <div className="flex flex-col sm:flex-row gap-2 w-full sm:w-auto">
+            <div className="grid grid-cols-3 sm:flex sm:gap-2 gap-2 w-full">
+              {/* Share Button */}
+              <Button 
+                variant="outline" 
+                className="flex items-center justify-center gap-1.5 sm:gap-2 bg-light/10 border-light/20 text-light hover:bg-light/20 text-xs sm:text-sm md:text-base px-2 sm:px-3 py-2 h-auto min-h-[44px]"
+                onClick={handleShareAnalysis}
+                disabled={!metrics.hasData}
+              >
+                <Share2 className="h-4 w-4 flex-shrink-0" />
+                <span className="hidden sm:inline">Share</span>
+              </Button>
+              
+              {/* Export Button */}
+              <Button 
+                variant="outline" 
+                className="flex items-center justify-center gap-1.5 sm:gap-2 bg-light/10 border-light/20 text-light hover:bg-light/20 text-xs sm:text-sm md:text-base px-2 sm:px-3 py-2 h-auto min-h-[44px]"
+                onClick={() => handleExportReport("pdf")}
+                disabled={!metrics.hasData}
+              >
+                <FileText className="h-4 w-4 flex-shrink-0" />
+                <span className="hidden sm:inline">Export</span>
+              </Button>
+              
+              {/* Update/Enter Data Button */}
+              <Button 
+                className="flex items-center justify-center gap-1.5 sm:gap-2 bg-light text-primary hover:bg-light/90 text-xs sm:text-sm md:text-base px-2 sm:px-3 py-2 h-auto min-h-[44px]"
+                onClick={() => setActiveView("input")}
+              >
+                <Calculator className="h-4 w-4 flex-shrink-0" />
+                <span className="hidden sm:inline">{metrics.hasData ? "Update Data" : "Enter Data"}</span>
+                <span className="sm:hidden">{metrics.hasData ? "Update" : "Enter"}</span>
+              </Button>
+            </div>
           </div>
         </div>
       </div>
@@ -877,31 +887,61 @@ export default function FinancialHealth() {
       </div>
 
       <Tabs value={activeView} onValueChange={setActiveView} className="space-y-6">
-        <TabsList className="grid w-full grid-cols-4 lg:grid-cols-6 bg-surface border-border">
-          <TabsTrigger value="input" className="flex items-center gap-2 text-text data-[state=active]:bg-primary data-[state=active]:text-light">
+        <TabsList className="grid w-full grid-cols-4 lg:grid-cols-6 bg-card text-card border border-border rounded-xl">
+
+          <TabsTrigger
+            value="input"
+            className="flex items-center gap-2 text-text hover:bg-surface data-[state=active]:bg-muted data-[state=active]:text-text rounded-md transition-colors"
+          >
             <Calculator className="h-4 w-4" />
             <span className="hidden sm:inline">Input</span>
           </TabsTrigger>
-          <TabsTrigger value="dashboard" className="flex items-center gap-2 text-text data-[state=active]:bg-primary data-[state=active]:text-light" disabled={!metrics.hasData}>
+
+          <TabsTrigger
+            value="dashboard"
+            disabled={!metrics.hasData}
+            className="flex items-center gap-2 text-text hover:bg-surface data-[state=active]:bg-muted data-[state=active]:text-text rounded-md transition-colors"
+          >
             <BarChartIcon className="h-4 w-4" />
             <span className="hidden sm:inline">Dashboard</span>
           </TabsTrigger>
-          <TabsTrigger value="analysis" className="flex items-center gap-2 text-text data-[state=active]:bg-primary data-[state=active]:text-light" disabled={!metrics.hasData}>
+
+          <TabsTrigger
+            value="analysis"
+            disabled={!metrics.hasData}
+            className="flex items-center gap-2 text-text hover:bg-surface data-[state=active]:bg-muted data-[state=active]:text-text rounded-md transition-colors"
+          >
             <LineChartIcon className="h-4 w-4" />
             <span className="hidden sm:inline">Analysis</span>
           </TabsTrigger>
-          <TabsTrigger value="benchmarks" className="flex items-center gap-2 text-text data-[state=active]:bg-primary data-[state=active]:text-light" disabled={!metrics.hasData}>
+
+          <TabsTrigger
+            value="benchmarks"
+            disabled={!metrics.hasData}
+            className="flex items-center gap-2 text-text hover:bg-surface data-[state=active]:bg-muted data-[state=active]:text-text rounded-md transition-colors"
+          >
             <Target className="h-4 w-4" />
             <span className="hidden sm:inline">Benchmarks</span>
           </TabsTrigger>
-          <TabsTrigger value="trends" className="flex items-center gap-2 text-text data-[state=active]:bg-primary data-[state=active]:text-light" disabled={!metrics.hasData}>
+
+          <TabsTrigger
+            value="trends"
+            disabled={!metrics.hasData}
+            className="flex items-center gap-2 text-text hover:bg-surface data-[state=active]:bg-muted data-[state=active]:text-text rounded-md transition-colors"
+          >
             <TrendingUp className="h-4 w-4" />
             <span className="hidden sm:inline">Trends</span>
           </TabsTrigger>
-          <TabsTrigger value="insights" className="flex items-center gap-2 text-text data-[state=active]:bg-primary data-[state=active]:text-light" disabled={!metrics.hasData}>
+
+          <TabsTrigger
+            value="insights"
+            disabled={!metrics.hasData}
+            className="flex items-center gap-2 text-text hover:bg-surface data-[state=active]:bg-muted data-[state=active]:text-text rounded-md transition-colors"
+          >
             <Lightbulb className="h-4 w-4" />
             <span className="hidden sm:inline">Insights</span>
           </TabsTrigger>
+
         </TabsList>
 
         <TabsContent value="input" className="space-y-6">
