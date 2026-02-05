@@ -1,0 +1,513 @@
+{
+  "version": "0.1",
+  "project_name": "backend-assessment-system",
+  "region": "us-east-1",
+  "profile": "default",
+  "stack_name": "assessment-backend-stack",
+  "s3_bucket": "assessment-backend-deployment-bucket",
+  "s3_prefix": "sam",
+  "confirm_changeset": true,
+  "capabilities": [
+    "CAPABILITY_IAM",
+    "CAPABILITY_NAMED_IAM",
+    "CAPABILITY_AUTO_EXPAND"
+  ],
+  "tags": {
+    "Project": "AssessmentSystem",
+    "Environment": "Development",
+    "Owner": "DevelopmentTeam",
+    "CostCenter": "12345"
+  },
+  "parameters": {
+    "EnvironmentName": "dev",
+    "DatabaseInstanceType": "db.t3.micro",
+    "DatabaseName": "assessment_db",
+    "DatabaseUsername": "admin",
+    "DatabasePassword": "",
+    "CacheNodeType": "cache.t3.micro",
+    "ApiStageName": "v1",
+    "ApiDomainName": "api.yourdomain.com",
+    "ApiCertificateArn": "",
+    "AlarmEmail": "alerts@yourdomain.com",
+    "VpcId": "",
+    "SubnetIds": "",
+    "SecurityGroupIds": ""
+  },
+  "global": {
+    "timeout": 30,
+    "memory": 512,
+    "runtime": "python3.9",
+    "environment_variables": {
+      "LOG_LEVEL": "INFO",
+      "POWERTOOLS_SERVICE_NAME": "AssessmentBackend"
+    },
+    "tags": {
+      "Service": "AssessmentBackend",
+      "ManagedBy": "SAM"
+    }
+  },
+  "resources": {
+    "AssessmentApi": {
+      "type": "AWS::Serverless::Api",
+      "properties": {
+        "StageName": "v1",
+        "Cors": {
+          "AllowMethods": "'GET,POST,PUT,DELETE,OPTIONS'",
+          "AllowHeaders": "'Content-Type,Authorization,X-Api-Key'",
+          "AllowOrigin": "'*'",
+          "MaxAge": "'300'"
+        },
+        "Auth": {
+          "DefaultAuthorizer": "CognitoAuthorizer",
+          "AddDefaultAuthorizerToCorsPreflight": false
+        }
+      }
+    },
+    "CognitoUserPool": {
+      "type": "AWS::Cognito::UserPool",
+      "properties": {
+        "UserPoolName": "AssessmentUserPool",
+        "AutoVerifiedAttributes": ["email"],
+        "UsernameAttributes": ["email"],
+        "Policies": {
+          "PasswordPolicy": {
+            "MinimumLength": 8,
+            "RequireLowercase": true,
+            "RequireNumbers": true,
+            "RequireSymbols": true,
+            "RequireUppercase": true
+          }
+        },
+        "Schema": [
+          {
+            "Name": "email",
+            "AttributeDataType": "String",
+            "Required": true,
+            "Mutable": true
+          },
+          {
+            "Name": "given_name",
+            "AttributeDataType": "String",
+            "Required": false,
+            "Mutable": true
+          },
+          {
+            "Name": "family_name",
+            "AttributeDataType": "String",
+            "Required": false,
+            "Mutable": true
+          }
+        ],
+        "MfaConfiguration": "OPTIONAL",
+        "MfaConfigurationDetails": {
+          "SmsMfaConfiguration": {
+            "SmsAuthenticationMessage": "Your authentication code is {####}"
+          },
+          "SoftwareTokenMfaConfiguration": {
+            "Enabled": true
+          }
+        }
+      }
+    },
+    "CognitoUserPoolClient": {
+      "type": "AWS::Cognito::UserPoolClient",
+      "properties": {
+        "ClientName": "AssessmentWebClient",
+        "UserPoolId": {
+          "Ref": "CognitoUserPool"
+        },
+        "GenerateSecret": false,
+        "RefreshTokenValidity": 30,
+        "AccessTokenValidity": 60,
+        "IdTokenValidity": 60,
+        "TokenValidityUnits": {
+          "AccessToken": "minutes",
+          "IdToken": "minutes",
+          "RefreshToken": "days"
+        },
+        "ExplicitAuthFlows": [
+          "ALLOW_USER_PASSWORD_AUTH",
+          "ALLOW_USER_SRP_AUTH",
+          "ALLOW_REFRESH_TOKEN_AUTH"
+        ],
+        "SupportedIdentityProviders": ["COGNITO"],
+        "CallbackURLs": [
+          "http://localhost:3000/",
+          "https://yourdomain.com/"
+        ],
+        "LogoutURLs": [
+          "http://localhost:3000/",
+          "https://yourdomain.com/"
+        ],
+        "AllowedOAuthFlows": ["code", "implicit"],
+        "AllowedOAuthScopes": [
+          "phone",
+          "email",
+          "openid",
+          "profile",
+          "aws.cognito.signin.user.admin"
+        ],
+        "AllowedOAuthFlowsUserPoolClient": true
+      }
+    },
+    "DynamoDBTables": {
+      "UsersTable": {
+        "type": "AWS::DynamoDB::Table",
+        "properties": {
+          "TableName": "Users",
+          "BillingMode": "PAY_PER_REQUEST",
+          "AttributeDefinitions": [
+            {
+              "AttributeName": "userId",
+              "AttributeType": "S"
+            },
+            {
+              "AttributeName": "email",
+              "AttributeType": "S"
+            }
+          ],
+          "KeySchema": [
+            {
+              "AttributeName": "userId",
+              "KeyType": "HASH"
+            }
+          ],
+          "GlobalSecondaryIndexes": [
+            {
+              "IndexName": "EmailIndex",
+              "KeySchema": [
+                {
+                  "AttributeName": "email",
+                  "KeyType": "HASH"
+                }
+              ],
+              "Projection": {
+                "ProjectionType": "ALL"
+              }
+            }
+          ],
+          "StreamSpecification": {
+            "StreamViewType": "NEW_AND_OLD_IMAGES"
+          },
+          "TimeToLiveSpecification": {
+            "AttributeName": "ttl",
+            "Enabled": true
+          }
+        }
+      },
+      "AssessmentsTable": {
+        "type": "AWS::DynamoDB::Table",
+        "properties": {
+          "TableName": "Assessments",
+          "BillingMode": "PAY_PER_REQUEST",
+          "AttributeDefinitions": [
+            {
+              "AttributeName": "assessmentId",
+              "AttributeType": "S"
+            },
+            {
+              "AttributeName": "createdAt",
+              "AttributeType": "N"
+            },
+            {
+              "AttributeName": "status",
+              "AttributeType": "S"
+            }
+          ],
+          "KeySchema": [
+            {
+              "AttributeName": "assessmentId",
+              "KeyType": "HASH"
+            },
+            {
+              "AttributeName": "createdAt",
+              "KeyType": "RANGE"
+            }
+          ],
+          "GlobalSecondaryIndexes": [
+            {
+              "IndexName": "StatusIndex",
+              "KeySchema": [
+                {
+                  "AttributeName": "status",
+                  "KeyType": "HASH"
+                },
+                {
+                  "AttributeName": "createdAt",
+                  "KeyType": "RANGE"
+                }
+              ],
+              "Projection": {
+                "ProjectionType": "ALL"
+              }
+            }
+          ]
+        }
+      }
+    },
+    "LambdaFunctions": {
+      "ProcessAssessmentFunction": {
+        "type": "AWS::Serverless::Function",
+        "properties": {
+          "FunctionName": "ProcessAssessmentResults",
+          "Handler": "src/handlers/assessment.handler",
+          "Runtime": "python3.9",
+          "CodeUri": "src/",
+          "Timeout": 30,
+          "MemorySize": 512,
+          "Environment": {
+            "Variables": {
+              "DATABASE_URL": "{{resolve:secretsmanager:DatabaseSecret:SecretString:connectionString}}",
+              "REDIS_URL": "{{resolve:secretsmanager:RedisSecret:SecretString:url}}",
+              "LOG_LEVEL": "INFO"
+            }
+          },
+          "Policies": [
+            "SecretsManagerReadWrite",
+            "AmazonDynamoDBFullAccess",
+            "AmazonS3ReadOnlyAccess",
+            {
+              "SQSPollerPolicy": {
+                "QueueName": "AssessmentQueue"
+              }
+            }
+          ],
+          "Events": {
+            "AssessmentQueue": {
+              "Type": "SQS",
+              "Properties": {
+                "Queue": "arn:aws:sqs:us-east-1:123456789012:AssessmentQueue"
+              }
+            },
+            "AssessmentS3Event": {
+              "Type": "S3",
+              "Properties": {
+                "Bucket": "assessment-uploads",
+                "Events": "s3:ObjectCreated:*"
+              }
+            }
+          },
+          "Layers": [
+            "arn:aws:lambda:us-east-1:123456789012:layer:AWSLambda-Python-AWS-SDK:1",
+            "arn:aws:lambda:us-east-1:123456789012:layer:python-requests:1"
+          ],
+          "Tags": {
+            "Function": "ProcessAssessment",
+            "ManagedBy": "SAM"
+          }
+        }
+      },
+      "GenerateReportFunction": {
+        "type": "AWS::Serverless::Function",
+        "properties": {
+          "FunctionName": "GenerateReport",
+          "Handler": "src/handlers/report.handler",
+          "Runtime": "python3.9",
+          "CodeUri": "src/",
+          "Timeout": 300,
+          "MemorySize": 1024,
+          "EphemeralStorage": 512,
+          "Environment": {
+            "Variables": {
+              "DATABASE_URL": "{{resolve:secretsmanager:DatabaseSecret:SecretString:connectionString}}",
+              "REPORT_BUCKET": "assessment-reports"
+            }
+          },
+          "VpcConfig": {
+            "SecurityGroupIds": ["sg-123456"],
+            "SubnetIds": ["subnet-123", "subnet-456"]
+          }
+        }
+      }
+    },
+    "S3Buckets": {
+      "AssessmentUploadsBucket": {
+        "type": "AWS::S3::Bucket",
+        "properties": {
+          "BucketName": "assessment-uploads-${EnvironmentName}",
+          "AccessControl": "Private",
+          "VersioningConfiguration": {
+            "Status": "Enabled"
+          },
+          "LifecycleConfiguration": {
+            "Rules": [
+              {
+                "Id": "DeleteOldVersions",
+                "Status": "Enabled",
+                "NoncurrentVersionExpirationInDays": 30
+              },
+              {
+                "Id": "DeleteIncompleteUploads",
+                "Status": "Enabled",
+                "AbortIncompleteMultipartUpload": {
+                  "DaysAfterInitiation": 7
+                }
+              }
+            ]
+          },
+          "CorsConfiguration": {
+            "CorsRules": [
+              {
+                "AllowedOrigins": ["*"],
+                "AllowedMethods": ["GET", "PUT", "POST", "DELETE"],
+                "AllowedHeaders": ["*"],
+                "MaxAge": 3000
+              }
+            ]
+          }
+        }
+      }
+    },
+    "SQSQueues": {
+      "AssessmentQueue": {
+        "type": "AWS::SQS::Queue",
+        "properties": {
+          "QueueName": "AssessmentQueue",
+          "VisibilityTimeout": 300,
+          "MessageRetentionPeriod": 1209600,
+          "RedrivePolicy": {
+            "deadLetterTargetArn": "arn:aws:sqs:us-east-1:123456789012:AssessmentDLQ",
+            "maxReceiveCount": 3
+          }
+        }
+      },
+      "AssessmentDLQ": {
+        "type": "AWS::SQS::Queue",
+        "properties": {
+          "QueueName": "AssessmentDLQ",
+          "MessageRetentionPeriod": 1209600
+        }
+      }
+    },
+    "EventBridgeRules": {
+      "ScheduledReportGeneration": {
+        "type": "AWS::Events::Rule",
+        "properties": {
+          "ScheduleExpression": "cron(0 2 * * ? *)",
+          "State": "ENABLED",
+          "Targets": [
+            {
+              "Arn": "arn:aws:lambda:us-east-1:123456789012:function:GenerateReport",
+              "Id": "GenerateReportTarget"
+            }
+          ]
+        }
+      }
+    },
+    "CloudWatchAlarms": {
+      "HighErrorRateAlarm": {
+        "type": "AWS::CloudWatch::Alarm",
+        "properties": {
+          "AlarmName": "AssessmentAPI-HighErrorRate",
+          "AlarmDescription": "Alarm when API error rate exceeds threshold",
+          "MetricName": "5XXError",
+          "Namespace": "AWS/ApiGateway",
+          "Statistic": "Average",
+          "Period": 300,
+          "EvaluationPeriods": 2,
+          "Threshold": 5,
+          "ComparisonOperator": "GreaterThanThreshold",
+          "TreatMissingData": "notBreaching",
+          "AlarmActions": [
+            "arn:aws:sns:us-east-1:123456789012:AlarmNotificationTopic"
+          ]
+        }
+      }
+    },
+    "SNSTopics": {
+      "AlarmNotificationTopic": {
+        "type": "AWS::SNS::Topic",
+        "properties": {
+          "TopicName": "AssessmentAlarmNotifications",
+          "Subscription": [
+            {
+              "Endpoint": "alerts@yourdomain.com",
+              "Protocol": "email"
+            }
+          ]
+        }
+      }
+    }
+  },
+  "outputs": {
+    "ApiGatewayEndpoint": {
+      "Description": "API Gateway endpoint URL",
+      "Value": {
+        "Fn::Sub": "https://${AssessmentApi}.execute-api.${AWS::Region}.amazonaws.com/${ApiStageName}/"
+      }
+    },
+    "CognitoUserPoolId": {
+      "Description": "Cognito User Pool ID",
+      "Value": {
+        "Ref": "CognitoUserPool"
+      }
+    },
+    "CognitoUserPoolClientId": {
+      "Description": "Cognito User Pool Client ID",
+      "Value": {
+        "Ref": "CognitoUserPoolClient"
+      }
+    },
+    "DynamoDBUsersTableName": {
+      "Description": "DynamoDB Users Table Name",
+      "Value": {
+        "Ref": "UsersTable"
+      }
+    },
+    "S3UploadsBucketName": {
+      "Description": "S3 Uploads Bucket Name",
+      "Value": {
+        "Ref": "AssessmentUploadsBucket"
+      }
+    },
+    "ProcessAssessmentFunctionArn": {
+      "Description": "Process Assessment Lambda Function ARN",
+      "Value": {
+        "Fn::GetAtt": ["ProcessAssessmentFunction", "Arn"]
+      }
+    },
+    "SQSQueueUrl": {
+      "Description": "SQS Queue URL",
+      "Value": {
+        "Ref": "AssessmentQueue"
+      }
+    },
+    "SNSAlarmTopicArn": {
+      "Description": "SNS Alarm Topic ARN",
+      "Value": {
+        "Ref": "AlarmNotificationTopic"
+      }
+    }
+  },
+  "metadata": {
+    "template_format_version": "2010-09-09",
+    "transform": "AWS::Serverless-2016-10-31",
+    "description": "Assessment System Backend - SAM Template",
+    "author": "Development Team",
+    "created": "2024-01-15",
+    "last_modified": "2024-01-15",
+    "version": "1.0.0"
+  },
+  "hooks": {
+    "pre_deploy": [
+      {
+        "command": "python scripts/validate_config.py",
+        "description": "Validate configuration before deployment"
+      },
+      {
+        "command": "npm run build",
+        "description": "Build TypeScript/JavaScript code"
+      }
+    ],
+    "post_deploy": [
+      {
+        "command": "python scripts/run_tests.py",
+        "description": "Run integration tests after deployment"
+      },
+      {
+        "command": "aws cloudformation describe-stacks --stack-name ${STACK_NAME} --query 'Stacks[0].Outputs'",
+        "description": "Display stack outputs"
+      }
+    ]
+  }
+}

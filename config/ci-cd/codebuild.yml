@@ -1,0 +1,75 @@
+# aws/ci-cd/codebuild.yml
+
+AWSTemplateFormatVersion: '2010-09-09'
+Description: CodeBuild project for Oli Branch website upgrade
+
+Parameters:
+  GitHubToken:
+    Type: String
+    NoEcho: true
+    Description: GitHub personal access token
+  GitHubRepo:
+    Type: String
+    Default: "https://github.com/n-dre/oli-branch-website-upgrade.git"
+  Branch:
+    Type: String
+    Default: "main"
+
+Resources:
+  CodeBuildServiceRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: codebuild.amazonaws.com
+            Action: sts:AssumeRole
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/AdministratorAccess  # For simplicity; restrict in production
+
+  OliBranchCodeBuild:
+    Type: AWS::CodeBuild::Project
+    Properties:
+      Name: !Sub "oli-branch-upgrade-${Branch}"
+      Description: Build and deploy Oli Branch website upgrade
+      ServiceRole: !GetAtt CodeBuildServiceRole.Arn
+      Source:
+        Type: GITHUB
+        Location: !Ref GitHubRepo
+        BuildSpec: aws/ci-cd/buildspec.yml
+        ReportBuildStatus: true
+        GitCloneDepth: 1
+      Artifacts:
+        Type: NO_ARTIFACTS
+      Environment:
+        Type: LINUX_CONTAINER
+        ComputeType: BUILD_GENERAL1_MEDIUM
+        Image: aws/codebuild/amazonlinux2-x86_64-standard:4.0
+        EnvironmentVariables:
+          - Name: AWS_ACCOUNT_ID
+            Value: !Ref "AWS::AccountId"
+          - Name: AWS_REGION
+            Value: !Ref "AWS::Region"
+          - Name: BRANCH
+            Value: !Ref Branch
+        PrivilegedMode: true  # For Docker in Docker
+      TimeoutInMinutes: 30
+      BadgeEnabled: true
+      LogsConfig:
+        CloudWatchLogs:
+          Status: ENABLED
+          GroupName: /aws/codebuild/oli-branch
+
+  GitHubSourceCredential:
+    Type: AWS::CodeBuild::SourceCredential
+    Properties:
+      AuthType: PERSONAL_ACCESS_TOKEN
+      ServerType: GITHUB
+      Token: !Ref GitHubToken
+
+Outputs:
+  CodeBuildProject:
+    Value: !Ref OliBranchCodeBuild
+    Description: CodeBuild Project ID
