@@ -1,6 +1,8 @@
+# backend/src/models/assessment.py
 """
-Assessment Models
-Assessment, questions, answers, and results models
+Assessment Model
+Comprehensive assessment model for Oli-Branch
+Combines simplified financial assessment with detailed questionnaire capabilities
 """
 
 import uuid
@@ -10,12 +12,12 @@ from enum import Enum as PyEnum
 
 from sqlalchemy import (
     Column, String, Integer, Boolean, DateTime, 
-    Text, ForeignKey, Float, Enum, JSON, UUID
+    Text, ForeignKey, Float, Enum, JSON, Numeric
 )
 from sqlalchemy.orm import relationship, validates
 from sqlalchemy.dialects.postgresql import UUID as PGUUID
 
-from database.database import Base
+from . import Base
 
 
 class AssessmentStatus(str, PyEnum):
@@ -23,6 +25,7 @@ class AssessmentStatus(str, PyEnum):
     DRAFT = "draft"
     PUBLISHED = "published"
     ARCHIVED = "archived"
+    COMPLETED = "completed"
 
 
 class QuestionType(str, PyEnum):
@@ -33,53 +36,96 @@ class QuestionType(str, PyEnum):
     RATING = "rating"
     LIKERT_SCALE = "likert_scale"
     YES_NO = "yes_no"
+    NUMERIC = "numeric"  # For financial numbers
+    CURRENCY = "currency"  # For dollar amounts
 
 
 class Assessment(Base):
     """
-    Assessment model representing a survey or test
+    Comprehensive Assessment model for Oli-Branch
+    
+    Handles:
+    - Financial intake assessments (simplified version)
+    - Detailed questionnaires with multiple question types
+    - Scoring and result tracking
+    - Business relationship management
     """
     __tablename__ = "assessments"
     
-    # Primary key
+    # ==================== PRIMARY KEY ====================
     id = Column(PGUUID(as_uuid=True), primary_key=True, default=uuid.uuid4, index=True)
     
-    # Basic information
-    title = Column(String(500), nullable=False, index=True)
+    # ==================== BASIC INFORMATION ====================
+    title = Column(String(500), nullable=False, default="Financial Assessment")
     description = Column(Text)
-    code = Column(String(50), unique=True, index=True)  # Human-readable identifier
+    code = Column(String(50), unique=True, index=True, nullable=True)  # Human-readable identifier
     
-    # Assessment configuration
+    # ==================== FINANCIAL DATA (From simplified version) ====================
+    business_type = Column(String)
+    monthly_revenue = Column(Numeric(14, 2))
+    monthly_expenses = Column(Numeric(14, 2))
+    bank_used = Column(String)
+    fees_paid = Column(Text)  # Raw user input
+    payment_methods = Column(Text)  # Raw user input
+    loans_taken = Column(Text)  # Raw user input
+    services_used = Column(Text)  # Raw user input
+    
+    # ==================== ADDITIONAL FINANCIAL FIELDS ====================
+    cash_balance = Column(Numeric(14, 2))
+    has_employees = Column(Boolean, default=False)
+    employee_count = Column(Integer)
+    account_types = Column(JSON)  # ["checking", "savings", "credit"]
+    fee_comfort_level = Column(String)  # low, medium, high
+    payment_methods_json = Column(JSON)  # Structured payment methods
+    card_processor = Column(String)
+    ach_volume_monthly = Column(Integer)
+    wire_volume_monthly = Column(Integer)
+    has_business_loan = Column(Boolean, default=False)
+    loan_amount = Column(Numeric(14, 2))
+    loan_interest_rate = Column(Numeric(5, 3))
+    has_personal_loan_for_business = Column(Boolean, default=False)
+    software_spend_monthly = Column(Numeric(10, 2))
+    
+    # ==================== GOALS ====================
+    primary_goal = Column(String)  # reduce_fees, grow_cash, optimize_operations
+    time_horizon = Column(String)  # immediate, quarterly, annual
+    
+    # ==================== ASSESSMENT CONFIGURATION ====================
     instructions = Column(Text)
     duration_minutes = Column(Integer)  # Optional time limit
     passing_score = Column(Float)  # Optional passing score threshold
     max_attempts = Column(Integer, default=1)  # Number of allowed attempts
     
-    # Status and visibility
+    # ==================== STATUS AND VISIBILITY ====================
     status = Column(Enum(AssessmentStatus), default=AssessmentStatus.DRAFT, index=True)
     is_public = Column(Boolean, default=False)
     requires_login = Column(Boolean, default=True)
     
-    # Metadata
+    # ==================== METADATA ====================
     tags = Column(JSON, default=list)
     metadata = Column(JSON, default=dict)  # Additional configuration
     
-    # Timestamps
+    # ==================== TIMESTAMPS ====================
+    submitted_at = Column(DateTime, default=datetime.utcnow)  # From simplified version
     created_at = Column(DateTime, default=datetime.utcnow)
     updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
     published_at = Column(DateTime, nullable=True)
     
-    # Foreign keys
+    # ==================== FOREIGN KEYS ====================
+    business_id = Column(PGUUID(as_uuid=True), ForeignKey("businesses.id", ondelete="CASCADE"), nullable=False, index=True)
     created_by = Column(PGUUID(as_uuid=True), ForeignKey('users.id'), nullable=False, index=True)
     
-    # Relationships
-    user = relationship("User", back_populates="assessments")
+    # ==================== RELATIONSHIPS ====================
+    business = relationship("Business", back_populates="assessments")
+    user = relationship("User", foreign_keys=[created_by])
     questions = relationship("Question", back_populates="assessment", cascade="all, delete-orphan", order_by="Question.order")
     results = relationship("AssessmentResult", back_populates="assessment", cascade="all, delete-orphan")
+    reports = relationship("Report", back_populates="assessment")
     
-    # Methods
+    # ==================== METHODS ====================
+    
     def __repr__(self):
-        return f"<Assessment(id={self.id}, title={self.title}, status={self.status})>"
+        return f"<Assessment(id={self.id}, title={self.title}, business_id={self.business_id}, status={self.status})>"
     
     @validates('code')
     def validate_code(self, key, code):
@@ -102,6 +148,10 @@ class Assessment(Base):
         """Check if assessment is published"""
         return self.status == AssessmentStatus.PUBLISHED
     
+    def is_completed(self) -> bool:
+        """Check if assessment is completed"""
+        return self.status == AssessmentStatus.COMPLETED
+    
     def can_take_assessment(self, user_attempts: int = 0) -> bool:
         """Check if assessment can be taken"""
         if not self.is_published():
@@ -109,6 +159,40 @@ class Assessment(Base):
         if self.max_attempts and user_attempts >= self.max_attempts:
             return False
         return True
+    
+    def get_financial_summary(self) -> dict:
+        """Get financial data summary (from simplified version)"""
+        return {
+            "business_type": self.business_type,
+            "monthly_revenue": float(self.monthly_revenue) if self.monthly_revenue else None,
+            "monthly_expenses": float(self.monthly_expenses) if self.monthly_expenses else None,
+            "bank_used": self.bank_used,
+            "fees_paid": self.fees_paid,
+            "payment_methods": self.payment_methods,
+            "loans_taken": self.loans_taken,
+            "services_used": self.services_used,
+            "primary_goal": self.primary_goal
+        }
+    
+    def get_detailed_financials(self) -> dict:
+        """Get detailed financial data"""
+        return {
+            "cash_balance": float(self.cash_balance) if self.cash_balance else None,
+            "has_employees": self.has_employees,
+            "employee_count": self.employee_count,
+            "account_types": self.account_types,
+            "fee_comfort_level": self.fee_comfort_level,
+            "payment_methods_json": self.payment_methods_json,
+            "card_processor": self.card_processor,
+            "ach_volume_monthly": self.ach_volume_monthly,
+            "wire_volume_monthly": self.wire_volume_monthly,
+            "has_business_loan": self.has_business_loan,
+            "loan_amount": float(self.loan_amount) if self.loan_amount else None,
+            "loan_interest_rate": float(self.loan_interest_rate) if self.loan_interest_rate else None,
+            "has_personal_loan_for_business": self.has_personal_loan_for_business,
+            "software_spend_monthly": float(self.software_spend_monthly) if self.software_spend_monthly else None,
+            "time_horizon": self.time_horizon
+        }
 
 
 class Question(Base):
@@ -131,13 +215,17 @@ class Question(Base):
     is_required = Column(Boolean, default=True)
     
     # Options for multiple/single choice questions
-    options = Column(JSON, default=list)  # List of option dicts: {"id": 1, "text": "Option", "points": 1.0}
+    options = Column(JSON, default=list)  # List of option dicts: {"id": 1, "text": "Option", "points": 1.0, "is_correct": false}
     
     # Validation and constraints
     min_length = Column(Integer)  # For text questions
     max_length = Column(Integer)  # For text questions
     min_value = Column(Float)  # For rating questions
     max_value = Column(Float)  # For rating questions
+    
+    # For financial questions
+    currency = Column(String(3), default="USD")  # For currency type questions
+    format_pattern = Column(String)  # Regex pattern for validation
     
     # Metadata
     tags = Column(JSON, default=list)
@@ -180,6 +268,16 @@ class Question(Base):
                 return False
             return True
         
+        elif self.type == QuestionType.CURRENCY:
+            amount = answer_data.get("amount")
+            if amount is None:
+                return not self.is_required
+            try:
+                float(amount)
+                return True
+            except (ValueError, TypeError):
+                return False
+        
         elif self.type in [QuestionType.MULTIPLE_CHOICE, QuestionType.SINGLE_CHOICE]:
             selected_ids = answer_data.get("selected_ids", [])
             if not selected_ids:
@@ -199,6 +297,16 @@ class Question(Base):
                 return False
             return True
         
+        elif self.type == QuestionType.NUMERIC:
+            value = answer_data.get("value")
+            if value is None:
+                return not self.is_required
+            try:
+                float(value)
+                return True
+            except (ValueError, TypeError):
+                return False
+        
         return True  # Default validation
 
 
@@ -215,6 +323,8 @@ class Answer(Base):
     text = Column(Text)  # For text questions
     selected_ids = Column(JSON, default=list)  # For multiple/single choice
     rating = Column(Float)  # For rating questions
+    amount = Column(Numeric(14, 2))  # For currency questions
+    numeric_value = Column(Float)  # For numeric questions
     answer_data = Column(JSON, default=dict)  # Flexible storage for all types
     
     # Scoring
@@ -268,11 +378,15 @@ class Answer(Base):
         elif question.type == QuestionType.RATING:
             if self.rating is None:
                 return 0.0
-            # For rating questions, points are based on percentage of max
             max_value = question.max_value or 5
             return (self.rating / max_value) * question.points
         
-        # For text and other question types, scoring might be manual
+        elif question.type == QuestionType.CURRENCY:
+            if self.amount is None:
+                return 0.0
+            # For financial questions, scoring might be based on ranges
+            return question.points
+        
         return 0.0
 
 
@@ -290,6 +404,14 @@ class AssessmentResult(Base):
     total_points = Column(Float, default=0.0)
     percentage = Column(Float, default=0.0)  # score / total_points * 100
     passed = Column(Boolean, default=False)
+    
+    # Financial results (from simplified version)
+    financial_health_score = Column(Integer)  # 0-100
+    mismatch_score = Column(Integer)  # 0-100
+    risk_label = Column(String)  # High/Medium/Low
+    health_label = Column(String)  # Healthy/Needs optimization/At risk/Critical
+    total_monthly_leaks = Column(Numeric(14, 2))
+    total_annual_leaks = Column(Numeric(14, 2))
     
     # Completion data
     started_at = Column(DateTime, default=datetime.utcnow)
@@ -347,3 +469,14 @@ class AssessmentResult(Base):
         if self.started_at and self.completed_at:
             return int((self.completed_at - self.started_at).total_seconds())
         return None
+    
+    def get_financial_summary(self) -> dict:
+        """Get financial results summary"""
+        return {
+            "financial_health_score": self.financial_health_score,
+            "mismatch_score": self.mismatch_score,
+            "risk_label": self.risk_label,
+            "health_label": self.health_label,
+            "total_monthly_leaks": float(self.total_monthly_leaks) if self.total_monthly_leaks else 0,
+            "total_annual_leaks": float(self.total_annual_leaks) if self.total_annual_leaks else 0
+        }

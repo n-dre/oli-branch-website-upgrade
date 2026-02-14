@@ -1,0 +1,5 @@
+{
+  "cfn-guard.rules": {
+    "CODEBUILD_PROJECT_ENVVAR_AWSCRED_CHECK": "ignore"
+  }
+}

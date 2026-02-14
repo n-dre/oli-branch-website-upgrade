@@ -1,0 +1,7 @@
+Collecting click-didyoumean
+  Downloading click_didyoumean-0.3.1-py3-none-any.whl.metadata (3.9 kB)
+Requirement already satisfied: click>=7 in .\lambda\layers\ai_utils\python\.venv\Lib\site-packages (from click-didyoumean) (8.3.1)
+Requirement already satisfied: colorama in .\lambda\layers\ai_utils\python\.venv\Lib\site-packages (from click>=7->click-didyoumean) (0.4.6)
+Downloading click_didyoumean-0.3.1-py3-none-any.whl (3.6 kB)
+Installing collected packages: click-didyoumean
+Successfully installed click-didyoumean-0.3.1

@@ -1,12 +1,32 @@
-name: ai-utils-layer
-description: AI/ML utilities layer for Lambda functions
-compatible_runtimes:
-  - python3.8
-  - python3.9
-  - python3.10
-  - python3.11
-  - python3.12
-license_info: MIT
-compatible_architectures:
-  - x86_64
-  - arm64
+# backend/lambda/layers/ai_utils/layer.yml
+AWSTemplateFormatVersion: '2010-09-09'
+Description: 'AI Utilities Layer for Oli-Branch Lambda Functions'
+
+Parameters:
+  LayerBucket:
+    Type: String
+    Description: S3 bucket containing the layer zip file
+    Default: oli-branch-lambda-layers
+
+Resources:
+  AIUtilsLayer:
+    Type: AWS::Lambda::LayerVersion
+    Properties:
+      LayerName: oli-branch-ai-utils
+      Description: AI utilities for Bedrock and audit storage
+      Content:
+        S3Bucket: !Ref LayerBucket
+        S3Key: ai_utils.zip
+      CompatibleRuntimes:
+        - python3.9
+        - python3.10
+        - python3.11
+        - python3.12
+      LicenseInfo: MIT
+
+Outputs:
+  LayerVersionArn:
+    Description: ARN of the AI Utils Layer
+    Value: !Ref AIUtilsLayer
+    Export:
+      Name: !Sub "${AWS::StackName}-AIUtilsLayerArn"

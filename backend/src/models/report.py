@@ -1,6 +1,7 @@
+# backend/src/models/report.py
 """
-Report Models
-Report generation and management models
+Report Model
+Comprehensive report model combining both detailed and simplified versions
 """
 
 import uuid
@@ -9,13 +10,13 @@ from typing import Optional
 from enum import Enum as PyEnum
 
 from sqlalchemy import (
-    Column, String, Integer, Boolean, DateTime, 
-    Text, ForeignKey, Enum, JSON, Float
+    Column, String, Integer, Boolean, DateTime, Date,
+    Text, ForeignKey, Enum, JSON, Float, Numeric
 )
 from sqlalchemy.orm import relationship
 from sqlalchemy.dialects.postgresql import UUID as PGUUID
 
-from database.database import Base
+from . import Base
 
 
 class ReportType(str, PyEnum):
@@ -47,67 +48,110 @@ class ReportFormat(str, PyEnum):
 
 class Report(Base):
     """
-    Report model for generated reports
+    Comprehensive Report model for Oli-Branch
+    
+    Combines:
+    - Detailed report structure with sections and data sources
+    - Simplified analysis report with scores and leaks
+    - Export and scheduling capabilities
     """
     __tablename__ = "reports"
     
-    # Primary key
+    # ==================== PRIMARY KEY ====================
     id = Column(PGUUID(as_uuid=True), primary_key=True, default=uuid.uuid4, index=True)
     
-    # Report identification
+    # ==================== REPORT IDENTIFICATION ====================
     title = Column(String(500), nullable=False, index=True)
     description = Column(Text)
     code = Column(String(100), unique=True, index=True)  # Human-readable identifier
     
-    # Report configuration
+    # ==================== REPORT CONFIGURATION ====================
     type = Column(Enum(ReportType), nullable=False, index=True)
     format = Column(Enum(ReportFormat), default=ReportFormat.HTML, index=True)
     template = Column(String(255))  # Template name or path
     parameters = Column(JSON, default=dict)  # Report generation parameters
     
-    # Status and visibility
+    # ==================== STATUS AND VISIBILITY ====================
     status = Column(Enum(ReportStatus), default=ReportStatus.DRAFT, index=True)
     is_public = Column(Boolean, default=False)
     is_scheduled = Column(Boolean, default=False)
+    is_latest = Column(Boolean, default=True, index=True)  # From simplified version
     
-    # Generation data
+    # ==================== GENERATION DATA ====================
     generated_at = Column(DateTime, nullable=True)
     generation_duration = Column(Float)  # Seconds taken to generate
     file_size = Column(Integer)  # Size in bytes
     file_path = Column(String(1000))  # Storage path
     file_url = Column(String(1000))  # Download URL
     
-    # Error handling
+    # ==================== ERROR HANDLING ====================
     error_message = Column(Text)
     error_details = Column(JSON, default=dict)
     retry_count = Column(Integer, default=0)
     
-    # Schedule information (if scheduled)
+    # ==================== SCHEDULE INFORMATION ====================
     schedule_cron = Column(String(50))  # Cron expression
     next_scheduled_at = Column(DateTime, nullable=True)
     
-    # Metadata
+    # ==================== SCORES AND METRICS (From simplified version) ====================
+    mismatch_score = Column(Integer, nullable=True)  # 0-100
+    financial_health_score = Column(Integer, nullable=True)  # 0-100
+    risk_label = Column(String, nullable=True)  # High/Medium/Low
+    health_label = Column(String, nullable=True)  # Healthy/Needs optimization/At risk/Critical
+    
+    # ==================== FINANCIAL TOTALS ====================
+    total_monthly_leaks = Column(Numeric(14, 2), default=0)
+    total_annual_leaks = Column(Numeric(14, 2), default=0)
+    fee_to_revenue_ratio = Column(Numeric(5, 4), nullable=True)
+    cash_efficiency_score = Column(Numeric(5, 2), nullable=True)
+    
+    # ==================== CONTENT SECTIONS ====================
+    executive_summary = Column(Text)  # From simplified version
+    key_findings = Column(Text)  # From simplified version
+    recommendations_summary = Column(Text)  # From simplified version
+    next_actions = Column(Text)  # From simplified version
+    
+    # ==================== METADATA ====================
     tags = Column(JSON, default=list)
     metadata = Column(JSON, default=dict)
     
-    # Timestamps
+    # ==================== TIMESTAMPS ====================
+    period_start = Column(Date, nullable=True)  # From simplified version
+    period_end = Column(Date, nullable=True)  # From simplified version
+    analysis_date = Column(DateTime, default=datetime.utcnow)  # From simplified version
     created_at = Column(DateTime, default=datetime.utcnow)
     updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
     expires_at = Column(DateTime, nullable=True)  # Auto-delete after this date
     
-    # Foreign keys
+    # ==================== FOREIGN KEYS ====================
+    # User/business ownership
     created_by = Column(PGUUID(as_uuid=True), ForeignKey('users.id'), nullable=False, index=True)
+    business_id = Column(PGUUID(as_uuid=True), ForeignKey("businesses.id", ondelete="CASCADE"), nullable=False, index=True)
+    
+    # Related entities
     assessment_id = Column(PGUUID(as_uuid=True), ForeignKey('assessments.id'), nullable=True, index=True)
     result_id = Column(PGUUID(as_uuid=True), ForeignKey('assessment_results.id'), nullable=True, index=True)
     
-    # Relationships
+    # ==================== RELATIONSHIPS ====================
+    # User and business
     user = relationship("User", back_populates="reports")
-    assessment = relationship("Assessment")
+    business = relationship("Business", back_populates="reports")
+    
+    # Related entities
+    assessment = relationship("Assessment", back_populates="reports")
     result = relationship("AssessmentResult")
+    
+    # Report components (from detailed version)
     sections = relationship("ReportSection", back_populates="report", cascade="all, delete-orphan")
     data_sources = relationship("ReportData", back_populates="report", cascade="all, delete-orphan")
     
-    # Methods
+    # Analysis components (from simplified version)
+    leaks = relationship("Leak", back_populates="report", cascade="all, delete-orphan")
+    recommendations = relationship("Recommendation", back_populates="report", cascade="all, delete-orphan")
+    scores = relationship("Score", back_populates="report", cascade="all, delete-orphan")
+    
+    # ==================== METHODS ====================
+    
     def __repr__(self):
         return f"<Report(id={self.id}, title={self.title}, type={self.type}, status={self.status})>"
     
@@ -128,8 +172,20 @@ class Report(Base):
             "path": self.file_path,
             "url": self.file_url,
             "size": self.file_size,
-            "format": self.format,
+            "format": self.format.value if self.format else None,
             "generated_at": self.generated_at.isoformat() if self.generated_at else None
+        }
+    
+    @property
+    def score_summary(self) -> dict:
+        """Get score summary from simplified version"""
+        return {
+            "mismatch_score": self.mismatch_score,
+            "financial_health_score": self.financial_health_score,
+            "risk_label": self.risk_label,
+            "health_label": self.health_label,
+            "total_monthly_leaks": float(self.total_monthly_leaks) if self.total_monthly_leaks else 0,
+            "total_annual_leaks": float(self.total_annual_leaks) if self.total_annual_leaks else 0
         }
     
     def can_regenerate(self) -> bool:
@@ -141,6 +197,14 @@ class Report(Base):
         if self.is_generated and self.file_url:
             return self.file_url
         return None
+    
+    def mark_as_latest(self):
+        """Mark this report as the latest for its business"""
+        self.is_latest = True
+    
+    def unmark_as_latest(self):
+        """Unmark this report as latest"""
+        self.is_latest = False
 
 
 class ReportSection(Base):
@@ -188,7 +252,6 @@ class ReportSection(Base):
     report = relationship("Report", back_populates="sections")
     parent_section = relationship("ReportSection", remote_side=[id], backref="child_sections")
     
-    # Methods
     def __repr__(self):
         return f"<ReportSection(id={self.id}, title={self.title}, report_id={self.report_id})>"
     
@@ -248,7 +311,6 @@ class ReportData(Base):
     # Relationships
     report = relationship("Report", back_populates="data_sources")
     
-    # Methods
     def __repr__(self):
         return f"<ReportData(id={self.id}, data_key={self.data_key}, report_id={self.report_id})>"
     

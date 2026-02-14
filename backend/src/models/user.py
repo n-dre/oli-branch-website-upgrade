@@ -1,24 +1,24 @@
+# backend/src/models/user.py
 """
 User Models
 User, profile, and role management models
 """
 
 import uuid
-from datetime import datetime, timedelta  # Added timedelta import
+from datetime import datetime, timedelta
 from typing import Optional, List
 from enum import Enum as PyEnum
 
 from sqlalchemy import (
     Column, String, Integer, Boolean, DateTime, 
-    Text, ForeignKey, Table, Enum, JSON, UUID, Index,
-    UniqueConstraint, CheckConstraint, text
+    Text, ForeignKey, Table, Enum, JSON, Index,
+    UniqueConstraint, CheckConstraint, func, ARRAY
 )
 from sqlalchemy.orm import relationship, validates, backref
-from sqlalchemy.dialects.postgresql import UUID as PGUUID, ARRAY
+from sqlalchemy.dialects.postgresql import UUID as PGUUID
 from sqlalchemy.ext.hybrid import hybrid_property
-from sqlalchemy.sql import func
 
-from database.database import Base
+from . import Base  # Changed from database.database import Base
 
 
 # Association table for many-to-many user roles
@@ -139,10 +139,6 @@ class User(Base):
     
     # Social/OAuth connections
     social_accounts = relationship("SocialAccount", back_populates="user", cascade="all, delete-orphan")
-    
-    # Content relationships (commented out as they may cause circular imports)
-    # assessments = relationship("Assessment", back_populates="user", cascade="all, delete-orphan")
-    # reports = relationship("Report", back_populates="user", cascade="all, delete-orphan")
     
     # Notification preferences
     notification_preferences = relationship("NotificationPreference", back_populates="user", cascade="all, delete-orphan")
@@ -475,6 +471,118 @@ class UserSession(Base):
     # Methods
     def __repr__(self):
         return f"<UserSession(id={self.id}, user_id={self.user_id}, device={self.device_name})>"
+    
+    @hybrid_property
+    def is_valid(self):
+        """Check if session is valid"""
+        now = datetime.utcnow()
+        return self.is_active and not self.revoked_at and now < self.expires_at
+    
+    def revoke(self, reason: str = "manual"):
+        """Revoke session"""
+        self.is_active = False
+        self.revoked_at = datetime.utcnow()
+        self.revocation_reason = reason
+    
+    def touch(self):
+        """Update last used timestamp"""
+        self.last_used_at = datetime.utcnow()
+        self.usage_count += 1
+
+
+class SocialAccount(Base):
+    """
+    Social/OAuth account connections
+    """
+    __tablename__ = "social_accounts"
+    __table_args__ = (
+        UniqueConstraint('provider', 'provider_user_id', name='uq_provider_user'),
+        UniqueConstraint('user_id', 'provider', name='uq_user_provider'),
+    )
+    
+    # Primary key
+    id = Column(PGUUID(as_uuid=True), primary_key=True, default=uuid.uuid4, index=True)
+    
+    # Provider information
+    provider = Column(String(50), nullable=False, index=True)  # google, facebook, github, etc.
+    provider_user_id = Column(String(255), nullable=False, index=True)  # ID from provider
+    provider_email = Column(String(255), index=True)
+    
+    # Account information
+    display_name = Column(String(255))
+    profile_url = Column(String(500))
+    avatar_url = Column(String(500))
+    
+    # Token information
+    access_token = Column(Text, nullable=True)
+    refresh_token = Column(Text, nullable=True)
+    token_expires_at = Column(DateTime, nullable=True)
+    
+    # Additional data
+    extra_data = Column(JSON, default=dict)
+    
+    # Status
+    is_connected = Column(Boolean, default=True, index=True)
+    
+    # Timestamps
+    created_at = Column(DateTime, server_default=func.now())
+    updated_at = Column(DateTime, server_default=func.now(), onupdate=func.now())
+    last_used_at = Column(DateTime, nullable=True)
+    
+    # Foreign keys
+    user_id = Column(PGUUID(as_uuid=True), ForeignKey('users.id', ondelete='CASCADE'), nullable=False, index=True)
+    
+    # Relationships
+    user = relationship("User", back_populates="social_accounts")
+    
+    # Methods
+    def __repr__(self):
+        return f"<SocialAccount(id={self.id}, provider={self.provider}, user_id={self.user_id})>"
+    
+    def disconnect(self):
+        """Disconnect social account"""
+        self.is_connected = False
+        self.access_token = None
+        self.refresh_token = None
+
+
+class NotificationPreference(Base):
+    """
+    User notification preferences
+    """
+    __tablename__ = "notification_preferences"
+    __table_args__ = (
+        UniqueConstraint('user_id', 'notification_type', 'channel', name='uq_user_notification_channel'),
+    )
+    
+    # Primary key
+    id = Column(PGUUID(as_uuid=True), primary_key=True, default=uuid.uuid4, index=True)
+    
+    # Notification settings
+    notification_type = Column(String(100), nullable=False, index=True)  # system, email_digest, marketing, etc.
+    channel = Column(String(50), nullable=False, index=True)  # email, push, sms, in_app
+    is_enabled = Column(Boolean, default=True, index=True)
+    
+    # Frequency and timing
+    frequency = Column(String(50), default="immediate")  # immediate, daily, weekly, never
+    preferred_time = Column(String(10), nullable=True)  # HH:MM format
+    
+    # Customization
+    filters = Column(JSON, default=dict)  # Category filters, importance levels, etc.
+    
+    # Timestamps
+    created_at = Column(DateTime, server_default=func.now())
+    updated_at = Column(DateTime, server_default=func.now(), onupdate=func.now())
+    
+    # Foreign keys
+    user_id = Column(PGUUID(as_uuid=True), ForeignKey('users.id', ondelete='CASCADE'), nullable=False, index=True)
+    
+    # Relationships
+    user = relationship("User", back_populates="notification_preferences")
+    
+    # Methods
+    def __repr__(self):
+        return f"<NotificationPreference(id={self.id}, user_id={self.user_id}, type={self.notification_type})>"
     
     @hybrid_property
     def is_valid(self):

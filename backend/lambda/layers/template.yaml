@@ -1,0 +1,61 @@
+# backend/lambda/layers/template.yaml
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: 'Oli-Branch Lambda Layers'
+
+Parameters:
+  Environment:
+    Type: String
+    Default: dev
+    AllowedValues:
+      - dev
+      - staging
+      - prod
+
+Resources:
+  # AI Utilities Layer
+  AIUtilsLayer:
+    Type: AWS::Serverless::LayerVersion
+    Properties:
+      LayerName: !Sub "oli-branch-ai-utils-${Environment}"
+      Description: AI utilities for Bedrock and audit storage
+      ContentUri: ./ai_utils/
+      CompatibleRuntimes:
+        - python3.9
+        - python3.10
+        - python3.11
+        - python3.12
+      LicenseInfo: MIT
+      RetentionPolicy: Retain
+    Metadata:
+      BuildMethod: python3.11
+
+  # AWS Utilities Layer
+  AWSUtilsLayer:
+    Type: AWS::Serverless::LayerVersion
+    Properties:
+      LayerName: !Sub "oli-branch-aws-utils-${Environment}"
+      Description: Comprehensive AWS service utilities for Oli-Branch
+      ContentUri: ./aws_utils/
+      CompatibleRuntimes:
+        - python3.9
+        - python3.10
+        - python3.11
+        - python3.12
+      LicenseInfo: MIT
+      RetentionPolicy: Retain
+    Metadata:
+      BuildMethod: python3.11
+
+Outputs:
+  AIUtilsLayerArn:
+    Description: ARN of the AI Utils Layer
+    Value: !Ref AIUtilsLayer
+    Export:
+      Name: !Sub "${AWS::StackName}-AIUtilsLayerArn"
+
+  AWSUtilsLayerArn:
+    Description: ARN of the AWS Utils Layer
+    Value: !Ref AWSUtilsLayer
+    Export:
+      Name: !Sub "${AWS::StackName}-AWSUtilsLayerArn"
