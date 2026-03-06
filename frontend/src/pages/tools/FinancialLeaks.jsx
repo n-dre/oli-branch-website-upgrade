@@ -369,172 +369,7 @@ export default function FinancialLeaks() {
   const savingsPotential = avoidableFees * 12; // Annual projection
 
   return (
-<<<<<<< HEAD
-    <DashboardLayout 
-  title="FinLeaks" 
-  subtitle="AI-powered bank fee analysis by Oli Agent" 
-  className="bg-[#F8F5F0] dark:bg-gray-950 text-[#1B4332] dark:text-white"
->
-      <style>{`
-            .btn-primary {
-              background: #1B4332 !important;
-              color: #ffa200 !important;
-              transition: all 0.3s ease;
-            }
-            .btn-primary:hover {
-              background: #52796F !important;
-              transform: translateY(-2px);
-              box-shadow: 0 10px 20px rgba(27, 67, 50, 0.3);
-            }
-            .btn-secondary {
-              border: 2px solid #1B4332 !important;
-              color: #1B4332 !important;
-              background: transparent !important;
-              transition: all 0.3s ease;
-            }
-            .btn-secondary:hover {
-              background: #1B4332 !important;
-              color: #ffa200 !important;
-            }
-            .btn-disabled {
-              background: #94a3b8 !important;
-              color: #f1f5f9 !important;
-              cursor: not-allowed !important;
-              opacity: 0.7 !important;
-            }
-            .btn-voice {
-              background: linear-gradient(135deg, #b9b9b9 0%, #3B82F6 100%) !important;
-              color: white !important;
-              animation: pulse 2s infinite;
-            }
-            .achievement-card {
-              border-left: 4px solid #c7c7c7 !important;
-              transition: all 0.3s ease;
-              background: linear-gradient(135deg, rgba(27, 67, 50, 0.05) 0%, rgba(82, 121, 111, 0.05) 100%);
-            }
-            .stats-card {
-              background: linear-gradient(135deg, rgba(27, 67, 50, 0.05) 0%, rgba(82, 121, 111, 0.05) 100%);
-              border: 1px solid rgba(82, 121, 111, 0.1);
-            }
-            .progress-gradient {
-              background: linear-gradient(90deg, #1B4332 0%, #52796F 100%);
-            }
-            .demo-banner {
-              background: linear-gradient(135deg, #1B4332 0%, #52796F 100%);
-              color: white;
-              padding: 8px 16px;
-              border-radius: 6px;
-              display: inline-flex;
-              align-items: center;
-              gap: 8px;
-              font-size: 0.875rem;
-              margin-bottom: 16px;
-            }
-            .pulse-animation {
-              animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
-            }
-            @keyframes pulse {
-              0%, 100% { 
-                transform: scale(1);
-                box-shadow: 0 0 0 0 rgba(59, 130, 246, 0.7);
-              }
-              50% { 
-                transform: scale(1.05);
-                box-shadow: 0 0 0 10px rgba(59, 130, 246, 0);
-              }
-            }
-            .mismatch-item {
-              display: flex;
-              align-items: flex-start;
-              gap: 8px;
-              margin-bottom: 12px;
-            }
-            .mismatch-item::before {
-              content: "•";
-              color: #b9b9b9;
-              font-size: 24px;
-              line-height: 1;
-            }
-            .next-step-card {
-              background: white;
-              border-radius: 12px;
-              padding: 20px;
-              margin-bottom: 16px;
-              border-left: 4px solid #b9b9b9;
-              box-shadow: 0 2px 8px rgba(27, 67, 50, 0.1);
-            }
-            .bank-card, .grant-card {
-              background: white;
-              border-radius: 12px;
-              padding: 16px;
-              border: 1px solid rgba(82, 121, 111, 0.2);
-              transition: all 0.3s ease;
-            }
-            .bank-card:hover, .grant-card:hover {
-              transform: translateY(-4px);
-              box-shadow: 0 8px 24px rgba(27, 67, 50, 0.15);
-              border-color: #ffffff;
-            }
-           .achievement-card {
-            border-left: 4px solid #c7c7c7 !important;
-            transition: all 0.3s ease;
-            background: linear-gradient(135deg, rgba(27, 67, 50, 0.05) 0%, rgba(82, 121, 111, 0.05) 100%);
-              }
-
-              .dark .achievement-card {
-                background: linear-gradient(135deg, rgba(27, 67, 50, 0.15) 0%, rgba(82, 121, 111, 0.15) 100%);
-                border-left: 4px solid #ffffff !important;
-              }
-
-              .stats-card {
-                background: linear-gradient(135deg, rgba(27, 67, 50, 0.05) 0%, rgba(82, 121, 111, 0.05) 100%);
-                border: 1px solid rgba(82, 121, 111, 0.1);
-              }
-
-              .dark .stats-card {
-                background: linear-gradient(135deg, rgba(27, 67, 50, 0.15) 0%, rgba(82, 121, 111, 0.15) 100%);
-                border: 1px solid rgba(82, 121, 111, 0.4);
-              }
-
-              .bank-card,
-              .grant-card,
-              .next-step-card {
-                background: white;
-                border-radius: 12px;
-                padding: 16px;
-                border: 1px solid rgba(82, 121, 111, 0.2);
-                transition: all 0.3s ease;
-              }
-
-              .dark .bank-card,
-              .dark .grant-card,
-              .dark .next-step-card {
-                background: #1f2937;
-                border: 1px solid #374151;
-              }
-
-              .bank-card:hover,
-              .grant-card:hover {
-                transform: translateY(-4px);
-                box-shadow: 0 8px 24px rgba(27, 67, 50, 0.15);
-                border-color: #ffffff;
-              }
-
-              .dark .bank-card:hover,
-              .dark .grant-card:hover {
-                border-color: #ffffff;
-              }
-
-              .progress-gradient {
-                background: linear-gradient(90deg, #ffffff 0%, #ffffff 100%);
-              }
-
-              .dark .progress-gradient {
-                background: linear-gradient(90deg, #ffffff 0%, #ffffff 100%);
-              }
-            `}</style>
-=======
-    <DashboardLayout title="FinLeaks" subtitle="AI-powered bank fee analysis by Oli Agent" className="bg-[#F8F5F0]">
+    <DashboardLayout title="FinLeaks" subtitle="AI-powered bank fee analysis by Oli Agent" className="bg-[#F8F5F0] dark:bg-gray-950 text-[#1B4332] dark:text-white">
       <style>{`
         .btn-primary {
           background: #1B4332 !important;
@@ -635,8 +470,28 @@ export default function FinancialLeaks() {
           box-shadow: 0 8px 24px rgba(27, 67, 50, 0.15);
           border-color: #1B4332;
         }
+        .dark .achievement-card {
+          background: linear-gradient(135deg, rgba(27, 67, 50, 0.15) 0%, rgba(82, 121, 111, 0.15) 100%);
+          border-left: 4px solid #ffffff !important;
+        }
+        .dark .stats-card {
+          background: linear-gradient(135deg, rgba(27, 67, 50, 0.15) 0%, rgba(82, 121, 111, 0.15) 100%);
+          border: 1px solid rgba(82, 121, 111, 0.4);
+        }
+        .dark .bank-card,
+        .dark .grant-card,
+        .dark .next-step-card {
+          background: #1f2937;
+          border: 1px solid #374151;
+        }
+        .dark .bank-card:hover,
+        .dark .grant-card:hover {
+          border-color: #ffffff;
+        }
+        .dark .progress-gradient {
+          background: linear-gradient(90deg, #ffffff 0%, #ffffff 100%);
+        }
       `}</style>
->>>>>>> e9235cc2169c9dd35b28965cf0c7f9b3388f2812
 
       <div className="space-y-6">
         {/* Demo Mode Banner */}
@@ -678,27 +533,27 @@ export default function FinancialLeaks() {
             {/* Financial Leaks Summary */}
             <Card className="achievement-card">
               <CardHeader>
-                <CardTitle className="text-[#1B4332] flex items-center gap-2">
+                <CardTitle className="text-[#1B4332] dark:text-white flex items-center gap-2">
                   <AlertTriangle className="h-5 w-5" />
                   Financial Leaks Detected
                 </CardTitle>
-                <CardDescription className="text-[#52796F]">
+                <CardDescription className="text-[#52796F] dark:text-gray-300">
                   Oli identified potential savings opportunities in your current banking setup
                 </CardDescription>
               </CardHeader>
               <CardContent>
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                  <div className="bg-white rounded-xl p-6 text-center border border-[#52796F]/10">
+                  <div className="bg-white dark:bg-gray-800 rounded-xl p-6 text-center border border-[#52796F]/10 dark:border-gray-700">
                     <div className="text-3xl font-bold text-[#DC2626] mb-2">${totalFees.toFixed(2)}</div>
-                    <div className="text-sm text-[#52796F]">Monthly Fee Leaks</div>
+                    <div className="text-sm text-[#52796F] dark:text-gray-300">Monthly Fee Leaks</div>
                   </div>
-                  <div className="bg-white rounded-xl p-6 text-center border border-[#52796F]/10">
+                  <div className="bg-white dark:bg-gray-800 rounded-xl p-6 text-center border border-[#52796F]/10 dark:border-gray-700">
                     <div className="text-3xl font-bold text-[#10B981] mb-2">${savingsPotential.toFixed(2)}</div>
-                    <div className="text-sm text-[#52796F]">Annual Savings Potential</div>
+                    <div className="text-sm text-[#52796F] dark:text-gray-300">Annual Savings Potential</div>
                   </div>
-                  <div className="bg-white rounded-xl p-6 text-center border border-[#52796F]/10">
+                  <div className="bg-white dark:bg-gray-800 rounded-xl p-6 text-center border border-[#52796F]/10 dark:border-gray-700">
                     <div className="text-3xl font-bold text-[#F59E0B] mb-2">{detectedLeaks.length}</div>
-                    <div className="text-sm text-[#52796F]">Areas for Improvement</div>
+                    <div className="text-sm text-[#52796F] dark:text-gray-300">Areas for Improvement</div>
                   </div>
                 </div>
               </CardContent>
@@ -707,16 +562,16 @@ export default function FinancialLeaks() {
             {/* Key Mismatch Areas */}
             <Card className="achievement-card">
               <CardHeader>
-                <CardTitle className="text-[#1B4332]">Key Mismatch Areas</CardTitle>
-                <CardDescription className="text-[#52796F]">
+                <CardTitle className="text-[#1B4332] dark:text-white">Key Mismatch Areas</CardTitle>
+                <CardDescription className="text-[#52796F] dark:text-gray-300">
                   Based on Oli&apos;s analysis of your financial patterns
                 </CardDescription>
               </CardHeader>
               <CardContent>
-                <div className="bg-white rounded-xl p-6 border border-[#52796F]/10">
+                <div className="bg-white dark:bg-gray-800 rounded-xl p-6 border border-[#52796F]/10 dark:border-gray-700">
                   {keyMismatchAreas.map((item, index) => (
                     <div key={index} className="mismatch-item">
-                      <span className="text-[#1B4332]">{item}</span>
+                      <span className="text-[#1B4332] dark:text-white">{item}</span>
                     </div>
                   ))}
                 </div>
@@ -728,8 +583,8 @@ export default function FinancialLeaks() {
               {/* Bank Recommendations */}
               <Card className="achievement-card">
                 <CardHeader>
-                  <CardTitle className="text-[#1B4332]">Bank Recommendations</CardTitle>
-                  <CardDescription className="text-[#52796F]">
+                  <CardTitle className="text-[#1B4332] dark:text-white">Bank Recommendations</CardTitle>
+                  <CardDescription className="text-[#52796F] dark:text-gray-300">
                     Banks better suited to your cash handling needs
                   </CardDescription>
                 </CardHeader>
@@ -741,17 +596,12 @@ export default function FinancialLeaks() {
                         initial={{ opacity: 0, y: 20 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ delay: index * 0.1 }}
-                        className="bank-card"
+                        className="bank-card dark:bg-gray-800"
                       >
                         <div className="flex justify-between items-start mb-3">
                           <div>
-                            <h4 className="font-bold text-lg text-[#1B4332]">{bank.name}</h4>
-<<<<<<< HEAD
-                            <p className="text-[#52796F] dark:text-white">
-                            {bank.description}</p>
-=======
-                            <p className="text-[#52796F]">{bank.description}</p>
->>>>>>> e9235cc2169c9dd35b28965cf0c7f9b3388f2812
+                            <h4 className="font-bold text-lg text-[#1B4332] dark:text-white">{bank.name}</h4>
+                            <p className="text-[#52796F] dark:text-gray-300">{bank.description}</p>
                           </div>
                           <Badge className="bg-[#10B981]/10 text-[#10B981] border-[#10B981]/20">
                             {bank.matchScore}% Match
@@ -761,14 +611,14 @@ export default function FinancialLeaks() {
                         <div className="mb-4">
                           <div className="flex flex-wrap gap-2">
                             {bank.features.map((feature, idx) => (
-                              <Badge key={idx} className="bg-[#1B4332]/5 text-[#1B4332] border-[#1B4332]/10 text-xs">
+                              <Badge key={idx} className="bg-[#1B4332]/5 text-[#1B4332] border-[#1B4332]/10 dark:bg-gray-700 dark:text-gray-300 text-xs">
                                 {feature}
                               </Badge>
                             ))}
                           </div>
                         </div>
                         
-                        <div className="flex items-center gap-2 text-sm text-[#52796F]">
+                        <div className="flex items-center gap-2 text-sm text-[#52796F] dark:text-gray-300">
                           <Phone className="h-4 w-4" />
                           <span>{bank.contact}</span>
                         </div>
@@ -781,8 +631,8 @@ export default function FinancialLeaks() {
               {/* Grant & Funding Resources */}
               <Card className="achievement-card">
                 <CardHeader>
-                  <CardTitle className="text-[#1B4332]">Grant & Funding Resources</CardTitle>
-                  <CardDescription className="text-[#52796F]">
+                  <CardTitle className="text-[#1B4332] dark:text-white">Grant & Funding Resources</CardTitle>
+                  <CardDescription className="text-[#52796F] dark:text-gray-300">
                     Local and government funding opportunities
                   </CardDescription>
                 </CardHeader>
@@ -794,17 +644,12 @@ export default function FinancialLeaks() {
                         initial={{ opacity: 0, y: 20 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ delay: index * 0.1 }}
-                        className="grant-card"
+                        className="grant-card dark:bg-gray-800"
                       >
                         <div className="flex justify-between items-start mb-3">
                           <div>
-                            <h4 className="font-bold text-lg text-[#1B4332]">{grant.name}</h4>
-<<<<<<< HEAD
-                            <p className="text-[#52796F] dark:text-white">
-                            {grant.description}</p>
-=======
-                            <p className="text-[#52796F]">{grant.description}</p>
->>>>>>> e9235cc2169c9dd35b28965cf0c7f9b3388f2812
+                            <h4 className="font-bold text-lg text-[#1B4332] dark:text-white">{grant.name}</h4>
+                            <p className="text-[#52796F] dark:text-gray-300">{grant.description}</p>
                           </div>
                           <Badge className="bg-[#3B82F6]/10 text-[#3B82F6] border-[#3B82F6]/20">
                             {grant.matchScore}% Match
@@ -814,14 +659,14 @@ export default function FinancialLeaks() {
                         <div className="mb-4">
                           <div className="flex flex-wrap gap-2">
                             {grant.features.map((feature, idx) => (
-                              <Badge key={idx} className="bg-[#3B82F6]/5 text-[#3B82F6] border-[#3B82F6]/10 text-xs">
+                              <Badge key={idx} className="bg-[#3B82F6]/5 text-[#3B82F6] border-[#3B82F6]/10 dark:bg-gray-700 dark:text-gray-300 text-xs">
                                 {feature}
                               </Badge>
                             ))}
                           </div>
                         </div>
                         
-                        <div className="flex items-center gap-2 text-sm text-[#52796F]">
+                        <div className="flex items-center gap-2 text-sm text-[#52796F] dark:text-gray-300">
                           <Globe className="h-4 w-4" />
                           <span>{grant.contact}</span>
                         </div>
@@ -835,28 +680,28 @@ export default function FinancialLeaks() {
             {/* Next Steps */}
             <Card className="achievement-card">
               <CardHeader>
-                <CardTitle className="text-[#1B4332]">Next Steps</CardTitle>
-                <CardDescription className="text-[#52796F]">
+                <CardTitle className="text-[#1B4332] dark:text-white">Next Steps</CardTitle>
+                <CardDescription className="text-[#52796F] dark:text-gray-300">
                   Actionable steps to improve your financial alignment
                 </CardDescription>
               </CardHeader>
               <CardContent>
                 <div className="space-y-6">
                   {/* Step 1 */}
-                  <div className="next-step-card">
+                  <div className="next-step-card dark:bg-gray-800">
                     <div className="flex items-start gap-4">
                       <div className="bg-[#1B4332]/10 p-3 rounded-lg">
-                        <Banknote className="h-6 w-6 text-[#1B4332]" />
+                        <Banknote className="h-6 w-6 text-[#1B4332] dark:text-white" />
                       </div>
                       <div className="flex-1">
-                        <h4 className="font-bold text-lg text-[#1B4332] mb-2">Review Bank Options</h4>
-                        <p className="text-[#52796F] mb-4">
+                        <h4 className="font-bold text-lg text-[#1B4332] dark:text-white mb-2">Review Bank Options</h4>
+                        <p className="text-[#52796F] dark:text-gray-300 mb-4">
                           Contact the recommended banks to compare their business banking packages
                         </p>
                         <Button 
-                        className="gap-2 btn-primary"
-                        onClick={() => navigate("/nearby-banks")}
-                      >
+                          className="gap-2 btn-primary"
+                          onClick={() => navigate("/nearby-banks")}
+                        >
                           View Banks
                           <ChevronRight className="h-4 w-4" />
                         </Button>
@@ -865,20 +710,20 @@ export default function FinancialLeaks() {
                   </div>
 
                   {/* Step 2 */}
-                  <div className="next-step-card">
+                  <div className="next-step-card dark:bg-gray-800">
                     <div className="flex items-start gap-4">
                       <div className="bg-[#1B4332]/10 p-3 rounded-lg">
-                        <BarChart3 className="h-6 w-6 text-[#1B4332]" />
+                        <BarChart3 className="h-6 w-6 text-[#1B4332] dark:text-white" />
                       </div>
                       <div className="flex-1">
-                        <h4 className="font-bold text-lg text-[#1B4332] mb-2">Set Up Budget Tracking</h4>
-                        <p className="text-[#52796F] mb-4">
+                        <h4 className="font-bold text-lg text-[#1B4332] dark:text-white mb-2">Set Up Budget Tracking</h4>
+                        <p className="text-[#52796F] dark:text-gray-300 mb-4">
                           Use our budget dashboard to track fees and optimize your banking costs
                         </p>
-                      <Button
-                        className="gap-2 btn-primary"
-                        onClick={() => navigate("/budget")}
-                      >
+                        <Button
+                          className="gap-2 btn-primary"
+                          onClick={() => navigate("/budget")}
+                        >
                           Open Dashboard
                           <ChevronRight className="h-4 w-4" />
                         </Button>
@@ -887,77 +732,74 @@ export default function FinancialLeaks() {
                   </div>
 
                   {/* Step 3 */}
-                  <div className="next-step-card">
+                  <div className="next-step-card dark:bg-gray-800">
                     <div className="flex items-start gap-4">
                       <div className="bg-[#1B4332]/10 p-3 rounded-lg">
-                        <MapPin className="h-6 w-6 text-[#1B4332]" />
+                        <MapPin className="h-6 w-6 text-[#1B4332] dark:text-white" />
                       </div>
                       <div className="flex-1">
-                        <h4 className="font-bold text-lg text-[#1B4332] mb-2">Explore Funding Resources</h4>
-                        <p className="text-[#52796F] mb-4">
+                        <h4 className="font-bold text-lg text-[#1B4332] dark:text-white mb-2">Explore Funding Resources</h4>
+                        <p className="text-[#52796F] dark:text-gray-300 mb-4">
                           Research the suggested grant programs and SBA resources for your area
                         </p>
-                      <Button
-                        className="gap-2 btn-primary"
-                        onClick={() => navigate("/finder")}
-                      >
-                        View Resources
-                        <ChevronRight className="h-4 w-4" />
-                      </Button>
-                      </div>
-                    </div>
-                  </div>
-
-                 {/* Step 4 */}
-                <div className="next-step-card">
-                  <div className="flex items-start gap-4">
-                    <div className="bg-[#1B4332]/10 p-3 rounded-lg">
-                      <Calendar className="h-6 w-6 text-[#1B4332]" />
-                    </div>
-
-                    <div className="flex-1">
-                      <h4 className="font-bold text-lg text-[#1B4332] mb-2">
-                        Schedule Follow-up Assessment
-                      </h4>
-
-                      <p className="text-[#52796F] mb-4">
-                        Regular assessments help track improvement in your financial alignment
-                      </p>
-
-                      <div className="flex items-center gap-3">
-                        <Button className="gap-2 btn-primary">
-                          New Assessment
+                        <Button
+                          className="gap-2 btn-primary"
+                          onClick={() => navigate("/finder")}
+                        >
+                          View Resources
                           <ChevronRight className="h-4 w-4" />
                         </Button>
-
-                        {/* Calendar icon trigger ONLY */}
-                        <AssessmentCalendar
-                          onSchedule={(date) => {
-                            console.log("Follow-up assessment scheduled:", date);
-                          }}
-                        />
                       </div>
                     </div>
                   </div>
-                </div>
+
+                  {/* Step 4 */}
+                  <div className="next-step-card dark:bg-gray-800">
+                    <div className="flex items-start gap-4">
+                      <div className="bg-[#1B4332]/10 p-3 rounded-lg">
+                        <Calendar className="h-6 w-6 text-[#1B4332] dark:text-white" />
+                      </div>
+                      <div className="flex-1">
+                        <h4 className="font-bold text-lg text-[#1B4332] dark:text-white mb-2">
+                          Schedule Follow-up Assessment
+                        </h4>
+                        <p className="text-[#52796F] dark:text-gray-300 mb-4">
+                          Regular assessments help track improvement in your financial alignment
+                        </p>
+                        <div className="flex items-center gap-3">
+                          <Button className="gap-2 btn-primary">
+                            New Assessment
+                            <ChevronRight className="h-4 w-4" />
+                          </Button>
+
+                          {/* Calendar icon trigger ONLY */}
+                          <AssessmentCalendar
+                            onSchedule={(date) => {
+                              console.log("Follow-up assessment scheduled:", date);
+                            }}
+                          />
+                        </div>
+                      </div>
+                    </div>
+                  </div>
                 </div>
               </CardContent>
             </Card>
 
             {/* Oli Summary */}
-            <Card className="stats-card">
+            <Card className="stats-card dark:bg-gray-800">
               <CardContent className="p-6">
                 <div className="flex items-start gap-4">
                   <div className="p-3 rounded-full bg-gradient-to-br from-[#3B82F6] to-[#1B4332]">
                     <Brain className="h-8 w-8 text-white" />
                   </div>
                   <div className="flex-1">
-                    <h3 className="font-bold text-xl text-[#1B4332] mb-2">Oli&apos;s Financial Assessment</h3>
-                    <p className="text-[#52796F] mb-4">{`
-                      Based on my analysis, your current banking setup has significant fee leakages totaling $${totalFees.toFixed(2)} monthly. 
+                    <h3 className="font-bold text-xl text-[#1B4332] dark:text-white mb-2">Oli&apos;s Financial Assessment</h3>
+                    <p className="text-[#52796F] dark:text-gray-300 mb-4">
+                      Based on my analysis, your current banking setup has significant fee leakages totaling ${totalFees.toFixed(2)} monthly. 
                       The key mismatch areas identified suggest you need banks with better cash handling policies and should explore 
-                      local grant opportunities. Following the recommended next steps could save you $${savingsPotential.toFixed(2)} annually.
-                    `}</p>
+                      local grant opportunities. Following the recommended next steps could save you ${savingsPotential.toFixed(2)} annually.
+                    </p>
                     <div className="flex gap-4">
                       <Button onClick={handleDownloadPDF} className="gap-2 btn-primary">
                         <FileText className="h-4 w-4" />
@@ -977,7 +819,7 @@ export default function FinancialLeaks() {
 
         {/* AI Agent Oli Card (shown when no results yet) */}
         {!showResults && (
-          <Card className="ai-agent-card" style={{
+          <Card className="ai-agent-card dark:bg-gray-800" style={{
             background: 'linear-gradient(135deg, rgba(59, 130, 246, 0.05) 0%, rgba(96, 165, 250, 0.05) 100%)',
             border: '2px solid rgba(59, 130, 246, 0.2)'
           }}>
@@ -1004,16 +846,11 @@ export default function FinancialLeaks() {
                     )}
                   </div>
                   <div>
-                    <h2 className="text-2xl font-bold text-[#1B4332]">{OLI_AGENT_CONFIG.name}</h2>
-<<<<<<< HEAD
-                    <p className="text-[#52796F] dark:text-white">
-                    {OLI_AGENT_CONFIG.role}</p>
-=======
-                    <p className="text-[#52796F]">{OLI_AGENT_CONFIG.role}</p>
->>>>>>> e9235cc2169c9dd35b28965cf0c7f9b3388f2812
+                    <h2 className="text-2xl font-bold text-[#1B4332] dark:text-white">{OLI_AGENT_CONFIG.name}</h2>
+                    <p className="text-[#52796F] dark:text-gray-300">{OLI_AGENT_CONFIG.role}</p>
                     <div className="flex flex-wrap gap-2 mt-2">
                       {OLI_AGENT_CONFIG.capabilities.map((cap, idx) => (
-                        <Badge key={idx} className="bg-[#3B82F6]/10 text-[#3B82F6] border-[#3B82F6]/20">
+                        <Badge key={idx} className="bg-[#3B82F6]/10 text-[#3B82F6] border-[#3B82F6]/20 dark:bg-gray-700 dark:text-gray-300">
                           {cap}
                         </Badge>
                       ))}
@@ -1023,9 +860,9 @@ export default function FinancialLeaks() {
                 
                 <div className="text-right">
                   <Badge className={`
-                    ${oliStatus === "idle" ? "bg-[#52796F]/10 text-[#52796F]" : ""}
-                    ${oliStatus === "analyzing" ? "bg-[#F59E0B]/10 text-[#F59E0B] pulse-animation" : ""}
-                    ${oliStatus === "complete" ? "bg-[#10B981]/10 text-[#10B981]" : ""}
+                    ${oliStatus === "idle" ? "bg-[#52796F]/10 text-[#52796F] dark:bg-gray-700 dark:text-gray-300" : ""}
+                    ${oliStatus === "analyzing" ? "bg-[#F59E0B]/10 text-[#F59E0B] dark:bg-gray-700 dark:text-gray-300 pulse-animation" : ""}
+                    ${oliStatus === "complete" ? "bg-[#10B981]/10 text-[#10B981] dark:bg-gray-700 dark:text-gray-300" : ""}
                     border-transparent text-lg px-4 py-2
                   `}>
                     {oliStatus === "idle" && "Ready for Analysis"}
@@ -1033,24 +870,24 @@ export default function FinancialLeaks() {
                     {oliStatus === "complete" && "Analysis Complete"}
                   </Badge>
                   {oliStatus === "analyzing" && (
-                    <p className="text-sm text-[#52796F] mt-2">Scanning for financial leaks...</p>
+                    <p className="text-sm text-[#52796F] dark:text-gray-300 mt-2">Scanning for financial leaks...</p>
                   )}
                 </div>
               </div>
               
               {oliStatus === "analyzing" && (
                 <div className="mt-6">
-                  <div className="flex justify-between text-sm text-[#52796F] mb-2">
+                  <div className="flex justify-between text-sm text-[#52796F] dark:text-gray-300 mb-2">
                     <span>Analysis Progress</span>
                     <span>{Math.round(analysisProgress)}%</span>
                   </div>
-                  <Progress value={analysisProgress} className="h-2 progress-gradient" />
+                  <Progress value={analysisProgress} className="h-2 progress-gradient dark:bg-gray-700" />
                 </div>
               )}
               
               {oliStatus === "idle" && (
                 <div className="mt-6 flex flex-col items-center gap-4">
-                  <p className="text-[#52796F] text-center">
+                  <p className="text-[#52796F] dark:text-gray-300 text-center">
                     Click the Oli avatar or say &quot;Hey Oli&quot; to start voice-activated financial analysis
                   </p>
                   <div className="flex gap-4">
@@ -1071,11 +908,11 @@ export default function FinancialLeaks() {
 
         {/* Link Bank Account Card - DISABLED */}
         {!showResults && (
-          <Card className="stats-card">
+          <Card className="stats-card dark:bg-gray-800">
             <CardContent className="py-8 text-center">
-              <Building className="h-16 w-16 mx-auto mb-4 text-[#52796F]/30" />
-              <h2 className="text-2xl font-bold mb-2 text-[#1B4332]">No Bank Linked</h2>
-              <p className="text-[#52796F] mb-6">
+              <Building className="h-16 w-16 mx-auto mb-4 text-[#52796F]/30 dark:text-gray-600" />
+              <h2 className="text-2xl font-bold mb-2 text-[#1B4332] dark:text-white">No Bank Linked</h2>
+              <p className="text-[#52796F] dark:text-gray-300 mb-6">
                 Link your bank account for AI agent Oli to analyze fees and find better banking options.
               </p>
               <Button disabled className="gap-2 btn-disabled">
