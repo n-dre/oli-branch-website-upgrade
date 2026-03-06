@@ -315,7 +315,11 @@ const ResourcesPage = () => {
                 className="px-8 py-4 rounded-lg text-lg font-bold hover:opacity-90 transition-all text-center"
                 style={{ backgroundColor: colors.gold, color: colors.forest }}
               >
+<<<<<<< HEAD
                 Start a Free 7-Day Trial
+=======
+                Start a Free 14-Day Trial
+>>>>>>> e9235cc2169c9dd35b28965cf0c7f9b3388f2812
               </Link>
             </div>
           </div>

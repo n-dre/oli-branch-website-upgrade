@@ -1,6 +1,13 @@
 import React, { useState } from 'react';
+<<<<<<< HEAD
 import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip } from 'recharts/es6';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Legend } from 'recharts/es6';
+=======
+import {
+  PieChart, Pie, Cell, ResponsiveContainer, Tooltip,
+  BarChart, Bar, XAxis, YAxis, CartesianGrid, Legend
+} from 'recharts';
+>>>>>>> e9235cc2169c9dd35b28965cf0c7f9b3388f2812
 import {
   DollarSign, FileText, Shield, TrendingUp, AlertCircle,
   CheckCircle, RefreshCw, Download, BarChart3, PlusCircle,

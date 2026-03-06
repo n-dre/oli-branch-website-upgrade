@@ -141,7 +141,11 @@ const LoginPage = () => {
         </div>
 
         {/* Right Side - Form */}
+<<<<<<< HEAD
         <div className="flex-1 flex items-center justify-center p-4 sm:p-6 lg:p-8 bg-background">
+=======
+        <div className="flex-1 flex items-center justify-center p-4 sm:p-6 lg:p-8 bg-white">
+>>>>>>> e9235cc2169c9dd35b28965cf0c7f9b3388f2812
           <div className="w-full max-w-md space-y-6 sm:space-y-8">
             {/* Mobile Logo */}
             <div className="lg:hidden flex items-center justify-center mb-6">
@@ -152,7 +156,11 @@ const LoginPage = () => {
 
               <div className="text-center">
               <h2 className="font-display text-2xl sm:text-3xl font-bold" style={{ color: colors.forest}}>Welcome Back</h2>
+<<<<<<< HEAD
               <p className="mt-2 text-muted-foreground">Sign in to access your dashboard</p>
+=======
+              <p className="mt-2 text-sm sm:text-base text-gray-500">Sign in to access your dashboard</p>
+>>>>>>> e9235cc2169c9dd35b28965cf0c7f9b3388f2812
             </div>
 
             <form onSubmit={handleLogin} className="space-y-5 sm:space-y-6" noValidate>

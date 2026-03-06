@@ -1,8 +1,14 @@
 import React, { useState } from "react";
 import { toast } from "sonner";
+<<<<<<< HEAD
 import DashboardLayout from "../../components/layout/DashboardLayout";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "../../components/ui/card";
 import { Button } from "../../components/ui/button";
+=======
+import DashboardLayout from "../../../frontend/src/components/layout/DashboardLayout";
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "../../../frontend/src/components/ui/card";
+import { Button } from "../../../frontend/src/components/ui/button";
+>>>>>>> e9235cc2169c9dd35b28965cf0c7f9b3388f2812
 
 export default function Memories() {
   const [state, setState] = useState({

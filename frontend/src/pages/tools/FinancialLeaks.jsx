@@ -369,6 +369,7 @@ export default function FinancialLeaks() {
   const savingsPotential = avoidableFees * 12; // Annual projection
 
   return (
+<<<<<<< HEAD
     <DashboardLayout 
   title="FinLeaks" 
   subtitle="AI-powered bank fee analysis by Oli Agent" 
@@ -532,6 +533,110 @@ export default function FinancialLeaks() {
                 background: linear-gradient(90deg, #ffffff 0%, #ffffff 100%);
               }
             `}</style>
+=======
+    <DashboardLayout title="FinLeaks" subtitle="AI-powered bank fee analysis by Oli Agent" className="bg-[#F8F5F0]">
+      <style>{`
+        .btn-primary {
+          background: #1B4332 !important;
+          color: #ffa200 !important;
+          transition: all 0.3s ease;
+        }
+        .btn-primary:hover {
+          background: #52796F !important;
+          transform: translateY(-2px);
+          box-shadow: 0 10px 20px rgba(27, 67, 50, 0.3);
+        }
+        .btn-secondary {
+          border: 2px solid #1B4332 !important;
+          color: #1B4332 !important;
+          background: transparent !important;
+          transition: all 0.3s ease;
+        }
+        .btn-secondary:hover {
+          background: #1B4332 !important;
+          color: #ffa200 !important;
+        }
+        .btn-disabled {
+          background: #94a3b8 !important;
+          color: #f1f5f9 !important;
+          cursor: not-allowed !important;
+          opacity: 0.7 !important;
+        }
+        .btn-voice {
+          background: linear-gradient(135deg, #b9b9b9 0%, #3B82F6 100%) !important;
+          color: white !important;
+          animation: pulse 2s infinite;
+        }
+        .achievement-card {
+          border-left: 4px solid #c7c7c7 !important;
+          transition: all 0.3s ease;
+          background: linear-gradient(135deg, rgba(27, 67, 50, 0.05) 0%, rgba(82, 121, 111, 0.05) 100%);
+        }
+        .stats-card {
+          background: linear-gradient(135deg, rgba(27, 67, 50, 0.05) 0%, rgba(82, 121, 111, 0.05) 100%);
+          border: 1px solid rgba(82, 121, 111, 0.1);
+        }
+        .progress-gradient {
+          background: linear-gradient(90deg, #1B4332 0%, #52796F 100%);
+        }
+        .demo-banner {
+          background: linear-gradient(135deg, #1B4332 0%, #52796F 100%);
+          color: white;
+          padding: 8px 16px;
+          border-radius: 6px;
+          display: inline-flex;
+          align-items: center;
+          gap: 8px;
+          font-size: 0.875rem;
+          margin-bottom: 16px;
+        }
+        .pulse-animation {
+          animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+        }
+        @keyframes pulse {
+          0%, 100% { 
+            transform: scale(1);
+            box-shadow: 0 0 0 0 rgba(59, 130, 246, 0.7);
+          }
+          50% { 
+            transform: scale(1.05);
+            box-shadow: 0 0 0 10px rgba(59, 130, 246, 0);
+          }
+        }
+        .mismatch-item {
+          display: flex;
+          align-items: flex-start;
+          gap: 8px;
+          margin-bottom: 12px;
+        }
+        .mismatch-item::before {
+          content: "•";
+          color: #b9b9b9;
+          font-size: 24px;
+          line-height: 1;
+        }
+        .next-step-card {
+          background: white;
+          border-radius: 12px;
+          padding: 20px;
+          margin-bottom: 16px;
+          border-left: 4px solid #1B4332;
+          box-shadow: 0 2px 8px rgba(27, 67, 50, 0.1);
+        }
+        .bank-card, .grant-card {
+          background: white;
+          border-radius: 12px;
+          padding: 16px;
+          border: 1px solid rgba(82, 121, 111, 0.2);
+          transition: all 0.3s ease;
+        }
+        .bank-card:hover, .grant-card:hover {
+          transform: translateY(-4px);
+          box-shadow: 0 8px 24px rgba(27, 67, 50, 0.15);
+          border-color: #1B4332;
+        }
+      `}</style>
+>>>>>>> e9235cc2169c9dd35b28965cf0c7f9b3388f2812
 
       <div className="space-y-6">
         {/* Demo Mode Banner */}
@@ -641,8 +746,12 @@ export default function FinancialLeaks() {
                         <div className="flex justify-between items-start mb-3">
                           <div>
                             <h4 className="font-bold text-lg text-[#1B4332]">{bank.name}</h4>
+<<<<<<< HEAD
                             <p className="text-[#52796F] dark:text-white">
                             {bank.description}</p>
+=======
+                            <p className="text-[#52796F]">{bank.description}</p>
+>>>>>>> e9235cc2169c9dd35b28965cf0c7f9b3388f2812
                           </div>
                           <Badge className="bg-[#10B981]/10 text-[#10B981] border-[#10B981]/20">
                             {bank.matchScore}% Match
@@ -690,8 +799,12 @@ export default function FinancialLeaks() {
                         <div className="flex justify-between items-start mb-3">
                           <div>
                             <h4 className="font-bold text-lg text-[#1B4332]">{grant.name}</h4>
+<<<<<<< HEAD
                             <p className="text-[#52796F] dark:text-white">
                             {grant.description}</p>
+=======
+                            <p className="text-[#52796F]">{grant.description}</p>
+>>>>>>> e9235cc2169c9dd35b28965cf0c7f9b3388f2812
                           </div>
                           <Badge className="bg-[#3B82F6]/10 text-[#3B82F6] border-[#3B82F6]/20">
                             {grant.matchScore}% Match
@@ -892,8 +1005,12 @@ export default function FinancialLeaks() {
                   </div>
                   <div>
                     <h2 className="text-2xl font-bold text-[#1B4332]">{OLI_AGENT_CONFIG.name}</h2>
+<<<<<<< HEAD
                     <p className="text-[#52796F] dark:text-white">
                     {OLI_AGENT_CONFIG.role}</p>
+=======
+                    <p className="text-[#52796F]">{OLI_AGENT_CONFIG.role}</p>
+>>>>>>> e9235cc2169c9dd35b28965cf0c7f9b3388f2812
                     <div className="flex flex-wrap gap-2 mt-2">
                       {OLI_AGENT_CONFIG.capabilities.map((cap, idx) => (
                         <Badge key={idx} className="bg-[#3B82F6]/10 text-[#3B82F6] border-[#3B82F6]/20">

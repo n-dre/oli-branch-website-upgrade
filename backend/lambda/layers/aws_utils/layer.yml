@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 AWSTemplateFormatVersion: '2010-09-09'
 Description: AWS Utilities Layer for Oli-Branch Lambda Functions
 
@@ -37,3 +38,17 @@ Outputs:
     Export:
       Name:
         Fn::Sub: "${AWS::StackName}-AWSUtilsLayerArn"
+=======
+name: aws-utils-layer
+description: AWS utilities layer for Lambda functions
+compatible_runtimes:
+  - python3.8
+  - python3.9
+  - python3.10
+  - python3.11
+  - python3.12
+license_info: MIT
+compatible_architectures:
+  - x86_64
+  - arm64
+>>>>>>> e9235cc2169c9dd35b28965cf0c7f9b3388f2812
