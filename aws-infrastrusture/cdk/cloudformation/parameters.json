@@ -1,0 +1,67 @@
+{
+  "Parameters": {
+    "Environment": {
+      "Type": "String",
+      "Default": "dev",
+      "AllowedValues": ["dev", "staging", "prod"],
+      "Description": "Environment name"
+    },
+    
+    "ProjectName": {
+      "Type": "String",
+      "Default": "oli-branch",
+      "Description": "Project name for resource naming"
+    },
+    "VpcCIDR": {
+      "Type": "String",
+      "Default": "10.0.0.0/16",
+      "Description": "VPC CIDR block"
+    },
+    "PublicSubnet1CIDR": {
+      "Type": "String",
+      "Default": "10.0.1.0/24",
+      "Description": "Public subnet 1 CIDR"
+    },
+    "PublicSubnet2CIDR": {
+      "Type": "String",
+      "Default": "10.0.2.0/24",
+      "Description": "Public subnet 2 CIDR"
+    },
+    "PrivateSubnet1CIDR": {
+      "Type": "String",
+      "Default": "10.0.3.0/24",
+      "Description": "Private subnet 1 CIDR"
+    },
+    "PrivateSubnet2CIDR": {
+      "Type": "String",
+      "Default": "10.0.4.0/24",
+      "Description": "Private subnet 2 CIDR"
+    },
+    "DatabaseName": {
+      "Type": "String",
+      "Default": "olibranchdb",
+      "Description": "RDS database name"
+    },
+    "DatabaseUsername": {
+      "Type": "String",
+      "Default": "admin",
+      "Description": "RDS master username",
+      "NoEcho": true
+    },
+    "DatabasePassword": {
+      "Type": "String",
+      "Description": "RDS master password",
+      "NoEcho": true
+    },
+    "DomainName": {
+      "Type": "String",
+      "Default": "api.oli-branch.com",
+      "Description": "Custom domain name for API"
+    },
+    "CertificateArn": {
+      "Type": "String",
+      "Default": "",
+      "Description": "ACM certificate ARN for custom domain"
+    }
+  }
+}

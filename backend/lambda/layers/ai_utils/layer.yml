@@ -1,0 +1,38 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: AI Utilities Layer for Oli-Branch Lambda Functions
+
+Parameters:
+  LayerBucket:
+    Type: String
+    Default: oli-branch-lambda-layers
+
+  Environment:
+    Type: String
+    Default: dev
+    AllowedValues:
+      - dev
+      - staging
+      - prod
+
+Resources:
+  AIUtilsLayer:
+    Type: AWS::Lambda::LayerVersion
+    Properties:
+      LayerName: !Sub oli-branch-ai-utils-${Environment}
+      Description: AI utilities for Bedrock and audit storage
+      Content:
+        S3Bucket: !Ref LayerBucket
+        S3Key: ai_utils.zip
+      CompatibleRuntimes:
+        - python3.9
+        - python3.10
+        - python3.11
+        - python3.12
+      LicenseInfo: MIT
+
+Outputs:
+  LayerVersionArn:
+    Description: ARN of the AI Utils Layer
+    Value: !Ref AIUtilsLayer
+    Export:
+      Name: !Sub ${AWS::StackName}-AIUtilsLayerArn

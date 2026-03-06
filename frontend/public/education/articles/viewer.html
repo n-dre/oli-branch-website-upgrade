@@ -1,0 +1,56 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Oli-Branch Knowledge Base</title>
+  <style>
+    html, body { height: 100%; margin: 0; }
+    body { font-family: system-ui, -apple-system, Segoe UI, sans-serif; background:#0b0f0e; }
+    header {
+      height: 56px; display:flex; align-items:center; justify-content:space-between;
+      padding: 0 16px; background:#1B4332; color:#F8F5F0;
+      border-bottom: 1px solid rgba(255,255,255,.12);
+    }
+    .title { font-weight: 700; font-size: 14px; white-space: nowrap; overflow:hidden; text-overflow: ellipsis; max-width: 70vw; }
+    .actions a {
+      color:#1B4332; background:#D4AF37; padding:8px 12px; border-radius:10px;
+      text-decoration:none; font-weight:700; font-size: 13px;
+    }
+    main { height: calc(100% - 56px); }
+    iframe { width: 100%; height: 100%; border: 0; background: #fff; }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="title" id="docTitle">Document</div>
+    <div class="actions">
+      <a id="downloadLink" href="#" download>Download</a>
+    </div>
+  </header>
+
+  <main>
+    <!-- Embedded PDF (opens like normal reading, not the Acrobat UI) -->
+    <iframe id="pdfFrame" title="PDF"></iframe>
+  </main>
+
+    <script>
+    const params = new URLSearchParams(location.search);
+    const file = params.get("file");
+
+    // basic safety
+    if (!file || !file.endsWith(".pdf") || file.includes("..") || file.includes("/") || file.includes("\\")) {
+        document.getElementById("docTitle").textContent = "Invalid document";
+        throw new Error("Invalid file");
+    }
+
+    // IMPORTANT: absolute path to where the PDFs live
+    const url = "/education/articles/" + file;
+
+    document.getElementById("pdfFrame").src = url;
+    document.getElementById("downloadLink").href = url;
+    document.getElementById("docTitle").textContent = file;
+    </script>
+
+</body>
+</html>

@@ -1,0 +1,18 @@
+{
+  "videos": {
+    "youtubeChannelUrl": "https://www.youtube.com/@AdminContact-xd1xk"
+  },
+  "articles": [
+    {
+      "id": "fin-leaks-001",
+      "title": "How Financial Leaks Quietly Drain Small Businesses",
+      "summary": "An original Oli-Branch analysis on hidden fees, idle balances, and structural banking mismatches.",
+      "category": "Financial Leaks",
+      "publishedAt": "2026-01-20",
+      "readingTime": "6 min",
+      "format": "pdf",
+      "url": "/education/articles/financial-leaks-001.pdf",
+      "authorAgent": "agent_07"
+    }
+  ]
+}

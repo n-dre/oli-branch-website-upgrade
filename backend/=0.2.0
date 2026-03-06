@@ -1,0 +1,14 @@
+Collecting click-repl
+  Downloading click_repl-0.3.0-py3-none-any.whl.metadata (3.6 kB)
+Requirement already satisfied: click>=7.0 in .\lambda\layers\ai_utils\python\.venv\Lib\site-packages (from click-repl) (8.3.1)
+Collecting prompt-toolkit>=3.0.36 (from click-repl)
+  Downloading prompt_toolkit-3.0.52-py3-none-any.whl.metadata (6.4 kB)
+Requirement already satisfied: colorama in .\lambda\layers\ai_utils\python\.venv\Lib\site-packages (from click>=7.0->click-repl) (0.4.6)
+Collecting wcwidth (from prompt-toolkit>=3.0.36->click-repl)
+  Downloading wcwidth-0.6.0-py3-none-any.whl.metadata (30 kB)
+Downloading click_repl-0.3.0-py3-none-any.whl (10 kB)
+Downloading prompt_toolkit-3.0.52-py3-none-any.whl (391 kB)
+Downloading wcwidth-0.6.0-py3-none-any.whl (94 kB)
+Installing collected packages: wcwidth, prompt-toolkit, click-repl
+
+Successfully installed click-repl-0.3.0 prompt-toolkit-3.0.52 wcwidth-0.6.0

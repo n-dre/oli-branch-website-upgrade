@@ -1,0 +1,44 @@
+# Logs
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+node_modules
+dist
+dist-ssr
+*.local
+
+# Editor directories and files
+.vscode/*
+!.vscode/extensions.json
+.idea
+.DS_Store
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+# AWS
+.aws/
+*.pem
+*.key
+*.secret
+
+# Environment
+.env
+.env.local
+.env.production
+
+# CDK
+aws-infrastructure/cdk/cdk.out/
+aws-infrastructure/cdk/node_modules/
+
+# Terraform
+aws-infrastructure/terraform/.terraform/
+aws-infrastructure/terraform/*.tfstate*
+aws-infrastructure/terraform/.terraform.lock.hcl

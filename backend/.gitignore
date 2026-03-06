@@ -1,0 +1,48 @@
+# backend/.gitignore
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+.env
+.venv
+venv/
+ENV/
+env/
+pip-log.txt
+pip-delete-this-directory.txt
+.pytest_cache/
+.coverage
+htmlcov/
+.tox/
+.mypy_cache/
+.dmypy.json
+dmypy.json
+*.log
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Database
+*.db
+*.sqlite3
+
+# AWS
+aws_utils.zip
+ai_utils.zip
+*.tfstate
+*.tfstate.backup
+
+# Docker
+*.pid
+docker-compose.override.yml
+
+# Secrets
+.secrets
+*.pem
+*.key

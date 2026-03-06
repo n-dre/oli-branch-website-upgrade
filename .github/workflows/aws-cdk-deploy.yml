@@ -1,0 +1,97 @@
+name: Deploy AWS CDK Infrastructure
+
+on:
+  push:
+    branches: [ main, staging ]
+    paths:
+      - 'aws-infrastructure/cdk/**'
+      - '.github/workflows/aws-cdk-deploy.yml'
+  pull_request:
+    branches: [ main ]
+    paths:
+      - 'aws-infrastructure/cdk/**'
+  workflow_dispatch:
+
+env:
+  AWS_REGION: us-east-1
+  CDK_VERSION: '2.100.0'
+  NODE_VERSION: '18'
+
+jobs:
+  cdk-diff:
+    name: CDK Diff Check
+    runs-on: ubuntu-latest
+    if: github.event_name == 'pull_request'
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+
+      - name: Install AWS CDK
+        run: npm install -g aws-cdk@${{ env.CDK_VERSION }}
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v2
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Install dependencies
+        run: |
+          cd aws-infrastructure/cdk
+          npm ci
+
+      - name: CDK Diff
+        run: |
+          cd aws-infrastructure/cdk
+          cdk diff --all
+        continue-on-error: true
+
+  cdk-deploy:
+    name: CDK Deploy
+    runs-on: ubuntu-latest
+    if: github.event_name == 'push' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/staging')
+    environment: ${{ github.ref == 'refs/heads/main' && 'production' || 'staging' }}
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+
+      - name: Install AWS CDK
+        run: npm install -g aws-cdk@${{ env.CDK_VERSION }}
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v2
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Install dependencies
+        run: |
+          cd aws-infrastructure/cdk
+          npm ci
+
+      - name: CDK Synth
+        run: |
+          cd aws-infrastructure/cdk
+          cdk synth
+        env:
+          ENVIRONMENT: ${{ github.ref == 'refs/heads/main' && 'production' || 'staging' }}
+
+      - name: CDK Deploy
+        run: |
+          cd aws-infrastructure/cdk
+          cdk deploy --all --require-approval never
+        env:
+          ENVIRONMENT: ${{ github.ref == 'refs/heads/main' && 'production' || 'staging' }}

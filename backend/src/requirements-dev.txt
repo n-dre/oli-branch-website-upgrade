@@ -1,0 +1,51 @@
+# Testing
+pytest==7.4.3
+pytest-asyncio==0.21.1
+pytest-cov==4.1.0
+httpx==0.25.1
+
+# Code Quality
+black==23.11.0
+flake8==6.1.0
+isort==5.12.0
+mypy==1.7.0
+pre-commit==3.5.0
+
+# Documentation
+mkdocs==1.5.3
+mkdocs-material==9.5.3
+mkdocstrings[python]==0.23.0
+
+# Database Tools
+sqlacodegen==3.0.0rc4
+
+# Development Server
+watchfiles==0.21.0
+
+# Debugging
+ipdb==0.13.13
+debugpy==1.8.0
+
+# Jupyter for exploration
+jupyter==1.0.0
+
+# API Testing
+httpie==3.2.2
+
+# Environment Management
+python-dotenv==1.0.0
+
+# Code Analysis
+radon==6.0.1
+bandit==1.7.5
+safety==2.3.5
+
+# Monitoring
+sentry-sdk==1.38.0
+
+# Mocking
+responses==0.24.1
+freezegun==1.2.2
+
+# Formatting
+ruff==0.1.6

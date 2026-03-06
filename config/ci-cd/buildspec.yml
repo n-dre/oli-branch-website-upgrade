@@ -1,0 +1,50 @@
+# aws/ci-cd/buildspec.yml
+
+version: 0.2
+
+env:
+  variables:
+    AWS_REGION: "us-east-1"
+    REPO_NAME: "oli-branch-website-upgrade"
+    ECR_REPO: "oli-branch-backend"
+
+phases:
+  install:
+    runtime-versions:
+      python: 3.9
+      nodejs: 16
+    commands:
+      - echo "Installing system dependencies..."
+      - yum install -y docker
+      - service docker start
+      - usermod -a -G docker ec2-user || true
+
+  pre_build:
+    commands:
+      - echo "Logging in to Amazon ECR..."
+      - aws ecr get-login-password --region $AWS_REGION | docker login --username AWS --password-stdin $AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com
+      - echo "Installing backend dependencies..."
+      - cd backend
+      - pip install -r requirements.txt
+      - echo "Installing frontend dependencies..."
+      - cd ../frontend  # if exists
+      - npm ci
+
+  build:
+    commands:
+      - echo "Building Docker image..."
+      - cd backend
+      - docker build -t $ECR_REPO:latest .
+      - docker tag $ECR_REPO:latest $AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com/$ECR_REPO:latest
+
+  post_build:
+    commands:
+      - echo "Pushing Docker image to ECR..."
+      - docker push $AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com/$ECR_REPO:latest
+      - echo "Build completed at $(date)"
+
+artifacts:
+  files:
+    - backend/**/*
+    - frontend/build/**/*  # if frontend exists
+  discard-paths: no
