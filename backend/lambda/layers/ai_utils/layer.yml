@@ -1,16 +1,11 @@
-<<<<<<< HEAD
-AWSTemplateFormatVersion: '2010-09-09'
-Description: AI Utilities Layer for Oli-Branch Lambda Functions
-=======
 # backend/lambda/layers/ai_utils/layer.yml
 AWSTemplateFormatVersion: '2010-09-09'
 Description: 'AI Utilities Layer for Oli-Branch Lambda Functions'
->>>>>>> e9235cc2169c9dd35b28965cf0c7f9b3388f2812
 
 Parameters:
   LayerBucket:
     Type: String
-<<<<<<< HEAD
+    Description: S3 bucket containing the layer zip file
     Default: oli-branch-lambda-layers
 
   Environment:
@@ -21,20 +16,11 @@ Parameters:
       - staging
       - prod
 
-=======
-    Description: S3 bucket containing the layer zip file
-    Default: oli-branch-lambda-layers
-
->>>>>>> e9235cc2169c9dd35b28965cf0c7f9b3388f2812
 Resources:
   AIUtilsLayer:
     Type: AWS::Lambda::LayerVersion
     Properties:
-<<<<<<< HEAD
       LayerName: !Sub oli-branch-ai-utils-${Environment}
-=======
-      LayerName: oli-branch-ai-utils
->>>>>>> e9235cc2169c9dd35b28965cf0c7f9b3388f2812
       Description: AI utilities for Bedrock and audit storage
       Content:
         S3Bucket: !Ref LayerBucket
@@ -51,8 +37,4 @@ Outputs:
     Description: ARN of the AI Utils Layer
     Value: !Ref AIUtilsLayer
     Export:
-<<<<<<< HEAD
-      Name: !Sub ${AWS::StackName}-AIUtilsLayerArn
-=======
       Name: !Sub "${AWS::StackName}-AIUtilsLayerArn"
->>>>>>> e9235cc2169c9dd35b28965cf0c7f9b3388f2812

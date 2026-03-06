@@ -1,16 +1,6 @@
 // frontend/src/pages/tools/FinancialHealth.jsx
 import React, { useRef, useEffect, useState, useMemo } from "react";
 import { motion } from "framer-motion";
-<<<<<<< HEAD
-// Update recharts imports to import directly from specific files
-import { ResponsiveContainer, Tooltip } from "recharts/es6";
-import { LineChart, Line, XAxis, YAxis, CartesianGrid } from "recharts/es6";
-import { BarChart, Bar } from "recharts/es6";
-import { AreaChart, Area } from "recharts/es6";
-import { RadarChart, Radar, PolarGrid, PolarAngleAxis, PolarRadiusAxis } from "recharts/es6";
-import { ComposedChart, Legend } from "recharts/es6";
-
-=======
 import {
   ResponsiveContainer,
   Tooltip,
@@ -31,7 +21,6 @@ import {
   ComposedChart,
   Legend,
 } from "recharts";
->>>>>>> e9235cc2169c9dd35b28965cf0c7f9b3388f2812
 import { toast } from "sonner";
 import {
   Heart,
@@ -808,7 +797,7 @@ export default function FinancialHealth() {
             </p>
           </div>
           
-{/* Responsive Action Buttons */}
+          {/* Responsive Action Buttons */}
           <div className="flex flex-col sm:flex-row gap-2 w-full sm:w-auto">
             <div className="grid grid-cols-3 sm:flex sm:gap-2 gap-2 w-full">
               {/* Share Button */}
@@ -854,11 +843,7 @@ export default function FinancialHealth() {
               <Clock className="h-4 w-4 mr-2 text-tertiary" />
               <SelectValue placeholder="Timeframe" />
             </SelectTrigger>
-<<<<<<< HEAD
-              <SelectContent className="bg-white text-gray-900 border border-gray-200">
-=======
             <SelectContent className="bg-surface text-text">
->>>>>>> e9235cc2169c9dd35b28965cf0c7f9b3388f2812
               <SelectItem value="monthly">Monthly</SelectItem>
               <SelectItem value="quarterly">Quarterly</SelectItem>
               <SelectItem value="yearly">Yearly</SelectItem>
@@ -870,11 +855,7 @@ export default function FinancialHealth() {
               <Globe className="h-4 w-4 mr-2 text-tertiary" />
               <SelectValue placeholder="Compare With" />
             </SelectTrigger>
-<<<<<<< HEAD
-              <SelectContent className="bg-white text-gray-900 border border-gray-200">
-=======
             <SelectContent className="bg-surface text-text">
->>>>>>> e9235cc2169c9dd35b28965cf0c7f9b3388f2812
               <SelectItem value="industry">Industry Benchmark</SelectItem>
               <SelectItem value="past">Past Performance</SelectItem>
             </SelectContent>
@@ -885,11 +866,7 @@ export default function FinancialHealth() {
               <Briefcase className="h-4 w-4 mr-2 text-tertiary" />
               <SelectValue placeholder="Industry" />
             </SelectTrigger>
-<<<<<<< HEAD
-              <SelectContent className="bg-white text-gray-900 border border-gray-200">
-=======
             <SelectContent className="bg-surface text-text">
->>>>>>> e9235cc2169c9dd35b28965cf0c7f9b3388f2812
               {Object.entries(INDUSTRY_BENCHMARKS).map(([key, value]) => (
                 <SelectItem key={key} value={key}>{value.name}</SelectItem>
               ))}

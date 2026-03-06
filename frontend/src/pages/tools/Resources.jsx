@@ -64,31 +64,31 @@ const ResourcesPage = () => {
         }
       `}</style>
 
-            {/* Navigation */}
-            <nav
-            className="fixed top-0 w-full z-50 glass-effect border-b border-opacity-20"
-            style={{ borderColor: colors.sage }}
-            >
-            <div className="max-w-6xl mx-auto px-6 py-4">
-                <div className="flex items-center justify-between">
-                <Link to="/" className="flex items-center space-x-2">
-                    <img
-                    src="/images/oli-branch00.png"
-                    alt="Oli Logo"
-                    className="w-12 h-12 rounded-lg"
-                    />
-                    <div className="flex flex-col leading-tight">
-                    <span
-                        className="font-bold text-xl"
-                        style={{ color: colors.forest }}
-                    >
-                        Oli-Branch
-                    </span>
-                    <span className="text-[10px] uppercase tracking-widest italic">
-                        Powered by AI
-                    </span>
-                    </div>
-                </Link>
+      {/* Navigation */}
+      <nav
+        className="fixed top-0 w-full z-50 glass-effect border-b border-opacity-20"
+        style={{ borderColor: colors.sage }}
+      >
+        <div className="max-w-6xl mx-auto px-6 py-4">
+          <div className="flex items-center justify-between">
+            <Link to="/" className="flex items-center space-x-2">
+              <img
+                src="/images/oli-branch00.png"
+                alt="Oli Logo"
+                className="w-12 h-12 rounded-lg"
+              />
+              <div className="flex flex-col leading-tight">
+                <span
+                  className="font-bold text-xl"
+                  style={{ color: colors.forest }}
+                >
+                  Oli-Branch
+                </span>
+                <span className="text-[10px] uppercase tracking-widest italic">
+                  Powered by AI
+                </span>
+              </div>
+            </Link>
 
             <div className="hidden md:flex items-center space-x-8">
               <Link to="/" className="hover:opacity-70 transition-colors" style={{ color: colors.charcoal }}>Home</Link>
@@ -101,7 +101,7 @@ const ResourcesPage = () => {
                 rel="noopener noreferrer"
                 className="btn-primary px-6 py-2 rounded-lg font-medium inline-flex items-center justify-center"
               >
-               Run an Audit
+                Run an Audit
               </a>
             </div>
           </div>
@@ -315,11 +315,7 @@ const ResourcesPage = () => {
                 className="px-8 py-4 rounded-lg text-lg font-bold hover:opacity-90 transition-all text-center"
                 style={{ backgroundColor: colors.gold, color: colors.forest }}
               >
-<<<<<<< HEAD
-                Start a Free 7-Day Trial
-=======
                 Start a Free 14-Day Trial
->>>>>>> e9235cc2169c9dd35b28965cf0c7f9b3388f2812
               </Link>
             </div>
           </div>

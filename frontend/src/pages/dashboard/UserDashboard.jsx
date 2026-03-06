@@ -1,13 +1,8 @@
 import React, { useState } from 'react';
-<<<<<<< HEAD
-import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip } from 'recharts/es6';
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Legend } from 'recharts/es6';
-=======
 import {
   PieChart, Pie, Cell, ResponsiveContainer, Tooltip,
   BarChart, Bar, XAxis, YAxis, CartesianGrid, Legend
 } from 'recharts';
->>>>>>> e9235cc2169c9dd35b28965cf0c7f9b3388f2812
 import {
   DollarSign, FileText, Shield, TrendingUp, AlertCircle,
   CheckCircle, RefreshCw, Download, BarChart3, PlusCircle,
@@ -162,6 +157,7 @@ const UserDashboard = () => {
         audit.status.toLowerCase().includes(searchQuery.toLowerCase())
       )
     : recentAudits;
+
   return (
     <div className="font-sans bg-[hsl(var(--background))] text-[hsl(var(--foreground))] min-h-screen">
       <Toaster position="top-right" />
@@ -201,9 +197,6 @@ const UserDashboard = () => {
           </div>
         }
       >
-
-        {/* Remaining content starts here */}
-        {/* The next message will continue rendering the grid, cards, tabs, etc. */}
         {/* Key Metrics */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
           <Card className="border border-[hsl(var(--border))] bg-[hsl(var(--card))]">
@@ -300,6 +293,7 @@ const UserDashboard = () => {
             </CardContent>
           </Card>
         </div>
+
         {/* Main Content Tabs */}
         <Tabs
           defaultValue="overview"
@@ -417,6 +411,7 @@ const UserDashboard = () => {
               </Card>
             </div>
           </TabsContent>
+
           <TabsContent value="analytics" className="space-y-6">
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
               {/* Risk Distribution */}
@@ -541,6 +536,7 @@ const UserDashboard = () => {
               </Card>
             </div>
           </TabsContent>
+
           <TabsContent value="audits" className="space-y-6">
             <Card className="border border-[hsl(var(--border))] bg-[hsl(var(--card))]">
               <CardHeader>

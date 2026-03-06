@@ -1,14 +1,8 @@
 import React, { useState } from "react";
 import { toast } from "sonner";
-<<<<<<< HEAD
 import DashboardLayout from "../../components/layout/DashboardLayout";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "../../components/ui/card";
 import { Button } from "../../components/ui/button";
-=======
-import DashboardLayout from "../../../frontend/src/components/layout/DashboardLayout";
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "../../../frontend/src/components/ui/card";
-import { Button } from "../../../frontend/src/components/ui/button";
->>>>>>> e9235cc2169c9dd35b28965cf0c7f9b3388f2812
 
 export default function Memories() {
   const [state, setState] = useState({
@@ -33,9 +27,24 @@ export default function Memories() {
             <CardDescription>Control memory and personalization behavior.</CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
-            <ToggleRow title="Enable memories" desc="Allow the app to remember preferences and context." checked={state.enableMemories} onChange={() => toggle("enableMemories")} />
-            <ToggleRow title="Personalization" desc="Use memory to personalize insights and experiences." checked={state.allowPersonalization} onChange={() => toggle("allowPersonalization")} />
-            <ToggleRow title="Auto summaries" desc="Create automatic summaries of activity (if available)." checked={state.autoSummaries} onChange={() => toggle("autoSummaries")} />
+            <ToggleRow 
+              title="Enable memories" 
+              desc="Allow the app to remember preferences and context." 
+              checked={state.enableMemories} 
+              onChange={() => toggle("enableMemories")} 
+            />
+            <ToggleRow 
+              title="Personalization" 
+              desc="Use memory to personalize insights and experiences." 
+              checked={state.allowPersonalization} 
+              onChange={() => toggle("allowPersonalization")} 
+            />
+            <ToggleRow 
+              title="Auto summaries" 
+              desc="Create automatic summaries of activity (if available)." 
+              checked={state.autoSummaries} 
+              onChange={() => toggle("autoSummaries")} 
+            />
 
             <div className="pt-2 flex justify-end gap-2">
               <Button variant="outline" onClick={() => toast.message("Clear memory queued (wire API).")}>
@@ -57,7 +66,12 @@ function ToggleRow({ title, desc, checked, onChange }) {
         <div className="font-semibold">{title}</div>
         <div className="text-sm text-muted-foreground">{desc}</div>
       </div>
-      <input type="checkbox" className="h-5 w-5 accent-foreground" checked={!!checked} onChange={onChange} />
+      <input 
+        type="checkbox" 
+        className="h-5 w-5 accent-foreground" 
+        checked={!!checked} 
+        onChange={onChange} 
+      />
     </div>
   );
 }

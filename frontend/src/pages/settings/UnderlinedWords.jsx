@@ -1,14 +1,8 @@
 import React, { useState } from "react";
 import { toast } from "sonner";
-<<<<<<< HEAD
 import DashboardLayout from "../../components/layout/DashboardLayout";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "../../components/ui/card";
 import { Button } from "../../components/ui/button";
-=======
-import DashboardLayout from "../../../frontend/src/components/layout/DashboardLayout";
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "../../../frontend/src/components/ui/card";
-import { Button } from "../../../frontend/src/components/ui/button";
->>>>>>> e9235cc2169c9dd35b28965cf0c7f9b3388f2812
 
 export default function UnderlinedWords() {
   const [state, setState] = useState({
@@ -33,9 +27,24 @@ export default function UnderlinedWords() {
             <CardDescription>Control term underlines and definition behavior.</CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
-            <ToggleRow title="Enable underlined words" desc="Underline recognized terms and concepts." checked={state.enableUnderlines} onChange={() => toggle("enableUnderlines")} />
-            <ToggleRow title="Show definitions on hover/tap" desc="Quick definitions for underlined terms." checked={state.showDefinitions} onChange={() => toggle("showDefinitions")} />
-            <ToggleRow title="Highlight financial terms" desc="Prioritize finance-related vocabulary." checked={state.highlightFinancialTerms} onChange={() => toggle("highlightFinancialTerms")} />
+            <ToggleRow 
+              title="Enable underlined words" 
+              desc="Underline recognized terms and concepts." 
+              checked={state.enableUnderlines} 
+              onChange={() => toggle("enableUnderlines")} 
+            />
+            <ToggleRow 
+              title="Show definitions on hover/tap" 
+              desc="Quick definitions for underlined terms." 
+              checked={state.showDefinitions} 
+              onChange={() => toggle("showDefinitions")} 
+            />
+            <ToggleRow 
+              title="Highlight financial terms" 
+              desc="Prioritize finance-related vocabulary." 
+              checked={state.highlightFinancialTerms} 
+              onChange={() => toggle("highlightFinancialTerms")} 
+            />
 
             <div className="pt-2 flex justify-end">
               <Button onClick={onSave}>Save</Button>
@@ -54,7 +63,12 @@ function ToggleRow({ title, desc, checked, onChange }) {
         <div className="font-semibold">{title}</div>
         <div className="text-sm text-muted-foreground">{desc}</div>
       </div>
-      <input type="checkbox" className="h-5 w-5 accent-foreground" checked={!!checked} onChange={onChange} />
+      <input 
+        type="checkbox" 
+        className="h-5 w-5 accent-foreground" 
+        checked={!!checked} 
+        onChange={onChange} 
+      />
     </div>
   );
 }
