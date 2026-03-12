@@ -7,6 +7,9 @@ import React, {
   useCallback,
 } from "react";
 
+// API imports
+import { financialApi } from '../services/api/financial';
+
 const DataContext = createContext();
 const isBrowser = typeof window !== "undefined";
 
@@ -129,9 +132,9 @@ function getStateFromZip(zip) {
 }
 
 // --------------------
-// Health Score Logic
+// Health Score Logic (Fallback)
 // --------------------
-function computeHealthScore(inputs) {
+function computeHealthScoreFallback(inputs) {
   const revenue = Math.max(0, safeNumber(inputs?.revenue, 0));
   const expenses = Math.max(0, safeNumber(inputs?.expenses, 0));
   const debt = Math.max(0, safeNumber(inputs?.debt, 0));
@@ -149,7 +152,15 @@ function computeHealthScore(inputs) {
 
   const score = Math.round(marginScore * 45 + runwayScore * 30 + debtScore * 25);
 
-  return { score, metrics: { margin, runway, debtLoad } };
+  return {
+    score,
+    metrics: {
+      profitability: Math.min(100, margin * 100 + 50),
+      efficiency: Math.min(100, (1 - expenses / Math.max(1, revenue)) * 100 + 50),
+      liquidity: Math.min(100, (runway / 24) * 100),
+      growth: Math.min(100, margin > 0 ? 70 + margin * 50 : 30)
+    }
+  };
 }
 
 function healthLabel(score) {
@@ -224,7 +235,13 @@ export function DataProvider({ children }) {
   );
 
   // --------------------
-  // ✅ REPORTS (ADDED)
+  // API State
+  // --------------------
+  const [apiAvailable, setApiAvailable] = useState(false);
+  const [apiChecked, setApiChecked] = useState(false);
+
+  // --------------------
+  // Reports
   // --------------------
   const [reports, setReports] = useState(() =>
     safeJsonParse(isBrowser ? localStorage.getItem("oliBranchReports") : null, [])
@@ -270,6 +287,80 @@ export function DataProvider({ children }) {
     setHealthInputs(null);
     setHealthHistory([]);
   }, []);
+
+  // --------------------
+  // FIXED: API-based Health Score with control to prevent infinite loops
+  // --------------------
+  const computeHealthScore = useCallback(async (inputs, skipApi = false) => {
+    if (!inputs) return { score: 0, metrics: {} };
+    
+    // Log what we're sending (but only in development)
+    if (process.env.NODE_ENV === 'development') {
+      console.log('📤 Attempting to calculate score for:', inputs);
+    }
+    
+    // If we want to skip API or API is unavailable, use fallback
+    if (skipApi || !apiAvailable) {
+      if (process.env.NODE_ENV === 'development') {
+        console.log('📝 Using local calculation (API skipped or unavailable)');
+      }
+      return computeHealthScoreFallback(inputs);
+    }
+    
+    try {
+      // Try to get data from API
+      const result = await financialApi.analyzeFinancialData(inputs);
+      
+      if (process.env.NODE_ENV === 'development') {
+        console.log('📥 API Response:', result);
+      }
+      
+      // Update health history if we got a score
+      if (result?.score) {
+        addHealthHistory(result.score);
+      }
+      
+      return result;
+    } catch (error) {
+      console.warn('⚠️ API failed, falling back to local calculation:', error.message);
+      
+      // Fallback to local calculation if API fails
+      return computeHealthScoreFallback(inputs);
+    }
+  }, [addHealthHistory, apiAvailable]);
+
+  // --------------------
+  // API Health Check - runs only once on mount
+  // --------------------
+  useEffect(() => {
+    let isMounted = true;
+    
+    const checkApiHealth = async () => {
+      try {
+        const result = await financialApi.healthCheck();
+        if (isMounted) {
+          console.log('✅ API Health Check:', result);
+          setApiAvailable(true);
+        }
+      } catch (error) {
+        if (isMounted) {
+          console.error('❌ API Health Check Failed:', error);
+          console.log('📝 Using local calculations as fallback');
+          setApiAvailable(false);
+        }
+      } finally {
+        if (isMounted) {
+          setApiChecked(true);
+        }
+      }
+    };
+    
+    checkApiHealth();
+    
+    return () => {
+      isMounted = false;
+    };
+  }, []); // Empty dependency array = runs once on mount
 
   // --------------------
   // Persistence
@@ -358,6 +449,10 @@ export function DataProvider({ children }) {
         setProfileImage,
         subscription,
         linkedBanks,
+
+        // API status
+        apiAvailable,
+        apiChecked,
 
         // reports
         reports,

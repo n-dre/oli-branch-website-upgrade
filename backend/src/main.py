@@ -33,8 +33,11 @@ app = FastAPI(
     redoc_url="/redoc" if os.getenv("DEBUG", "True").lower() == "true" else None,
 )
 
-# Configure CORS
-origins = os.getenv("ALLOWED_ORIGINS", "http://localhost:3000,http://localhost:8000").split(",")
+# Configure CORS - IMPORTANT: Add your frontend URL here
+# Get allowed origins from env or use defaults that include your frontend
+default_origins = "http://localhost:3000,http://localhost:8000,http://localhost:5173,http://127.0.0.1:5173"
+origins = os.getenv("ALLOWED_ORIGINS", default_origins).split(",")
+
 app.add_middleware(
     CORSMiddleware,
     allow_origins=origins,
@@ -44,19 +47,19 @@ app.add_middleware(
 )
 
 # Security
-security = HTTPBearer()
+security = HTTPBearer(auto_error=False)  # Set to False to allow unauthenticated requests in development
 
 # Mount static files if upload folder exists
 upload_folder = os.getenv("UPLOAD_FOLDER", "./uploads")
 if os.path.exists(upload_folder):
     app.mount("/uploads", StaticFiles(directory=upload_folder), name="uploads")
 
-# Health check endpoint
+# Health check endpoint - PUBLIC (no auth required)
 @app.get("/")
 async def root():
     """Root endpoint returning API information."""
     return {
-        "message": "Welcome to Assessment Backend API",
+        "message": "Welcome to Oli-Branch Backend API",
         "version": app.version,
         "docs": "/docs" if app.docs_url else None,
         "health": "/health",
@@ -81,7 +84,8 @@ try:
         assessment_router,
         prefix="/api/v1/assessments",
         tags=["assessments"],
-        dependencies=[Depends(security)]
+        # Only add dependency if we have security enabled
+        dependencies=[Depends(security)] if os.getenv("ENABLE_AUTH", "False").lower() == "true" else []
     )
     print("✓ Assessment service router loaded")
 except ImportError as e:
@@ -91,11 +95,11 @@ except ImportError as e:
     
     @assessment_router.get("/")
     async def get_assessments():
-        return {"message": "Assessment service is under development"}
+        return {"message": "Assessment service is under development", "data": []}
     
     @assessment_router.post("/")
     async def create_assessment():
-        return {"message": "Create assessment endpoint placeholder"}
+        return {"message": "Create assessment endpoint placeholder", "id": "placeholder-id"}
     
     app.include_router(assessment_router, prefix="/api/v1/assessments", tags=["assessments"])
 
@@ -106,7 +110,7 @@ try:
         report_router,
         prefix="/api/v1/reports",
         tags=["reports"],
-        dependencies=[Depends(security)]
+        dependencies=[Depends(security)] if os.getenv("ENABLE_AUTH", "False").lower() == "true" else []
     )
     print("✓ Report service router loaded")
 except ImportError as e:
@@ -115,11 +119,11 @@ except ImportError as e:
     
     @report_router.get("/")
     async def get_reports():
-        return {"message": "Report service is under development"}
+        return {"message": "Report service is under development", "data": []}
     
     @report_router.post("/generate")
     async def generate_report():
-        return {"message": "Generate report endpoint placeholder"}
+        return {"message": "Generate report endpoint placeholder", "report_id": "placeholder"}
     
     app.include_router(report_router, prefix="/api/v1/reports", tags=["reports"])
 
@@ -130,7 +134,7 @@ try:
         ai_router,
         prefix="/api/v1/ai",
         tags=["ai"],
-        dependencies=[Depends(security)]
+        dependencies=[Depends(security)] if os.getenv("ENABLE_AUTH", "False").lower() == "true" else []
     )
     print("✓ AI service router loaded")
 except ImportError as e:
@@ -139,11 +143,11 @@ except ImportError as e:
     
     @ai_router.get("/")
     async def get_ai_status():
-        return {"message": "AI service is under development"}
+        return {"message": "AI service is under development", "status": "available"}
     
     @ai_router.post("/analyze")
     async def analyze_text():
-        return {"message": "AI analysis endpoint placeholder"}
+        return {"message": "AI analysis endpoint placeholder", "analysis": {}}
     
     app.include_router(ai_router, prefix="/api/v1/ai", tags=["ai"])
 
@@ -154,7 +158,7 @@ try:
         bank_router,
         prefix="/api/v1/payments",
         tags=["payments"],
-        dependencies=[Depends(security)]
+        dependencies=[Depends(security)] if os.getenv("ENABLE_AUTH", "False").lower() == "true" else []
     )
     print("✓ Bank/Payment service router loaded")
 except ImportError as e:
@@ -163,13 +167,51 @@ except ImportError as e:
     
     @bank_router.get("/")
     async def get_payments():
-        return {"message": "Payment service is under development"}
+        return {"message": "Payment service is under development", "data": []}
     
     @bank_router.post("/checkout")
     async def create_checkout():
-        return {"message": "Create checkout endpoint placeholder"}
+        return {"message": "Create checkout endpoint placeholder", "checkout_url": ""}
     
     app.include_router(bank_router, prefix="/api/v1/payments", tags=["payments"])
+
+# Financial Health endpoints - Add these for your frontend
+financial_router = APIRouter(prefix="/api/v1/financial", tags=["financial"])
+
+@financial_router.get("/health-score")
+async def get_health_score():
+    """Get financial health score data"""
+    # This is a placeholder - replace with actual logic
+    return {
+        "score": 75,
+        "metrics": {
+            "profitability": 80,
+            "efficiency": 80,
+            "liquidity": 22,
+            "growth": 100
+        },
+        "status": "success"
+    }
+
+@financial_router.post("/analyze")
+async def analyze_financial_data(data: dict = {}):
+    """Analyze financial data and return insights"""
+    # This is a placeholder - replace with actual analysis
+    return {
+        "score": 75,
+        "insights": [
+            "Your profitability is strong",
+            "Liquidity needs improvement",
+            "Growth potential is excellent"
+        ],
+        "recommendations": [
+            "Review cash flow management",
+            "Consider optimizing expenses",
+            "Explore investment opportunities"
+        ]
+    }
+
+app.include_router(financial_router)
 
 # Error handlers
 @app.exception_handler(404)
@@ -216,6 +258,7 @@ async def startup_event():
     print(f"📁 Environment: {os.getenv('ENVIRONMENT', 'development')}")
     print(f"🔧 Debug mode: {os.getenv('DEBUG', 'True')}")
     print(f"📂 Python path: {sys.path}")
+    print(f"🔓 CORS allowed origins: {origins}")
     
     # Initialize database
     init_database()
@@ -242,7 +285,7 @@ if __name__ == "__main__":
     
     print(f"🌐 Starting server on {host}:{port} (reload={reload})")
     uvicorn.run(
-        "main:app",
+        "src.main:app",  # Changed from "main:app" to "src.main:app"
         host=host,
         port=port,
         reload=reload,

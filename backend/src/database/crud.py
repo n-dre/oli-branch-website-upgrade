@@ -4,34 +4,42 @@ Provides reusable CRUD operations for all models
 """
 
 import logging
-from typing import Any, Dict, List, Optional, Union, Tuple
+from typing import Any, Dict, List, Optional, Union, Tuple, TypeVar, Generic, Type
+import logging
 from datetime import datetime
 from uuid import UUID
 
-from sqlalchemy import inspect, func, select, update, delete, or_
+from typing import Any, Dict, List, Optional, Union, Tuple, TypeVar, Generic, Type
+
+from sqlalchemy import inspect, func, select, update, delete, or_, text
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import Session
 from sqlalchemy.exc import SQLAlchemyError
 
-from .database import Base, db_manager
+from .database import db_manager
+from sqlalchemy.orm import DeclarativeMeta
 
 # Set up logger
 logger = logging.getLogger(__name__)
 
 
-class CRUDBase:
+# Type variables for generic CRUD operations
+ModelType = TypeVar("ModelType", bound=DeclarativeMeta)
+CreateSchemaType = TypeVar("CreateSchemaType")
+UpdateSchemaType = TypeVar("UpdateSchemaType")
+
+class CRUDBase(Generic[ModelType, CreateSchemaType, UpdateSchemaType]):
     """Base class for CRUD operations"""
-    
-    def __init__(self, model):
+
+    def __init__(self, model: Type[ModelType]):
         """
         Initialize CRUD operations for a specific model.
-        
+
         Args:
             model: SQLAlchemy model class
         """
         self.model = model
-    
-    async def get(self, db: AsyncSession, id: Union[int, str, UUID]) -> Optional[Any]:
+    async def get(self, db: AsyncSession, id: Union[int, str, UUID]) -> Optional[ModelType]:
         """
         Get a single record by ID.
         
@@ -59,7 +67,7 @@ class CRUDBase:
         limit: int = 100,
         filters: Optional[List[Any]] = None,
         order_by: Optional[List[Any]] = None
-    ) -> List[Any]:
+    ) -> List[ModelType]:
         """
         Get multiple records with pagination.
         
@@ -97,7 +105,7 @@ class CRUDBase:
             logger.error(f"Error retrieving multiple {self.model.__name__}: {e}")
             return []
     
-    async def create(self, db: AsyncSession, *, obj_in: Any) -> Optional[Any]:
+    async def create(self, db: AsyncSession, *, obj_in: CreateSchemaType) -> Optional[ModelType]:
         """
         Create a new record.
         
@@ -134,9 +142,9 @@ class CRUDBase:
         self, 
         db: AsyncSession, 
         *, 
-        db_obj: Any, 
-        obj_in: Any
-    ) -> Optional[Any]:
+        db_obj: ModelType, 
+        obj_in: Union[UpdateSchemaType, Dict[str, Any]]
+    ) -> Optional[ModelType]:
         """
         Update a record.
         
@@ -246,7 +254,7 @@ class CRUDBase:
         *, 
         field_name: str, 
         field_value: Any
-    ) -> Optional[Any]:
+    ) -> Optional[ModelType]:
         """
         Get a record by a specific field value.
         
@@ -276,7 +284,7 @@ class CRUDBase:
         *, 
         defaults: Optional[Dict[str, Any]] = None,
         **kwargs
-    ) -> Tuple[Optional[Any], bool]:
+    ) -> Tuple[Optional[ModelType], bool]:
         """
         Get a record or create it if it doesn't exist.
         
@@ -311,7 +319,7 @@ class CRUDBase:
         self, 
         db: AsyncSession, 
         **kwargs
-    ) -> Optional[Any]:
+    ) -> Optional[ModelType]:
         """
         Get a record by multiple field values.
         
@@ -340,8 +348,8 @@ class CRUDBase:
     async def bulk_create(
         self, 
         db: AsyncSession, 
-        objs_in: List[Any]
-    ) -> List[Any]:
+        objs_in: List[CreateSchemaType]
+    ) -> List[ModelType]:
         """
         Create multiple records in bulk.
         
@@ -456,7 +464,7 @@ class CRUDBase:
             logger.error(f"Error bulk deleting {self.model.__name__}: {e}")
             return 0
     
-    def _get_id(self, obj: Any) -> Union[int, str, UUID, None]:
+    def _get_id(self, obj: ModelType) -> Union[int, str, UUID, None]:
         """Get the ID of a model instance"""
         if hasattr(obj, "id"):
             return getattr(obj, "id")
@@ -587,107 +595,3 @@ class CRUDHelper:
             return []
 
 
-# Now let's also update the __init__.py file to remove the type variable exports:
-
-"""
-Database Module
-Exports database components and utilities
-"""
-
-from .database import (
-    Base,
-    metadata,
-    db_manager,
-    DatabaseManager,
-    execute_query,
-    execute_scalar,
-    execute_commit,
-    get_session as get_db_session,
-)
-
-from .crud import (
-    CRUDBase,
-    CRUDHelper,
-)
-
-# Export all public components
-__all__ = [
-    # Database
-    'Base',
-    'metadata',
-    'db_manager',
-    'DatabaseManager',
-    'execute_query',
-    'execute_scalar',
-    'execute_commit',
-    'get_db_session',
-    
-    # CRUD
-    'CRUDBase',
-    'CRUDHelper',
-]
-
-__version__ = '1.0.0'
-__author__ = 'Database Team'
-
-# Initialize database connection
-async def init_database():
-    """Initialize database connection and create tables if needed"""
-    try:
-        # Check connection
-        is_connected = await db_manager.check_connection()
-        
-        if is_connected:
-            print(f"✅ Database connected successfully")
-            
-            # Get database info
-            db_info = await db_manager.get_database_info()
-            print(f"📊 Database Info: {db_info.get('version', 'Unknown')}")
-            print(f"💾 Size: {db_info.get('size_mb', 0)} MB")
-            print(f"🔗 Connections: {db_info.get('active_connections', 0)} active")
-            
-            return True
-        else:
-            print("❌ Database connection failed")
-            return False
-            
-    except Exception as e:
-        print(f"⚠️  Database initialization error: {e}")
-        return False
-
-
-async def close_database():
-    """Close database connections"""
-    await db_manager.close()
-    print("🔒 Database connections closed")
-
-
-# Example usage instructions
-if __name__ == "__main__":
-    import asyncio
-    
-    async def example():
-        """Example of using the database module"""
-        print("Database Module Example")
-        print("=" * 50)
-        
-        # Initialize database
-        await init_database()
-        
-        # Get a session
-        async with db_manager.get_session() as session:
-            # Use session for database operations
-            print("✅ Got database session")
-            
-            # Example query
-            try:
-                result = await session.execute("SELECT 1 as test")
-                row = result.fetchone()
-                print(f"✅ Test query result: {row.test}")
-            except:
-                print("⚠️  Test query failed - check database configuration")
-        
-        print("=" * 50)
-    
-    # Run example
-    asyncio.run(example())

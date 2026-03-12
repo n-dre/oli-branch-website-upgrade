@@ -68,6 +68,11 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from ".
 import { Switch } from "../../components/ui/switch";
 import { useData } from "../../context/DataContext";
 
+console.log('💰 FinancialHealth component loaded');
+console.log('🔍 VITE_USE_MOCK_DATA:', import.meta.env.VITE_USE_MOCK_DATA);
+console.log('🔍 VITE_API_URL:', import.meta.env.VITE_API_URL);
+console.log('🔗 API Base URL:', import.meta.env.VITE_API_BASE_URL);
+
 const COLOR_SCHEME = {
   primary: "hsl(var(--primary))",
   primaryLight: "hsl(var(--primary-light))",

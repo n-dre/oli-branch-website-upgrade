@@ -1,5 +1,25 @@
 {
   "cfn-guard.rules": {
     "CODEBUILD_PROJECT_ENVVAR_AWSCRED_CHECK": "ignore"
-  }
+  },
+
+  "yaml.customTags": [
+    "!Ref",
+    "!Sub",
+    "!GetAtt",
+    "!Join",
+    "!Select",
+    "!Split",
+    "!If",
+    "!Equals",
+    "!And",
+    "!Or",
+    "!Not",
+    "!FindInMap",
+    "!Base64",
+    "!Cidr",
+    "!ImportValue",
+    "!Condition",
+    "!GetAZs"
+  ]
 }

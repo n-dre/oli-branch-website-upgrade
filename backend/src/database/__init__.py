@@ -3,6 +3,7 @@ Database Module
 Exports database components and utilities
 """
 
+from sqlalchemy import text
 from .database import (
     Base,
     metadata,
@@ -17,6 +18,7 @@ from .database import (
 from .crud import (
     CRUDBase,
     CRUDHelper,
+    # Type variables are now properly defined in crud.py
     ModelType,
     CreateSchemaType,
     UpdateSchemaType,
@@ -94,13 +96,13 @@ if __name__ == "__main__":
             # Use session for database operations
             print("✅ Got database session")
             
-            # Example query
+            # Example query - FIXED: wrap SQL in text()
             try:
-                result = await session.execute("SELECT 1 as test")
+                result = await session.execute(text("SELECT 1 as test"))
                 row = result.fetchone()
                 print(f"✅ Test query result: {row.test}")
-            except:
-                print("⚠️  Test query failed - check database configuration")
+            except Exception as e:
+                print(f"⚠️  Test query failed: {e}")
         
         print("=" * 50)
     
