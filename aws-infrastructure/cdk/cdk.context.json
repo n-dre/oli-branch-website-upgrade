@@ -6,5 +6,9 @@
     "us-east-1d",
     "us-east-1e",
     "us-east-1f"
-  ]
+  ],
+  "hosted-zone:account=571973773041:domainName=oli-branch.com:region=us-east-1": {
+    "Id": "/hostedzone/Z08359191SQH833UCKW0Q",
+    "Name": "oli-branch.com."
+  }
 }
