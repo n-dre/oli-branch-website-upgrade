@@ -1,0 +1,61 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: 'Validated Infrastructure Template'
+
+Parameters:
+  Environment:
+    Type: String
+    Default: dev
+    AllowedValues: [dev, staging, prod]
+
+  ProjectName:
+    Type: String
+    Default: myapp
+
+Resources:
+  VPC:
+    Type: AWS::EC2::VPC
+    Properties:
+      CidrBlock: 10.0.0.0/16
+      EnableDnsHostnames: true
+      Tags:
+        - Key: Name
+          Value: !Sub '${ProjectName}-${Environment}-vpc'
+
+  # Note: RDS requires at least TWO subnets in different AZs
+  PublicSubnet1:
+    Type: AWS::EC2::Subnet
+    Properties:
+      VpcId: !Ref VPC
+      AvailabilityZone: !Select [0, !GetAZs '']
+      CidrBlock: 10.0.1.0/24
+
+  PublicSubnet2:
+    Type: AWS::EC2::Subnet
+    Properties:
+      VpcId: !Ref VPC
+      AvailabilityZone: !Select [1, !GetAZs '']
+      CidrBlock: 10.0.2.0/24
+
+  DatabaseSubnetGroup:
+    Type: AWS::RDS::DBSubnetGroup
+    Properties:
+      DBSubnetGroupDescription: Subnet group for RDS
+      SubnetIds: 
+        - !Ref PublicSubnet1
+        - !Ref PublicSubnet2
+
+  DatabaseInstance:
+    Type: AWS::RDS::DBInstance
+    Properties:
+      DBName: appdb
+      Engine: postgres
+      EngineVersion: '14.9'
+      DBInstanceClass: db.t3.micro
+      AllocatedStorage: 20
+      MasterUsername: postgres
+      MasterUserPassword: "YourSecurePassword123" # Use a Parameter for this!
+      DBSubnetGroupName: !Ref DatabaseSubnetGroup
+
+Outputs:
+  VpcId:
+    Value: !Ref VPC

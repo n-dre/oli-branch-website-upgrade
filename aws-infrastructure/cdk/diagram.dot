@@ -1,0 +1,795 @@
+digraph "Diagram" {
+  splines = "ortho";
+  pad = 1;
+  nodesep = 0.6;
+  ranksep = 0.75;
+  fontname = "Sans-Serif";
+  fontsize = 15;
+  dpi = 200;
+  rankdir = "BT";
+  compound = true;
+  fontcolor = "#222222";
+  edge [
+    color = "#D5871488";
+    penwidth = 2;
+    arrowhead = "dot";
+    arrowtail = "dot";
+  ];
+  node [
+    shape = "box";
+    style = "rounded";
+    fixedsize = true;
+    width = 1.7;
+    height = 1.7;
+    labelloc = "c";
+    imagescale = true;
+    fontname = "Sans-Serif";
+    fontsize = 8;
+    margin = 8;
+  ];
+  subgraph "App" {
+    subgraph "cluster-SubGraph.App" {
+      graph [
+        label = "App";
+        labelloc = "b";
+        labeljust = "l";
+        margin = 10;
+        fontsize = 16;
+        penwidth = 2;
+        pencolor = "#888888";
+        style = "filled,rounded";
+        fillcolor = "#f3f3f3";
+      ];
+      subgraph "cluster-SubGraph.OliBranchNetworkStack" {
+        graph [
+          label = "OliBranchNetworkStack";
+          labelloc = "b";
+          labeljust = "l";
+          margin = 10;
+          fontsize = 16;
+          penwidth = 2;
+          pencolor = "#888888";
+          style = "filled,rounded";
+          fillcolor = "#e4e4e4";
+        ];
+        "OliBranchNetworkStack/OliBranchVpc" [
+          label = " OliBranchVpc";
+          fontsize = 12;
+          image = "C:\Users\drep7\AppData\Roaming\npm\node_modules\cdk-dia\icons\aws\Service\Arch_Networking-Content\64\Arch_Amazon-Virtual-Private-Cloud_64@5x.png";
+          imagescale = "true";
+          imagepos = "tc";
+          penwidth = 0;
+          shape = "node";
+          fixedsize = "true";
+          labelloc = "b";
+          width = 2;
+          height = 2.266;
+        ];
+        "OliBranchNetworkStack/LambdaSecurityGroup" [
+          label = " LambdaSecurityGroup";
+          fontsize = 12;
+          image = "C:\Users\drep7\AppData\Roaming\npm\node_modules\cdk-dia\icons\aws\security_group.png";
+          imagescale = "true";
+          imagepos = "tc";
+          penwidth = 0;
+          shape = "node";
+          fixedsize = "true";
+          labelloc = "b";
+          width = 2;
+          height = 2.266;
+        ];
+        "OliBranchNetworkStack/DatabaseSecurityGroup" [
+          label = "\nDatabaseSecurityGroup";
+          fontsize = 12;
+          image = "C:\Users\drep7\AppData\Roaming\npm\node_modules\cdk-dia\icons\aws\security_group.png";
+          imagescale = "true";
+          imagepos = "tc";
+          penwidth = 0;
+          shape = "node";
+          fixedsize = "true";
+          labelloc = "b";
+          width = 2;
+          height = 2.4819999999999998;
+        ];
+      }
+      subgraph "cluster-SubGraph.OliBranchDynamoDbStack" {
+        graph [
+          label = "OliBranchDynamoDbStack";
+          labelloc = "b";
+          labeljust = "l";
+          margin = 10;
+          fontsize = 16;
+          penwidth = 2;
+          pencolor = "#888888";
+          style = "filled,rounded";
+          fillcolor = "#e4e4e4";
+        ];
+        "OliBranchDynamoDbStack/UsersTable" [
+          label = " UsersTable";
+          fontsize = 12;
+          image = "C:\Users\drep7\AppData\Roaming\npm\node_modules\cdk-dia\icons\aws\Service\Arch_Database\64\Arch_Amazon-DynamoDB_64@5x.png";
+          imagescale = "true";
+          imagepos = "tc";
+          penwidth = 0;
+          shape = "node";
+          fixedsize = "true";
+          labelloc = "b";
+          width = 1.2;
+          height = 1.466;
+        ];
+        "OliBranchDynamoDbStack/BusinessesTable" [
+          label = " BusinessesTable";
+          fontsize = 12;
+          image = "C:\Users\drep7\AppData\Roaming\npm\node_modules\cdk-dia\icons\aws\Service\Arch_Database\64\Arch_Amazon-DynamoDB_64@5x.png";
+          imagescale = "true";
+          imagepos = "tc";
+          penwidth = 0;
+          shape = "node";
+          fixedsize = "true";
+          labelloc = "b";
+          width = 1.2;
+          height = 1.466;
+        ];
+        "OliBranchDynamoDbStack/AssessmentsTable" [
+          label = " AssessmentsTable";
+          fontsize = 12;
+          image = "C:\Users\drep7\AppData\Roaming\npm\node_modules\cdk-dia\icons\aws\Service\Arch_Database\64\Arch_Amazon-DynamoDB_64@5x.png";
+          imagescale = "true";
+          imagepos = "tc";
+          penwidth = 0;
+          shape = "node";
+          fixedsize = "true";
+          labelloc = "b";
+          width = 1.2;
+          height = 1.466;
+        ];
+        "OliBranchDynamoDbStack/ReportsTable" [
+          label = " ReportsTable";
+          fontsize = 12;
+          image = "C:\Users\drep7\AppData\Roaming\npm\node_modules\cdk-dia\icons\aws\Service\Arch_Database\64\Arch_Amazon-DynamoDB_64@5x.png";
+          imagescale = "true";
+          imagepos = "tc";
+          penwidth = 0;
+          shape = "node";
+          fixedsize = "true";
+          labelloc = "b";
+          width = 1.2;
+          height = 1.466;
+        ];
+        "OliBranchDynamoDbStack/LeaksTable" [
+          label = " LeaksTable";
+          fontsize = 12;
+          image = "C:\Users\drep7\AppData\Roaming\npm\node_modules\cdk-dia\icons\aws\Service\Arch_Database\64\Arch_Amazon-DynamoDB_64@5x.png";
+          imagescale = "true";
+          imagepos = "tc";
+          penwidth = 0;
+          shape = "node";
+          fixedsize = "true";
+          labelloc = "b";
+          width = 1.2;
+          height = 1.466;
+        ];
+        "OliBranchDynamoDbStack/RecommendationsTable" [
+          label = " RecommendationsTable";
+          fontsize = 12;
+          image = "C:\Users\drep7\AppData\Roaming\npm\node_modules\cdk-dia\icons\aws\Service\Arch_Database\64\Arch_Amazon-DynamoDB_64@5x.png";
+          imagescale = "true";
+          imagepos = "tc";
+          penwidth = 0;
+          shape = "node";
+          fixedsize = "true";
+          labelloc = "b";
+          width = 1.2;
+          height = 1.466;
+        ];
+      }
+      subgraph "cluster-SubGraph.OliBranchS3Stack" {
+        graph [
+          label = "OliBranchS3Stack";
+          labelloc = "b";
+          labeljust = "l";
+          margin = 10;
+          fontsize = 16;
+          penwidth = 2;
+          pencolor = "#888888";
+          style = "filled,rounded";
+          fillcolor = "#e4e4e4";
+        ];
+        "OliBranchS3Stack/AuditBucket" [
+          label = " AuditBucket";
+          fontsize = 12;
+          image = "C:\Users\drep7\AppData\Roaming\npm\node_modules\cdk-dia\icons\aws\Service\Arch_Storage\64\Arch_Amazon-S3-Standard_64@5x.png";
+          imagescale = "true";
+          imagepos = "tc";
+          penwidth = 0;
+          shape = "node";
+          fixedsize = "true";
+          labelloc = "b";
+          width = 2;
+          height = 2.266;
+        ];
+        "OliBranchS3Stack/ReportsBucket" [
+          label = " ReportsBucket";
+          fontsize = 12;
+          image = "C:\Users\drep7\AppData\Roaming\npm\node_modules\cdk-dia\icons\aws\Service\Arch_Storage\64\Arch_Amazon-S3-Standard_64@5x.png";
+          imagescale = "true";
+          imagepos = "tc";
+          penwidth = 0;
+          shape = "node";
+          fixedsize = "true";
+          labelloc = "b";
+          width = 2;
+          height = 2.266;
+        ];
+        "OliBranchS3Stack/StaticBucket" [
+          label = " StaticBucket";
+          fontsize = 12;
+          image = "C:\Users\drep7\AppData\Roaming\npm\node_modules\cdk-dia\icons\aws\Service\Arch_Storage\64\Arch_Amazon-S3-Standard_64@5x.png";
+          imagescale = "true";
+          imagepos = "tc";
+          penwidth = 0;
+          shape = "node";
+          fixedsize = "true";
+          labelloc = "b";
+          width = 2;
+          height = 2.266;
+        ];
+        "OliBranchS3Stack/PublicBucket" [
+          label = " PublicBucket";
+          fontsize = 12;
+          image = "C:\Users\drep7\AppData\Roaming\npm\node_modules\cdk-dia\icons\aws\Service\Arch_Storage\64\Arch_Amazon-S3-Standard_64@5x.png";
+          imagescale = "true";
+          imagepos = "tc";
+          penwidth = 0;
+          shape = "node";
+          fixedsize = "true";
+          labelloc = "b";
+          width = 2;
+          height = 2.266;
+        ];
+      }
+      subgraph "cluster-SubGraph.OliBranchCognitoStack" {
+        graph [
+          label = "OliBranchCognitoStack";
+          labelloc = "b";
+          labeljust = "l";
+          margin = 10;
+          fontsize = 16;
+          penwidth = 2;
+          pencolor = "#888888";
+          style = "filled,rounded";
+          fillcolor = "#e4e4e4";
+        ];
+        "OliBranchCognitoStack/OliBranchUserPool" [
+          label = " OliBranchUserPool";
+          fontsize = 12;
+          image = "C:\Users\drep7\AppData\Roaming\npm\node_modules\cdk-dia\icons\aws\Service\Arch_Security-Identity-Compliance\64\Arch_Amazon-Cognito_64.png";
+          imagescale = "true";
+          imagepos = "tc";
+          penwidth = 0;
+          shape = "node";
+          fixedsize = "true";
+          labelloc = "b";
+          width = 1.2;
+          height = 1.466;
+        ];
+        "OliBranchCognitoStack/OliBranchClient" [
+          label = " OliBranchClient";
+          fontsize = 12;
+          image = "C:\Users\drep7\AppData\Roaming\npm\node_modules\cdk-dia\icons\aws\Service\Arch_Security-Identity-Compliance\64\Arch_Amazon-Cognito_64.png";
+          imagescale = "true";
+          imagepos = "tc";
+          penwidth = 0;
+          shape = "node";
+          fixedsize = "true";
+          labelloc = "b";
+          width = 1.2;
+          height = 1.466;
+        ];
+        "OliBranchCognitoStack/AuthCertificate" [
+          label = " AuthCertificate";
+          fontsize = 12;
+          image = "C:\Users\drep7\AppData\Roaming\npm\node_modules\cdk-dia\icons\aws\Service\Arch_Security-Identity-Compliance\64\Arch_AWS-Certificate-Manager_64@5x.png";
+          imagescale = "true";
+          imagepos = "tc";
+          penwidth = 0;
+          shape = "node";
+          fixedsize = "true";
+          labelloc = "b";
+          width = 1.2;
+          height = 1.466;
+        ];
+        "OliBranchCognitoStack/OliBranchDomain" [
+          label = " OliBranchDomain";
+          fontsize = 12;
+          image = "C:\Users\drep7\AppData\Roaming\npm\node_modules\cdk-dia\icons\aws\Service\Arch_Security-Identity-Compliance\64\Arch_Amazon-Cognito_64.png";
+          imagescale = "true";
+          imagepos = "tc";
+          penwidth = 0;
+          shape = "node";
+          fixedsize = "true";
+          labelloc = "b";
+          width = 1.2;
+          height = 1.466;
+        ];
+        "OliBranchCognitoStack/AuthSubdomainRecord" [
+          label = " AuthSubdomainRecord";
+          fontsize = 12;
+          image = "C:\Users\drep7\AppData\Roaming\npm\node_modules\cdk-dia\icons\aws\Resource\Res_Networking-and-Content-Delivery\Res_48_Dark\Res_Amazon-Route-53-Hosted-Zone_48_Dark_gen.png";
+          imagescale = "true";
+          imagepos = "tc";
+          penwidth = 0;
+          shape = "node";
+          fixedsize = "true";
+          labelloc = "b";
+          width = 1.2;
+          height = 1.466;
+        ];
+        "OliBranchCognitoStack/AWS679f53fac002430cb0da5b7982bd2287" [
+          label = "\nAWS679f53fac002430cb0";
+          fontsize = 12;
+          image = "C:\Users\drep7\AppData\Roaming\npm\node_modules\cdk-dia\icons\aws\Service\Arch_Compute\64\Arch_AWS-Lambda_64@5x.png";
+          imagescale = "true";
+          imagepos = "tc";
+          penwidth = 0;
+          shape = "node";
+          fixedsize = "true";
+          labelloc = "b";
+          width = 2;
+          height = 2.4819999999999998;
+        ];
+        "OliBranchCognitoStack/OliBranchIdentityPool" [
+          label = " Cognito IdentityPool\nOliBranchIdentityPool";
+          fontsize = 12;
+          image = "C:\Users\drep7\AppData\Roaming\npm\node_modules\cdk-dia\icons\aws\Service\Arch_Security-Identity-Compliance\64\Arch_Amazon-Cognito_64.png";
+          imagescale = "true";
+          imagepos = "tc";
+          penwidth = 0;
+          shape = "node";
+          fixedsize = "true";
+          labelloc = "b";
+          width = 1.2;
+          height = 1.682;
+        ];
+        "OliBranchCognitoStack/CognitoAuthenticatedRole" [
+          label = "\nCognitoAuthenticatedR";
+          fontsize = 12;
+          image = "C:\Users\drep7\AppData\Roaming\npm\node_modules\cdk-dia\icons\aws\Service\Arch_Security-Identity-Compliance\64\Arch_AWS-Identity-and-Access-Management_64@5x.png";
+          imagescale = "true";
+          imagepos = "tc";
+          penwidth = 0;
+          shape = "node";
+          fixedsize = "true";
+          labelloc = "b";
+          width = 1.2;
+          height = 1.682;
+        ];
+        "OliBranchCognitoStack/CognitoUnauthenticatedRole" [
+          label = "\nCognitoUnauthenticate";
+          fontsize = 12;
+          image = "C:\Users\drep7\AppData\Roaming\npm\node_modules\cdk-dia\icons\aws\Service\Arch_Security-Identity-Compliance\64\Arch_AWS-Identity-and-Access-Management_64@5x.png";
+          imagescale = "true";
+          imagepos = "tc";
+          penwidth = 0;
+          shape = "node";
+          fixedsize = "true";
+          labelloc = "b";
+          width = 1.2;
+          height = 1.682;
+        ];
+        "OliBranchCognitoStack/IdentityPoolRoleAttachment" [
+          label = " Cognito";
+          fontsize = 12;
+          image = "C:\Users\drep7\AppData\Roaming\npm\node_modules\cdk-dia\icons\aws\Service\Arch_Security-Identity-Compliance\64\Arch_Amazon-Cognito_64.png";
+          imagescale = "true";
+          imagepos = "tc";
+          penwidth = 0;
+          shape = "node";
+          fixedsize = "true";
+          labelloc = "b";
+          width = 1.2;
+          height = 1.466;
+        ];
+      }
+      subgraph "cluster-SubGraph.OliBranchLambdaStack" {
+        graph [
+          label = "OliBranchLambdaStack";
+          labelloc = "b";
+          labeljust = "l";
+          margin = 10;
+          fontsize = 16;
+          penwidth = 2;
+          pencolor = "#888888";
+          style = "filled,rounded";
+          fillcolor = "#e4e4e4";
+        ];
+        "OliBranchLambdaStack/LambdaExecutionRole" [
+          label = " LambdaExecutionRole";
+          fontsize = 12;
+          image = "C:\Users\drep7\AppData\Roaming\npm\node_modules\cdk-dia\icons\aws\Service\Arch_Security-Identity-Compliance\64\Arch_AWS-Identity-and-Access-Management_64@5x.png";
+          imagescale = "true";
+          imagepos = "tc";
+          penwidth = 0;
+          shape = "node";
+          fixedsize = "true";
+          labelloc = "b";
+          width = 1.2;
+          height = 1.466;
+        ];
+        "OliBranchLambdaStack/CommonLayer" [
+          label = " CommonLayer";
+          fontsize = 12;
+          image = "C:\Users\drep7\AppData\Roaming\npm\node_modules\cdk-dia\icons\aws\Service\Arch_Compute\64\Arch_AWS-Lambda_64@5x.png";
+          imagescale = "true";
+          imagepos = "tc";
+          penwidth = 0;
+          shape = "node";
+          fixedsize = "true";
+          labelloc = "b";
+          width = 2;
+          height = 2.266;
+        ];
+        "OliBranchLambdaStack/AILayer" [
+          label = " AILayer";
+          fontsize = 12;
+          image = "C:\Users\drep7\AppData\Roaming\npm\node_modules\cdk-dia\icons\aws\Service\Arch_Compute\64\Arch_AWS-Lambda_64@5x.png";
+          imagescale = "true";
+          imagepos = "tc";
+          penwidth = 0;
+          shape = "node";
+          fixedsize = "true";
+          labelloc = "b";
+          width = 2;
+          height = 2.266;
+        ];
+        "OliBranchLambdaStack/ProcessAnalysisFunction" [
+          label = "\nProcessAnalysisFuncti";
+          fontsize = 12;
+          image = "C:\Users\drep7\AppData\Roaming\npm\node_modules\cdk-dia\icons\aws\Service\Arch_Compute\64\Arch_AWS-Lambda_64@5x.png";
+          imagescale = "true";
+          imagepos = "tc";
+          penwidth = 0;
+          shape = "node";
+          fixedsize = "true";
+          labelloc = "b";
+          width = 2;
+          height = 2.4819999999999998;
+        ];
+        "OliBranchLambdaStack/BankSyncFunction" [
+          label = " BankSyncFunction";
+          fontsize = 12;
+          image = "C:\Users\drep7\AppData\Roaming\npm\node_modules\cdk-dia\icons\aws\Service\Arch_Compute\64\Arch_AWS-Lambda_64@5x.png";
+          imagescale = "true";
+          imagepos = "tc";
+          penwidth = 0;
+          shape = "node";
+          fixedsize = "true";
+          labelloc = "b";
+          width = 2;
+          height = 2.266;
+        ];
+        "OliBranchLambdaStack/GenerateReportFunction" [
+          label = "\nGenerateReportFunctio";
+          fontsize = 12;
+          image = "C:\Users\drep7\AppData\Roaming\npm\node_modules\cdk-dia\icons\aws\Service\Arch_Compute\64\Arch_AWS-Lambda_64@5x.png";
+          imagescale = "true";
+          imagepos = "tc";
+          penwidth = 0;
+          shape = "node";
+          fixedsize = "true";
+          labelloc = "b";
+          width = 2;
+          height = 2.4819999999999998;
+        ];
+        "OliBranchLambdaStack/WebhookHandlerFunction" [
+          label = "\nWebhookHandlerFunctio";
+          fontsize = 12;
+          image = "C:\Users\drep7\AppData\Roaming\npm\node_modules\cdk-dia\icons\aws\Service\Arch_Compute\64\Arch_AWS-Lambda_64@5x.png";
+          imagescale = "true";
+          imagepos = "tc";
+          penwidth = 0;
+          shape = "node";
+          fixedsize = "true";
+          labelloc = "b";
+          width = 2;
+          height = 2.4819999999999998;
+        ];
+        "OliBranchLambdaStack/LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8a/ServiceRole" [
+          label = " ServiceRole";
+          fontsize = 12;
+          image = "C:\Users\drep7\AppData\Roaming\npm\node_modules\cdk-dia\icons\aws\Service\Arch_Security-Identity-Compliance\64\Arch_AWS-Identity-and-Access-Management_64@5x.png";
+          imagescale = "true";
+          imagepos = "tc";
+          penwidth = 0;
+          shape = "node";
+          fixedsize = "true";
+          labelloc = "b";
+          width = 1.2;
+          height = 1.466;
+        ];
+      }
+      subgraph "cluster-SubGraph.OliBranchApiStack" {
+        graph [
+          label = "OliBranchApiStack";
+          labelloc = "b";
+          labeljust = "l";
+          margin = 10;
+          fontsize = 16;
+          penwidth = 2;
+          pencolor = "#888888";
+          style = "filled,rounded";
+          fillcolor = "#e4e4e4";
+        ];
+        "OliBranchApiStack/OliBranchCluster" [
+          label = " OliBranchCluster";
+          fontsize = 12;
+          image = "C:\Users\drep7\AppData\Roaming\npm\node_modules\cdk-dia\icons\aws\Service\Arch_Compute\64\Arch_Amazon-Elastic-Container-Service_64@5x.png";
+          imagescale = "true";
+          imagepos = "tc";
+          penwidth = 0;
+          shape = "node";
+          fixedsize = "true";
+          labelloc = "b";
+          width = 2;
+          height = 2.266;
+        ];
+        "OliBranchApiStack/ApiSecurityGroup" [
+          label = " ApiSecurityGroup";
+          fontsize = 12;
+          image = "C:\Users\drep7\AppData\Roaming\npm\node_modules\cdk-dia\icons\aws\security_group.png";
+          imagescale = "true";
+          imagepos = "tc";
+          penwidth = 0;
+          shape = "node";
+          fixedsize = "true";
+          labelloc = "b";
+          width = 2;
+          height = 2.266;
+        ];
+        subgraph "cluster-SubGraph.OliBranchService" {
+          graph [
+            label = "OliBranchService";
+            labelloc = "b";
+            labeljust = "l";
+            margin = 10;
+            fontsize = 16;
+            penwidth = 2;
+            pencolor = "#888888";
+            style = "filled,rounded";
+            fillcolor = "#d6d6d6";
+          ];
+          "OliBranchApiStack/OliBranchService/LB" [
+            label = " LB";
+            fontsize = 12;
+            image = "C:\Users\drep7\AppData\Roaming\npm\node_modules\cdk-dia\icons\aws\Service\Arch_Networking-Content\64\Arch_Elastic-Load-Balancing_64@5x.png";
+            imagescale = "true";
+            imagepos = "tc";
+            penwidth = 0;
+            shape = "node";
+            fixedsize = "true";
+            labelloc = "b";
+            width = 2;
+            height = 2.266;
+          ];
+          "OliBranchApiStack/OliBranchService/TaskDef" [
+            label = " TaskDef";
+            fontsize = 12;
+            image = "C:\Users\drep7\AppData\Roaming\npm\node_modules\cdk-dia\icons\aws\Resource\Res_Containers\Res_48_Dark\Res_Amazon-Elastic-Container-Service_Task_48_Dark_gen.png";
+            imagescale = "true";
+            imagepos = "tc";
+            penwidth = 0;
+            shape = "node";
+            fixedsize = "true";
+            labelloc = "b";
+            width = 2;
+            height = 2.266;
+          ];
+          subgraph "cluster-SubGraph.Service" {
+            graph [
+              label = "Service";
+              labelloc = "b";
+              labeljust = "l";
+              margin = 10;
+              fontsize = 16;
+              penwidth = 2;
+              pencolor = "#888888";
+              style = "filled,rounded";
+              fillcolor = "#c7c7c7";
+            ];
+            "OliBranchApiStack/OliBranchService/Service/Service" [
+              label = " ECS Service Service";
+              fontsize = 12;
+              image = "C:\Users\drep7\AppData\Roaming\npm\node_modules\cdk-dia\icons\aws\Resource\Res_Containers\Res_48_Dark\Res_Amazon-Elastic-Container-Service_Service_48_Dark_gen.png";
+              imagescale = "true";
+              imagepos = "tc";
+              penwidth = 0;
+              shape = "node";
+              fixedsize = "true";
+              labelloc = "b";
+              width = 2;
+              height = 2.266;
+            ];
+            "OliBranchApiStack/OliBranchService/Service/TaskCount/Target" [
+              label = " Target";
+              fontsize = 12;
+            ];
+          }
+        }
+      }
+    }
+  }
+  "OliBranchNetworkStack/LambdaSecurityGroup" -> "OliBranchNetworkStack/OliBranchVpc" [
+    dir = "both";
+  ];
+  "OliBranchNetworkStack/DatabaseSecurityGroup" -> "OliBranchNetworkStack/OliBranchVpc" [
+    dir = "both";
+  ];
+  "OliBranchNetworkStack/DatabaseSecurityGroup" -> "OliBranchNetworkStack/LambdaSecurityGroup" [
+    dir = "both";
+  ];
+  "OliBranchCognitoStack/OliBranchClient" -> "OliBranchCognitoStack/OliBranchUserPool" [
+    dir = "both";
+  ];
+  "OliBranchCognitoStack/OliBranchDomain" -> "OliBranchCognitoStack/OliBranchUserPool" [
+    dir = "both";
+  ];
+  "OliBranchCognitoStack/OliBranchDomain" -> "OliBranchCognitoStack/AuthCertificate" [
+    dir = "both";
+  ];
+  "OliBranchCognitoStack/OliBranchDomain" -> "OliBranchCognitoStack/AWS679f53fac002430cb0da5b7982bd2287" [
+    dir = "both";
+  ];
+  "OliBranchCognitoStack/AuthSubdomainRecord" -> "OliBranchCognitoStack/OliBranchDomain" [
+    dir = "both";
+  ];
+  "OliBranchCognitoStack/OliBranchIdentityPool" -> "OliBranchCognitoStack/OliBranchUserPool" [
+    dir = "both";
+  ];
+  "OliBranchCognitoStack/OliBranchIdentityPool" -> "OliBranchCognitoStack/OliBranchClient" [
+    dir = "both";
+  ];
+  "OliBranchCognitoStack/CognitoAuthenticatedRole" -> "OliBranchCognitoStack/OliBranchIdentityPool" [
+    dir = "both";
+  ];
+  "OliBranchCognitoStack/CognitoUnauthenticatedRole" -> "OliBranchCognitoStack/OliBranchIdentityPool" [
+    dir = "both";
+  ];
+  "OliBranchCognitoStack/IdentityPoolRoleAttachment" -> "OliBranchCognitoStack/OliBranchIdentityPool" [
+    dir = "both";
+  ];
+  "OliBranchCognitoStack/IdentityPoolRoleAttachment" -> "OliBranchCognitoStack/CognitoAuthenticatedRole" [
+    dir = "both";
+  ];
+  "OliBranchCognitoStack/IdentityPoolRoleAttachment" -> "OliBranchCognitoStack/CognitoUnauthenticatedRole" [
+    dir = "both";
+  ];
+  "OliBranchLambdaStack/LambdaExecutionRole" -> "OliBranchDynamoDbStack/UsersTable" [
+    dir = "both";
+  ];
+  "OliBranchLambdaStack/LambdaExecutionRole" -> "OliBranchDynamoDbStack/BusinessesTable" [
+    dir = "both";
+  ];
+  "OliBranchLambdaStack/LambdaExecutionRole" -> "OliBranchDynamoDbStack/AssessmentsTable" [
+    dir = "both";
+  ];
+  "OliBranchLambdaStack/LambdaExecutionRole" -> "OliBranchDynamoDbStack/ReportsTable" [
+    dir = "both";
+  ];
+  "OliBranchLambdaStack/LambdaExecutionRole" -> "OliBranchDynamoDbStack/LeaksTable" [
+    dir = "both";
+  ];
+  "OliBranchLambdaStack/LambdaExecutionRole" -> "OliBranchDynamoDbStack/RecommendationsTable" [
+    dir = "both";
+  ];
+  "OliBranchLambdaStack/LambdaExecutionRole" -> "OliBranchS3Stack/AuditBucket" [
+    dir = "both";
+  ];
+  "OliBranchLambdaStack/LambdaExecutionRole" -> "OliBranchS3Stack/ReportsBucket" [
+    dir = "both";
+  ];
+  "OliBranchLambdaStack/LambdaExecutionRole" -> "OliBranchS3Stack/StaticBucket" [
+    dir = "both";
+  ];
+  "OliBranchLambdaStack/LambdaExecutionRole" -> "OliBranchS3Stack/PublicBucket" [
+    dir = "both";
+  ];
+  "OliBranchLambdaStack/ProcessAnalysisFunction" -> "OliBranchNetworkStack/OliBranchVpc" [
+    dir = "both";
+  ];
+  "OliBranchLambdaStack/ProcessAnalysisFunction" -> "OliBranchNetworkStack/LambdaSecurityGroup" [
+    dir = "both";
+  ];
+  "OliBranchLambdaStack/ProcessAnalysisFunction" -> "OliBranchDynamoDbStack/UsersTable" [
+    dir = "both";
+  ];
+  "OliBranchLambdaStack/ProcessAnalysisFunction" -> "OliBranchDynamoDbStack/BusinessesTable" [
+    dir = "both";
+  ];
+  "OliBranchLambdaStack/ProcessAnalysisFunction" -> "OliBranchDynamoDbStack/AssessmentsTable" [
+    dir = "both";
+  ];
+  "OliBranchLambdaStack/ProcessAnalysisFunction" -> "OliBranchDynamoDbStack/ReportsTable" [
+    dir = "both";
+  ];
+  "OliBranchLambdaStack/ProcessAnalysisFunction" -> "OliBranchDynamoDbStack/LeaksTable" [
+    dir = "both";
+  ];
+  "OliBranchLambdaStack/ProcessAnalysisFunction" -> "OliBranchDynamoDbStack/RecommendationsTable" [
+    dir = "both";
+  ];
+  "OliBranchLambdaStack/ProcessAnalysisFunction" -> "OliBranchS3Stack/AuditBucket" [
+    dir = "both";
+  ];
+  "OliBranchLambdaStack/ProcessAnalysisFunction" -> "OliBranchLambdaStack/CommonLayer" [
+    dir = "both";
+  ];
+  "OliBranchLambdaStack/ProcessAnalysisFunction" -> "OliBranchLambdaStack/AILayer" [
+    dir = "both";
+  ];
+  "OliBranchLambdaStack/BankSyncFunction" -> "OliBranchNetworkStack/OliBranchVpc" [
+    dir = "both";
+  ];
+  "OliBranchLambdaStack/BankSyncFunction" -> "OliBranchNetworkStack/LambdaSecurityGroup" [
+    dir = "both";
+  ];
+  "OliBranchLambdaStack/BankSyncFunction" -> "OliBranchLambdaStack/CommonLayer" [
+    dir = "both";
+  ];
+  "OliBranchLambdaStack/GenerateReportFunction" -> "OliBranchNetworkStack/OliBranchVpc" [
+    dir = "both";
+  ];
+  "OliBranchLambdaStack/GenerateReportFunction" -> "OliBranchNetworkStack/LambdaSecurityGroup" [
+    dir = "both";
+  ];
+  "OliBranchLambdaStack/GenerateReportFunction" -> "OliBranchDynamoDbStack/ReportsTable" [
+    dir = "both";
+  ];
+  "OliBranchLambdaStack/GenerateReportFunction" -> "OliBranchS3Stack/ReportsBucket" [
+    dir = "both";
+  ];
+  "OliBranchLambdaStack/GenerateReportFunction" -> "OliBranchLambdaStack/CommonLayer" [
+    dir = "both";
+  ];
+  "OliBranchLambdaStack/WebhookHandlerFunction" -> "OliBranchLambdaStack/ProcessAnalysisFunction" [
+    dir = "both";
+  ];
+  "OliBranchLambdaStack/WebhookHandlerFunction" -> "OliBranchLambdaStack/BankSyncFunction" [
+    dir = "both";
+  ];
+  "OliBranchLambdaStack/WebhookHandlerFunction" -> "OliBranchLambdaStack/CommonLayer" [
+    dir = "both";
+  ];
+  "OliBranchApiStack/ApiSecurityGroup" -> "OliBranchNetworkStack/OliBranchVpc" [
+    dir = "both";
+  ];
+  "OliBranchApiStack/ApiSecurityGroup" -> "OliBranchApiStack/OliBranchService/LB" [
+    dir = "both";
+  ];
+  "OliBranchApiStack/OliBranchService/LB" -> "OliBranchNetworkStack/OliBranchVpc" [
+    dir = "both";
+  ];
+  "OliBranchApiStack/OliBranchService/LB" -> "OliBranchApiStack/ApiSecurityGroup" [
+    dir = "both";
+  ];
+  "OliBranchApiStack/OliBranchService/Service/Service" -> "OliBranchNetworkStack/OliBranchVpc" [
+    dir = "both";
+  ];
+  "OliBranchApiStack/OliBranchService/Service/Service" -> "OliBranchApiStack/OliBranchCluster" [
+    dir = "both";
+  ];
+  "OliBranchApiStack/OliBranchService/Service/Service" -> "OliBranchApiStack/ApiSecurityGroup" [
+    dir = "both";
+  ];
+  "OliBranchApiStack/OliBranchService/Service/Service" -> "OliBranchApiStack/OliBranchService/LB" [
+    dir = "both";
+  ];
+  "OliBranchApiStack/OliBranchService/Service/Service" -> "OliBranchApiStack/OliBranchService/TaskDef" [
+    dir = "both";
+  ];
+  "OliBranchApiStack/OliBranchService/Service/TaskCount/Target" -> "OliBranchApiStack/OliBranchService/Service/Service" [
+    dir = "both";
+  ];
+  "OliBranchApiStack/OliBranchService/Service/TaskCount/Target" -> "OliBranchApiStack/OliBranchCluster" [
+    dir = "both";
+  ];
+}
